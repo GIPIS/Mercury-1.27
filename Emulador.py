@@ -12,81 +12,57 @@ CANALES_CONFIG = [58] * 32  # 16 canales activos (ejemplo: config 58)
 INTERVALO_MUESTREO = 60
 
 def generar_respuesta_CE():
-    # Estructura del Frame para 16 canales (2 bloques de 8):
-    # 1. Datos (32 bytes data + 8 bytes padding = 40 bytes)
-    #    - Bloque 1 (8 ch): 16 bytes data + 4 bytes padding
-    #    - Bloque 2 (8 ch): 16 bytes data + 4 bytes padding
-    # 2. Hora (4 bytes)
-    # 3. Fecha Inicio (4 bytes)
-    # 4. Intervalo (2 bytes)
-    # 5. Config (16 bytes config + 4 bytes padding = 20 bytes)
-    #    - Bloque 1 (8 ch): 8 bytes config + 2 bytes padding
-    #    - Bloque 2 (8 ch): 8 bytes config + 2 bytes padding
-    # 6. Nombre (4 bytes)
-    # 7. Memoria (4 bytes)
-    
-    # Total esperado: 40 + 10 + 20 + 4 + 4 = 78 bytes aprox?
-    # Revisemos PuertoSerie.pas: loop de lectura con saltos.
-    # El loop lee linealmente con saltos.
-    # Data Loop: 
-    #   Lee 2 bytes. inc(i,2).
-    #   Si (i mod 8 == 0) -> inc(i,4)?? 
-    #   No, PuertoSerie.pas TENIA logic comentada de saltos.
-    #   En mi ultima lectura de PuertoSerie.pas, la linea de saltos estaba COMENTADA:
-    #   //if ((NCanal + 1) mod 8 = 0) then
-    #   //   inc(i, 4); 
-    #   
-    #   WAIT. If the skipping logic is COMMENTED OUT in Pascal, then the emulator MUST NOT send padding.
-    #   Or I must uncomment it if padding is standard.
-    #   The user said "20 bytes per block of 8 channels". this implies padding (16 data + 4 padding).
-    #   If Pascal code consumes 2 bytes per channel * 16 channels = 32 bytes.
-    #   And DOES NOT skip padding... then the emulator must SEND contiguous data (32 bytes).
-    #
-    #   However, line 620 in PuertoSerie.pas says:
-    #   BytesOcupadosData := CantCanales * 2;
-    #   And the reading loop iterates NCanal from 0 to CantCanales-1.
-    #   So it reads exactly CantCanales*2 bytes contiguously.
-    #
-    #   BUT, if the protocol definition (which I can't change primarily) says "20 bytes per block",
-    #   then the Pascal code is WRONG if it ignores padding?
-    #   OR the emulator should just match the Pascal code.
-    #   Start simple: Match Pascal code. Pascal code reads contiguous.
-    #   I will implement contiguous data generation for now.
-    
-    #   Wait, line 630: BytesToRead calculation.
-    #   BytesToRead := BytesOcupadosData (16*2=32) + 4 + 4 + 2 + BytesOcupadosConf (16*1=16) + 4 + 4;
-    #   Total: 32 + 14 + 16 + 8 = 70 bytes.
-    #   
-    #   So Pascal expects 70 bytes for 16 channels.
-    
+    """
+    Genera respuesta CE con estructura de bloques:
+    - Cada bloque de 8 canales tiene: 8 analog (16 bytes) + 2 digital (4 bytes) = 20 bytes
+    - Para 32 canales: 4 bloques × 20 bytes = 80 bytes de datos
+    - Luego: Hora(4) + FechaIni(4) + Intervalo(2) + Config(32) + Nombre(4) + Memoria(4)
+    """
     respuesta = bytearray()
     
-    # 1. Datos de Canales (2 bytes c/u)
-    for i in range(len(CANALES_CONFIG)):
-        valor = 1000 + i * 100
-        respuesta.extend(struct.pack('<H', valor))
+    num_canales = len(CANALES_CONFIG)
+    num_bloques = (num_canales + 7) // 8  # Round up to blocks of 8
+    
+    # 1. Datos de Canales por bloques
+    for bloque in range(num_bloques):
+        # 8 canales analógicos por bloque
+        for ch in range(8):
+            indice_real = bloque * 8 + ch
+            if indice_real < num_canales:
+                valor = 1000 + indice_real * 100
+            else:
+                valor = 0
+            respuesta.extend(struct.pack('<H', valor))
+        
+        # 2 canales digitales (alternativas A y B)
+        dig_a = 5000 + bloque * 10  # Digital A: 5000, 5010, 5020, 5030
+        dig_b = 6000 + bloque * 10  # Digital B: 6000, 6010, 6020, 6030
+        respuesta.extend(struct.pack('<H', dig_a))  # Digital A
+        respuesta.extend(struct.pack('<H', dig_b))  # Digital B
 
-    # 2. Hora
+    # 2. Hora (4 bytes)
     hora = int(time.time()) - 946684800
     respuesta.extend(struct.pack('<I', hora))
     
-    # 3. Fecha Inicio
+    # 3. Fecha Inicio (4 bytes)
     respuesta.extend(struct.pack('<I', hora))
     
-    # 4. Intervalo
+    # 4. Intervalo (2 bytes)
     respuesta.extend(struct.pack('<H', INTERVALO_MUESTREO))
     
     # 5. Configuración de Canales (1 byte c/u)
     for config in CANALES_CONFIG:
         respuesta.append(config)
         
-    # 6. Nombre
+    # 6. Nombre (4 bytes)
     respuesta.extend(NOMBRE_EQUIPO)
     
-    # 7. Memoria
-    respuesta.extend(struct.pack('<I', 65536)) # 4 bytes memoria
+    # 7. Memoria (4 bytes)
+    respuesta.extend(struct.pack('<I', 65536))
 
+    print(f"CE Frame: {len(respuesta)} bytes ({num_bloques} bloques)")
     return bytes(respuesta)
+
 
 def generar_datos_muestras():
     canales_activos = [i for i, c in enumerate(CANALES_CONFIG) if c > 0]

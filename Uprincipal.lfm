@@ -12,7 +12,7 @@ object Fprincipal: TFprincipal
   DesignTimePPI = 120
   Font.CharSet = ANSI_CHARSET
   Font.Color = clWindowText
-  Font.Height = -4929
+  Font.Height = -6161
   Font.Name = 'Tahoma'
   Menu = MenuPrincipal
   Position = poScreenCenter
@@ -6861,6 +6861,53 @@ object Fprincipal: TFprincipal
                 Width = 101
                 Shape = bsFrame
               end
+              object LValorCanDig01: TLabel
+                Tag = 8
+                Left = 344
+                Height = 20
+                Top = 213
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+              end
+              object LDescripcionCanDig01: TLabel
+                Tag = 8
+                Left = 122
+                Height = 16
+                Top = 216
+                Width = 211
+                Alignment = taCenter
+                AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object LUnidadDigCan01: TLabel
+                Tag = 8
+                Left = 456
+                Height = 16
+                Top = 216
+                Width = 60
+                Alignment = taCenter
+                AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
             end
           end
           object tsExp1: TTabSheet
@@ -8481,6 +8528,53 @@ object Fprincipal: TFprincipal
                 Width = 101
                 Shape = bsFrame
               end
+              object LValorCanDig02: TLabel
+                Tag = 8
+                Left = 344
+                Height = 20
+                Top = 213
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+              end
+              object LDescripcionCanDig02: TLabel
+                Tag = 8
+                Left = 122
+                Height = 16
+                Top = 216
+                Width = 211
+                Alignment = taCenter
+                AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object LUnidadDigCan02: TLabel
+                Tag = 8
+                Left = 456
+                Height = 16
+                Top = 216
+                Width = 60
+                Alignment = taCenter
+                AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
             end
           end
           object tsExp2: TTabSheet
@@ -10078,8 +10172,62 @@ object Fprincipal: TFprincipal
                 Width = 63
                 Shape = bsFrame
               end
+              object LValorCanDig03: TLabel
+                Tag = 8
+                Left = 344
+                Height = 20
+                Top = 213
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+              end
+              object LDescripcionCanDig03: TLabel
+                Tag = 8
+                Left = 122
+                Height = 16
+                Top = 216
+                Width = 211
+                Alignment = taCenter
+                AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object LUnidadDigCan03: TLabel
+                Tag = 8
+                Left = 456
+                Height = 16
+                Top = 216
+                Width = 60
+                Alignment = taCenter
+                AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
             end
           end
+        end
+        object Bevel240: TBevel
+          Left = 20
+          Height = 21
+          Top = 214
+          Width = 89
+          Shape = bsFrame
         end
       end
     end

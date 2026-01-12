@@ -161,6 +161,7 @@ type
     Bevel238: TBevel;
     Bevel239: TBevel;
     Bevel24: TBevel;
+    Bevel240: TBevel;
     Bevel25: TBevel;
     Bevel26: TBevel;
     Bevel27: TBevel;
@@ -260,6 +261,9 @@ type
     LDescripcionCan14: TLabel;
     LDescripcionCan15: TLabel;
     LDescripcionCan16: TLabel;
+    LDescripcionCanDig02: TLabel;
+    LDescripcionCanDig03: TLabel;
+    LDescripcionCanDig01: TLabel;
     LDescripcionParam1: TLabel;
     LDescripcionParam2: TLabel;
     LDescripcionParam3: TLabel;
@@ -335,6 +339,9 @@ type
     LUnidadCan14: TLabel;
     LUnidadCan15: TLabel;
     LUnidadCan16: TLabel;
+    LUnidadDigCan01: TLabel;
+    LUnidadDigCan02: TLabel;
+    LUnidadDigCan03: TLabel;
     LUnidadParam1: TLabel;
     LUnidadParam2: TLabel;
     LUnidadParam3: TLabel;
@@ -384,6 +391,9 @@ type
     LValor7: TLabel;
     LValorCan19: TLabel;
     LValorCan20: TLabel;
+    LValorCanDig01: TLabel;
+    LValorCanDig02: TLabel;
+    LValorCanDig03: TLabel;
     LValorParam1: TLabel;
     LValorParam2: TLabel;
     LValorParam3: TLabel;
@@ -1297,6 +1307,7 @@ var
   ExisteSensor : boolean;
   CompName, strDesc, strVal, strUnit, strGraph, strComm: string;
   Comp: TComponent;
+  fLog: TextFile;
 
 begin
   if (Cerrando or Creando) then exit;
@@ -1505,6 +1516,45 @@ begin
         31: if Assigned(LValorCan31) then LValorCan31.Caption := 'OFF';
       end;
     end;
+  end;
+
+  // --- CANALES DIGITALES (DEBUG + DISPLAY) ---
+  // DEBUG: Log digital values
+  try
+    AssignFile(fLog, 'debug_digital.txt');
+    if FileExists('debug_digital.txt') then Append(fLog) else Rewrite(fLog);
+    Writeln(fLog, Format('DigA[0]=%d DigB[0]=%d', [Equipo.ThreadComm.pvalorDigA[0], Equipo.ThreadComm.pvalorDigB[0]]));
+    CloseFile(fLog);
+  except
+  end;
+  
+  // Display digital values in LValorCanDig00-03
+  if Assigned(LValorCanDig00) then begin
+    if Equipo.ThreadComm.UsarCHDigB[0] then
+      LValorCanDig00.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[0])
+    else
+      LValorCanDig00.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[0]);
+  end;
+  
+  if (Equipo.NumCanales > 8) and Assigned(LValorCanDig01) then begin
+    if Equipo.ThreadComm.UsarCHDigB[1] then
+      LValorCanDig01.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[1])
+    else
+      LValorCanDig01.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[1]);
+  end;
+  
+  if (Equipo.NumCanales > 16) and Assigned(LValorCanDig02) then begin
+    if Equipo.ThreadComm.UsarCHDigB[2] then
+      LValorCanDig02.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[2])
+    else
+      LValorCanDig02.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[2]);
+  end;
+  
+  if (Equipo.NumCanales > 24) and Assigned(LValorCanDig03) then begin
+    if Equipo.ThreadComm.UsarCHDigB[3] then
+      LValorCanDig03.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[3])
+    else
+      LValorCanDig03.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[3]);
   end;
 
   // --- FIN DE LA SECCIÓN DE CARGA DE CANALES ---

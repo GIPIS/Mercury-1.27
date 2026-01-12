@@ -79,6 +79,12 @@ type
     public
       pvalorCH        : array of ^integer;
       pCH_conf        : array of ^byte;
+      
+      // Digital channel values (2 alternates per module, choose one)
+      // Index 0-3 corresponds to modules (0=Monitoreo, 1=Exp1, 2=Exp2, 3=Exp3)
+      pvalorDigA      : array[0..3] of integer;  // First digital option (ch 8, 16, 24, 32)
+      pvalorDigB      : array[0..3] of integer;  // Second digital option (ch 9, 17, 25, 33)
+      UsarCHDigB      : array[0..3] of boolean;  // True = use B, False = use A
 
       // Info que leo del equipo
       pNombre         : ^string;
@@ -590,6 +596,8 @@ end;
 procedure TThreadComm.LeerConfig;
 var
   NCanal   : byte;
+  NBloque  : integer;
+  IndiceCanalReal : integer;
   numDate  : double;
   num      : integer;
   FechaINI : double;
@@ -604,20 +612,23 @@ begin
   auxStr := '';
   
   // Calculate Frame Size logic:
-  // Data: 20 bytes per block of 8 channels.
-  //   Actual data: 8 channels * 2 bytes = 16 bytes.
-  //   Padding: 20 - 16 = 4 bytes per block.
-  // Config: 10 bytes per block of 8 channels.
-  //   Actual config: 8 channels * 1 byte = 8 bytes.
-  //   Padding: 10 - 8 = 2 bytes per block.
+  // For each 8-channel block: 8 analog + 2 digital alternates = 10 channels × 2 bytes = 20 bytes
+  // So the total is ((CantCanales / 8) * 10) * 2 bytes for data
+  //   8ch  = 10 channels = 20 bytes
+  //   16ch = 20 channels = 40 bytes
+  //   24ch = 30 channels = 60 bytes
+  //   32ch = 40 channels = 80 bytes
+  // Config: CantCanales * 1 byte (no change for config, no digital config)
   
-  // BORRAR Determine number of 8-channel blocks (1, 2, 3, or 4)
+  // Determine number of 8-channel blocks (1, 2, 3, or 4)
   if CantCanales <= 8 then NumBloques := 1
   else if CantCanales <= 16 then NumBloques := 2
   else if CantCanales <= 24 then NumBloques := 3
   else NumBloques := 4; // 32 channels
   
-  BytesOcupadosData := CantCanales * 2;
+  // Data bytes: analog + digital channels
+  // Each block has 8 analog (16 bytes) + 2 digital (4 bytes) = 20 bytes per block
+  BytesOcupadosData := NumBloques * 20;
   BytesOcupadosConf := CantCanales * 1;
   
   // Total Frame calculation:
@@ -639,33 +650,57 @@ begin
   // So bytes 1..16 are data for ch 0..7. Bytes 17..20 are padding.
   // Bytes 21..36 are data for ch 8..15. Bytes 37..40 are padding.
   
-  // Implementation note: The existing loop iterates 0 to length(pvalorCH)-1.
-  // We need to manage the index 'i' carefully.
+  // Implementation note: Read data in blocks of 10 channels (8 analog + 2 digital)
+  // Each block is 20 bytes (10 channels × 2 bytes)
   // DEBUG LOGGING START
   AssignFile(fLog, 'debug_mercury.txt');
   try
     if FileExists('debug_mercury.txt') then Append(fLog) else Rewrite(fLog);
-    Writeln(fLog, '--- LECTURA CE (Values) --- Channels: ' + IntToStr(CantCanales));
+    Writeln(fLog, '--- LECTURA CE (Values) --- Channels: ' + IntToStr(CantCanales) + ' Blocks: ' + IntToStr(NumBloques));
   except
     // Safe fail if file access denied
   end;
 
-  for NCanal := 0 to CantCanales - 1 do begin
-      // Read 2 bytes for channel data
-      num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256; 
+  // Process each 8-channel block (analog + digital)
+  for NBloque := 0 to NumBloques - 1 do begin
+    // Read 8 analog channels for this block
+    for NCanal := 0 to 7 do begin
+      IndiceCanalReal := (NBloque * 8) + NCanal;
       
-      // LOG VALUE
-      try
-        Writeln(fLog, Format('CH%d Val: %d (b1:%d b2:%d)', [NCanal, num, Byte(auxStr[i]), Byte(auxStr[i+1])]));
-      except
+      // Only read if this channel exists in our configuration
+      if IndiceCanalReal < CantCanales then begin
+        // Read 2 bytes for channel data
+        num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
+        
+        // LOG VALUE
+        try
+          Writeln(fLog, Format('Block%d CH%d(real:%d) Val: %d', [NBloque, NCanal, IndiceCanalReal, num]));
+        except
+        end;
+        
+        pvalorCH[IndiceCanalReal]^ := num;
       end;
-      
-      pvalorCH[NCanal]^ := num;
       inc(i, 2);
-
-      // ELIMINADO If we completed a block of 8 channels (e.g., ch 7, 15, 23...), skip 4 bytes of padding
-      //if ((NCanal + 1) mod 8 = 0) then
-      //   inc(i, 4); 
+    end;
+    
+    // Read 2 digital channels for this block (alternatives A and B)
+    // Digital A (e.g., ch 8 for block 0, ch 16 for block 1...)
+    num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
+    pvalorDigA[NBloque] := num;
+    try
+      Writeln(fLog, Format('Block%d DigA Val: %d', [NBloque, num]));
+    except
+    end;
+    inc(i, 2);
+    
+    // Digital B (e.g., ch 9 for block 0, ch 17 for block 1...)
+    num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
+    pvalorDigB[NBloque] := num;
+    try
+      Writeln(fLog, Format('Block%d DigB Val: %d', [NBloque, num]));
+    except
+    end;
+    inc(i, 2);
   end;
   
   try
@@ -673,14 +708,8 @@ begin
   except
   end;
   
-  // Move 'i' to the next section start. 
-  // Since we processed all blocks in the loop, 'i' should already be pointing to the start of Time section
-  // BUT only if CantCanales is a multiple of 8. If CantCanales < 8 * NumBloques?
-  // The user says "if 8 channels selected, frame has 8 channels".
-  // So we assume CantCanales is always 8, 16, 24, 32.
-  
   // Safety sync: Data section ends at Start + BytesOcupadosData
-  // i started at 1. So it should now be 1 + BytesOcupadosData.
+  // i started at 1. It should now be 1 + BytesOcupadosData.
   i := 1 + BytesOcupadosData; 
 
   // 2. Read Time (4 bytes)
