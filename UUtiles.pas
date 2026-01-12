@@ -60,6 +60,9 @@ type
       // Variable que para el tipo de Comunicación (Serie o Telefonica)
       TipoDeComm         : byte; //0:CABLE SERIE; 1:TELEFONIA
 
+      // Cantidad de Canales
+      NumCanales         : byte;
+
       // Variables que utilizo en general
       HoraMuestreoLinea  : real;
 
@@ -316,6 +319,9 @@ begin
   // Variables que para el tipo de Comunicación (Serie o Telefonica)
   TipoDeComm         := 0; // CABLE SERIE
 
+  // Cantidad de Canales Default
+  NumCanales         := 10;
+
   // Variables que utilizo en general
   HoraMuestreoLinea  := now;
 end;
@@ -385,6 +391,11 @@ begin
     // Tipo de Comunicación
     TipoDeComm         := StrToInt(ArchivoINI.ReadString(NombreExe, 'TipoDeComm','0'));
 
+    // Cantidad de Canales
+    NumCanales         := StrToInt(ArchivoINI.ReadString(NombreExe, 'NumCanales','10'));
+    
+
+
     // Info de la conexión automática
     ConexAuto.intervalo    := StrToInt(ArchivoINI.ReadString(NombreExe, 'intervalo_Auto'   , '0'));
     ConexAuto.CritDesconec := StrToInt(ArchivoINI.ReadString(NombreExe, 'CritDesconec_Auto', '1'));
@@ -446,6 +457,11 @@ begin
 
     // Tipo de Comunicación
     ArchivoINI.WriteString(NombreExe, 'TipoDeComm'        , IntToStr(TipoDeComm));
+
+    // Cantidad de Canales
+    ArchivoINI.WriteString(NombreExe, 'NumCanales'        , IntToStr(NumCanales));
+    
+
 
     // Info de la conexión automática
     ArchivoINI.WriteString(NombreExe, 'intervalo_Auto'    , IntToStr(ConexAuto.intervalo));

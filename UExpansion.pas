@@ -35,7 +35,7 @@ var
 
 implementation
 
-uses Uprincipal;
+uses Uprincipal, UUtiles;
 
 {$R *.lfm}
 
@@ -48,11 +48,22 @@ end;
 
 procedure TFExpansion.FormCreate(Sender: TObject);
 begin
-
+  case Mercury.NumCanales of
+    8:  RadioButton1.Checked := true;
+    16: RadioButton2.Checked := true;
+    24: rbCanales24.Checked := true;
+    32: rbCanales32.Checked := true;
+    else RadioButton1.Checked := true;
+  end;
 end;
 
 procedure TFExpansion.Button1Click(Sender: TObject);
 begin
+  if RadioButton1.Checked then Mercury.NumCanales := 8;
+  if RadioButton2.Checked then Mercury.NumCanales := 16;
+  if rbCanales24.Checked then Mercury.NumCanales := 24;
+  if rbCanales32.Checked then Mercury.NumCanales := 32;
+
   ModalResult := mrOK;
 end;
 

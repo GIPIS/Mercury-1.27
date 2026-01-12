@@ -940,6 +940,14 @@ begin
   end;
   Retardo(200);
 
+  // Muestro la ventana de configuracion para seleccionar canales
+  FExpansion := TFExpansion.Create(Self);
+  try
+    FExpansion.ShowModal;
+  finally
+    FExpansion.Free;
+  end;
+
   // Creo y Configuro el Equipo con 10 canales si es necesario por el tipo de Comunicaci�n
   //VERIFICA SI VALE LA PENA CREAR EL OBJETO FISICO
   //SI TipoDeComm FUESE (SOLO Internet/TCP-IP) SE SALTA TODO ESTO Y NO TOCA LOS PUERTOS SERIE
@@ -947,7 +955,7 @@ begin
   if (Mercury.TipoDeComm <> 2) then begin
   //TEquipo.crear, 1O ES LA CANTIDAD DE CANALES BASE, Mercury.PuertoSerie EL STRING "COM1"
   //Y TIPO DE COM, EL TIPO DE COMUNICACION
-    Equipo                           := TEquipo.crear(10,Mercury.PuertoSerie, Mercury.TipoDeComm);
+    Equipo                           := TEquipo.crear(Mercury.NumCanales,Mercury.PuertoSerie, Mercury.TipoDeComm);
     Equipo.ThreadComm.pProgreso      := @statusbar.Tag;
     Equipo.ThreadComm.pActualizar    := ActualizarInfo;
     Equipo.ThreadComm.pActualProgres := ActualizarProgreso;
@@ -973,9 +981,9 @@ begin
   Creando                       := false;
 
 
-  // Estado inicial: 8 Canales (ocultar canales 08-15)
+  // Estado inicial: Canales visibles segun configuracion
   InstanciarComponentesFaltantes;
-  ActualizarVisibilidadCanales(8);
+  ActualizarVisibilidadCanales(Mercury.NumCanales);
 
   // Manera de iniciar la ventana Principal Inicio
   if UpCase(Mercury.IniciarMinimizado)='S' then begin
@@ -1292,61 +1300,51 @@ begin
 
   //IntToStr(Equipo.Tmuestreo div 60)+' min
 
-  // Cargo la info de los canales en pantalla 
+  // Cargo la info de los canales en pantalla
   for i:=0 to Equipo.NumCanales-1 do begin
-     // Muestro la Descripci�n
-    case i of
-     0 : LDescripcion00.Caption := Equipo.Canales[i].Descripcion;
-     1 : LDescripcion01.Caption := Equipo.Canales[i].Descripcion;
-     2 : LDescripcion02.Caption := Equipo.Canales[i].Descripcion;
-     3 : LDescripcion03.Caption := Equipo.Canales[i].Descripcion;
-     4 : LDescripcion04.Caption := Equipo.Canales[i].Descripcion;
-     5 : LDescripcion05.Caption := Equipo.Canales[i].Descripcion;
-     6 : LDescripcion06.Caption := Equipo.Canales[i].Descripcion;
-     7 : LDescripcion07.Caption := Equipo.Canales[i].Descripcion;
-     // Canales Digitales
-     8 : if not Equipo.UsarCH9 then LDescripcion08.Caption := Equipo.Canales[i].Descripcion;
-     9 : if Equipo.UsarCH9 then LDescripcion08.Caption := Equipo.Canales[i].Descripcion;
-    end;
+    // Determino el sufijo del componente (00, 01, ..., 31)
+    // Para simplificar, asumimos mapeo directo 1 a 1 para expansiones
+    // La logica de UsarCH9 "digital" se omite por pedido del usuario ("no tener en cuenta")
+    
+    // Genero el nombre del componente
+    // Format('%.2d', [i]) genera 00, 01, 10, 11, etc.
+    
+    // 1. Validar existencia del componente de Descripcion
+    if (FindComponent('LDescripcion' + Format('%.2d', [i])) is TLabel) then
+       TLabel(FindComponent('LDescripcion' + Format('%.2d', [i]))).Caption := Equipo.Canales[i].Descripcion;
 
-    // Acutalizo el valor del canal
+    // 2. Actualizo Valor y Estado
     if Equipo.Canales[i].Config<>0 then begin
-      // Calculo el valor de cada canal
-      Equipo.Canales[i].Escala := Equipo.Escala;
-      Equipo.Canales[i].ComputarValor(Equipo.Canales[i].ValorSensor);
+       // Calculo el valor
+       Equipo.Canales[i].Escala := Equipo.Escala;
+       Equipo.Canales[i].ComputarValor(Equipo.Canales[i].ValorSensor);
 
-      // Muestro el valor del canal
-      case i of
-       0 : begin LValor00.Caption:=Equipo.Canales[i].ValorReal; LUnidad00.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico00.Enabled := true; sbComentario00.Enabled := true; end;
-       1 : begin LValor01.Caption:=Equipo.Canales[i].ValorReal; LUnidad01.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico01.Enabled := true; sbComentario01.Enabled := true; end;
-       2 : begin LValor02.Caption:=Equipo.Canales[i].ValorReal; LUnidad02.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico02.Enabled := true; sbComentario02.Enabled := true; end;
-       3 : begin LValor03.Caption:=Equipo.Canales[i].ValorReal; LUnidad03.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico03.Enabled := true; sbComentario03.Enabled := true; end;
-       4 : begin LValor04.Caption:=Equipo.Canales[i].ValorReal; LUnidad04.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico04.Enabled := true; sbComentario04.Enabled := true; end;
-       5 : begin LValor05.Caption:=Equipo.Canales[i].ValorReal; LUnidad05.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico05.Enabled := true; sbComentario05.Enabled := true; end;
-       6 : begin LValor06.Caption:=Equipo.Canales[i].ValorReal; LUnidad06.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico06.Enabled := true; sbComentario06.Enabled := true; end;
-       7 : begin LValor07.Caption:=Equipo.Canales[i].ValorReal; LUnidad07.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico07.Enabled := true; sbComentario07.Enabled := true; end;
-       // Canales Digitales
-       8 : if not Equipo.UsarCH9 then begin LValor08.Caption:=Equipo.Canales[i].ValorReal; LUnidad08.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico08.Enabled := true; sbComentario08.Enabled := true; end;
-       9 : if Equipo.UsarCH9 then begin LValor08.Caption:=Equipo.Canales[i].ValorReal; LUnidad08.Caption:='['+Equipo.Canales[i].Unidad+']'; sbGrafico08.Enabled := true; sbComentario08.Enabled := true; end;
-      end;
+       // Actualizo componentes si existen
+       if (FindComponent('LValor' + Format('%.2d', [i])) is TLabel) then
+          TLabel(FindComponent('LValor' + Format('%.2d', [i]))).Caption := Equipo.Canales[i].ValorReal;
 
-      {sgCanales.Cells[2,i+1]:= CentrarTexto(Equipo.Canales[i].ValorReal,sgCanales.ColWidths[2]);
-      sgCanales.Cells[3,i+1]:= CentrarTexto(Equipo.Canales[i].Unidad,sgCanales.ColWidths[3]);}
+       if (FindComponent('LUnidad' + Format('%.2d', [i])) is TLabel) then
+          TLabel(FindComponent('LUnidad' + Format('%.2d', [i]))).Caption := '['+Equipo.Canales[i].Unidad+']';
+
+       if (FindComponent('sbGrafico' + Format('%.2d', [i])) is TSpeedButton) then
+          TSpeedButton(FindComponent('sbGrafico' + Format('%.2d', [i]))).Enabled := true;
+
+       if (FindComponent('sbComentario' + Format('%.2d', [i])) is TSpeedButton) then
+          TSpeedButton(FindComponent('sbComentario' + Format('%.2d', [i]))).Enabled := true;
     end
     else begin
-      // Muestro el valor del canal
-      case i of
-       0 : begin LValor00.Caption:=''; LUnidad00.Caption:=''; sbGrafico00.Enabled := false; sbComentario00.Enabled := false; end;
-       1 : begin LValor01.Caption:=''; LUnidad01.Caption:=''; sbGrafico01.Enabled := false; sbComentario01.Enabled := false; end;
-       2 : begin LValor02.Caption:=''; LUnidad02.Caption:=''; sbGrafico02.Enabled := false; sbComentario02.Enabled := false; end;
-       3 : begin LValor03.Caption:=''; LUnidad03.Caption:=''; sbGrafico03.Enabled := false; sbComentario03.Enabled := false; end;
-       4 : begin LValor04.Caption:=''; LUnidad04.Caption:=''; sbGrafico04.Enabled := false; sbComentario04.Enabled := false; end;
-       5 : begin LValor05.Caption:=''; LUnidad05.Caption:=''; sbGrafico05.Enabled := false; sbComentario05.Enabled := false; end;
-       6 : begin LValor06.Caption:=''; LUnidad06.Caption:=''; sbGrafico06.Enabled := false; sbComentario06.Enabled := false; end;
-       7 : begin LValor07.Caption:=''; LUnidad07.Caption:=''; sbGrafico07.Enabled := false; sbComentario07.Enabled := false; end;
-       // Canales Digitales
-       8 : if not Equipo.UsarCH9 then begin LValor08.Caption:=''; LUnidad08.Caption:=''; sbGrafico08.Enabled := false; sbComentario08.Enabled := false; end;
-       end;
+       // Limpio componentes si no esta configurado
+       if (FindComponent('LValor' + Format('%.2d', [i])) is TLabel) then
+          TLabel(FindComponent('LValor' + Format('%.2d', [i]))).Caption := '';
+
+       if (FindComponent('LUnidad' + Format('%.2d', [i])) is TLabel) then
+          TLabel(FindComponent('LUnidad' + Format('%.2d', [i]))).Caption := '';
+
+       if (FindComponent('sbGrafico' + Format('%.2d', [i])) is TSpeedButton) then
+          TSpeedButton(FindComponent('sbGrafico' + Format('%.2d', [i]))).Enabled := false;
+
+       if (FindComponent('sbComentario' + Format('%.2d', [i])) is TSpeedButton) then
+          TSpeedButton(FindComponent('sbComentario' + Format('%.2d', [i]))).Enabled := false;
     end;
   end;
 

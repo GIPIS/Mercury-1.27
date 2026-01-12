@@ -650,10 +650,7 @@ begin
       
       num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
       // Write to debug file instead of console
-      AssignFile(fLog, 'c:\Users\hotma\Desktop\debug_mercury.txt');
-      if FileExists('c:\Users\hotma\Desktop\debug_mercury.txt') then Append(fLog) else Rewrite(fLog);
-      WriteLn(fLog, 'Canal: ' + IntToStr(NCanal) + ' - Received: ' + IntToStr(num));
-      CloseFile(fLog);
+      
       pvalorCH[NCanal]^ := num;
       inc(i, 2);
 
