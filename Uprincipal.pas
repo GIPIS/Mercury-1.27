@@ -156,6 +156,10 @@ type
     Bevel233: TBevel;
     Bevel234: TBevel;
     Bevel235: TBevel;
+    Bevel236: TBevel;
+    Bevel237: TBevel;
+    Bevel238: TBevel;
+    Bevel239: TBevel;
     Bevel24: TBevel;
     Bevel25: TBevel;
     Bevel26: TBevel;
@@ -220,42 +224,42 @@ type
     Label36: TLabel;
     Label42: TLabel;
     Label44: TLabel;
-    LDescripcion00: TLabel;
-    LDescripcion01: TLabel;
-    LDescripcion02: TLabel;
-    LDescripcion03: TLabel;
-    LDescripcion04: TLabel;
-    LDescripcion05: TLabel;
-    LDescripcion06: TLabel;
-    LDescripcion07: TLabel;
-    LDescripcion08: TLabel;
-    LDescripcion1: TLabel;
+    LDescripcionCan00: TLabel;
+    LDescripcionCan01: TLabel;
+    LDescripcionCan02: TLabel;
+    LDescripcionCan03: TLabel;
+    LDescripcionCan04: TLabel;
+    LDescripcionCan05: TLabel;
+    LDescripcionCan06: TLabel;
+    LDescripcionCan07: TLabel;
+    LDescripcionCanDig08: TLabel;
+    LDescripcionCan08: TLabel;
     LDescripcion16: TLabel;
     LDescripcion17: TLabel;
     LDescripcion18: TLabel;
-    LDescripcion19: TLabel;
-    LDescripcion2: TLabel;
-    LDescripcion20: TLabel;
-    LDescripcion21: TLabel;
-    LDescripcion22: TLabel;
-    LDescripcion23: TLabel;
-    LDescripcion24: TLabel;
-    LDescripcion25: TLabel;
-    LDescripcion26: TLabel;
-    LDescripcion27: TLabel;
-    LDescripcion28: TLabel;
-    LDescripcion29: TLabel;
-    LDescripcion3: TLabel;
-    LDescripcion30: TLabel;
-    LDescripcion31: TLabel;
-    LDescripcion32: TLabel;
-    LDescripcion33: TLabel;
-    LDescripcion4: TLabel;
-    LDescripcion5: TLabel;
-    LDescripcion6: TLabel;
-    LDescripcion7: TLabel;
-    LDescripcion8: TLabel;
-    LDescripcion9: TLabel;
+    LDescripcionCan17: TLabel;
+    LDescripcionCan09: TLabel;
+    LDescripcionCan18: TLabel;
+    LDescripcionCan19: TLabel;
+    LDescripcionCan20: TLabel;
+    LDescripcionCan21: TLabel;
+    LDescripcionCan22: TLabel;
+    LDescripcionCan23: TLabel;
+    LDescripcionCan24: TLabel;
+    LDescripcionCan25: TLabel;
+    LDescripcionCan26: TLabel;
+    LDescripcionCan27: TLabel;
+    LDescripcionCan10: TLabel;
+    LDescripcionCan28: TLabel;
+    LDescripcionCan29: TLabel;
+    LDescripcionCan30: TLabel;
+    LDescripcionCan31: TLabel;
+    LDescripcionCan11: TLabel;
+    LDescripcionCan12: TLabel;
+    LDescripcionCan13: TLabel;
+    LDescripcionCan14: TLabel;
+    LDescripcionCan15: TLabel;
+    LDescripcionCan16: TLabel;
     LDescripcionParam1: TLabel;
     LDescripcionParam2: TLabel;
     LDescripcionParam3: TLabel;
@@ -289,6 +293,12 @@ type
     LNombreCanal34: TLabel;
     LNombreCanal35: TLabel;
     LNombreCanal36: TLabel;
+    LUnidad10: TLabel;
+    LUnidad11: TLabel;
+    LUnidad12: TLabel;
+    LUnidad13: TLabel;
+    LUnidad14: TLabel;
+    LUnidad15: TLabel;
     LUnidadCan00: TLabel;
     LUnidadCan01: TLabel;
     LUnidadCan02: TLabel;
@@ -297,6 +307,14 @@ type
     LUnidadCan05: TLabel;
     LUnidadCan06: TLabel;
     LUnidadCan07: TLabel;
+    LUnidadCan24: TLabel;
+    LUnidadCan25: TLabel;
+    LUnidadCan26: TLabel;
+    LUnidadCan27: TLabel;
+    LUnidadCan28: TLabel;
+    LUnidadCan29: TLabel;
+    LUnidadCan30: TLabel;
+    LUnidadCan31: TLabel;
     LUnidadDigCan00: TLabel;
     LUnidadCan08: TLabel;
     LUnidad16: TLabel;
@@ -310,15 +328,7 @@ type
     LUnidadCan21: TLabel;
     LUnidadCan22: TLabel;
     LUnidadCan23: TLabel;
-    LUnidadCan24: TLabel;
-    LUnidadCan25: TLabel;
-    LUnidadCan26: TLabel;
-    LUnidadCan27: TLabel;
     LUnidadCan10: TLabel;
-    LUnidadCan28: TLabel;
-    LUnidadCan29: TLabel;
-    LUnidadCan30: TLabel;
-    LUnidadCan31: TLabel;
     LUnidadCan11: TLabel;
     LUnidadCan12: TLabel;
     LUnidadCan13: TLabel;
@@ -338,6 +348,14 @@ type
     LValorCan05: TLabel;
     LValorCan06: TLabel;
     LValorCan07: TLabel;
+    LValorCan24: TLabel;
+    LValorCan25: TLabel;
+    LValorCan26: TLabel;
+    LValorCan27: TLabel;
+    LValorCan28: TLabel;
+    LValorCan29: TLabel;
+    LValorCan30: TLabel;
+    LValorCan31: TLabel;
     LValorCanDig00: TLabel;
     LValorCan08: TLabel;
     LValorCan15: TLabel;
@@ -361,14 +379,6 @@ type
     LValorCan16: TLabel;
     LValorCan17: TLabel;
     LValorCan18: TLabel;
-    LValorCan31: TLabel;
-    LValorCan30: TLabel;
-    LValorCan29: TLabel;
-    LValorCan24: TLabel;
-    LValorCan25: TLabel;
-    LValorCan26: TLabel;
-    LValorCan27: TLabel;
-    LValorCan28: TLabel;
 
     LValor6: TLabel;
     LValor7: TLabel;
@@ -719,6 +729,8 @@ type
     procedure Bevel102ChangeBounds(Sender: TObject);
     procedure Bevel107ChangeBounds(Sender: TObject);
     procedure Bevel17ChangeBounds(Sender: TObject);
+    procedure Bevel195ChangeBounds(Sender: TObject);
+    procedure Bevel236ChangeBounds(Sender: TObject);
     procedure Bevel27ChangeBounds(Sender: TObject);
     procedure Bevel28ChangeBounds(Sender: TObject);
     procedure Bevel29ChangeBounds(Sender: TObject);
@@ -729,9 +741,11 @@ type
     procedure GroupBox1Click(Sender: TObject);
     procedure GroupBox6Click(Sender: TObject);
     procedure GroupBoxCan14Click(Sender: TObject);
+    procedure LDescripcionCan00Click(Sender: TObject);
     procedure LValorCan09Click(Sender: TObject);
     procedure LValorCan10Click(Sender: TObject);
     procedure LValorCan13Click(Sender: TObject);
+    procedure LValorCan17Click(Sender: TObject);
     procedure LValorCan24Click(Sender: TObject);
     procedure LValorCan00Click(Sender: TObject);
     procedure LValorCan08Click(Sender: TObject);
@@ -1030,6 +1044,11 @@ begin
 
 end;
 
+procedure TFprincipal.LDescripcionCan00Click(Sender: TObject);
+begin
+
+end;
+
 procedure TFprincipal.LValorCan09Click(Sender: TObject);
 begin
 
@@ -1043,6 +1062,11 @@ end;
 procedure TFprincipal.LValorCan13Click(Sender: TObject);
 begin
   // Click handler for LValorCan13
+end;
+
+procedure TFprincipal.LValorCan17Click(Sender: TObject);
+begin
+
 end;
 
 procedure TFprincipal.LValorCan24Click(Sender: TObject);
@@ -1086,6 +1110,16 @@ begin
 end;
 
 procedure TFprincipal.Bevel17ChangeBounds(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.Bevel195ChangeBounds(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.Bevel236ChangeBounds(Sender: TObject);
 begin
 
 end;
@@ -1409,20 +1443,11 @@ begin
       end;
 
 
-      // 3. ASIGNACIÓN DE DESCRIPCIONES (Directa para canales críticos)
-      case i of
-        0..7: begin
-          Comp := FindComponent(Format('LDescripcion%.2d', [i]));
-          if (Comp is TLabel) then TLabel(Comp).Caption := Equipo.Canales[i].Descripcion;
-        end;
-        8:  LDescripcion1.Caption := Equipo.Canales[i].Descripcion;
-        9:  LDescripcion2.Caption := Equipo.Canales[i].Descripcion;
-        10: LDescripcion3.Caption := Equipo.Canales[i].Descripcion;
-        11: LDescripcion4.Caption := Equipo.Canales[i].Descripcion;
-        12: LDescripcion5.Caption := Equipo.Canales[i].Descripcion;
-        13: LDescripcion6.Caption := Equipo.Canales[i].Descripcion;
-        14: LDescripcion7.Caption := Equipo.Canales[i].Descripcion;
-        15: LDescripcion8.Caption := Equipo.Canales[i].Descripcion;
+      // 3. ASIGNACIÓN DE DESCRIPCIONES (usando nombres coherentes LDescripcionCanXX)
+      Comp := FindComponent(Format('LDescripcionCan%.2d', [i]));
+      if (Comp is TLabel) then begin
+        TLabel(Comp).Caption := Equipo.Canales[i].Descripcion;
+        TLabel(Comp).BringToFront;
       end;
 
       // 4. UNIDADES Y BOTONES (Búsqueda dinámica segura)
@@ -1581,24 +1606,24 @@ begin
 
   // ========= LIMPIEZA EXPLÍCITA DE CANALES 0-15 =========
   // Canales 0-7 (Monitoreo principal)
-  LDescripcion00.Caption := ''; LValorCan00.Caption := ''; LUnidadCan00.Caption := '';
-  LDescripcion01.Caption := ''; LValorCan01.Caption := ''; LUnidadCan01.Caption := '';
-  LDescripcion02.Caption := ''; LValorCan02.Caption := ''; LUnidadCan02.Caption := '';
-  LDescripcion03.Caption := ''; LValorCan03.Caption := ''; LUnidadCan03.Caption := '';
-  LDescripcion04.Caption := ''; LValorCan04.Caption := ''; LUnidadCan04.Caption := '';
-  LDescripcion05.Caption := ''; LValorCan05.Caption := ''; LUnidadCan05.Caption := '';
-  LDescripcion06.Caption := ''; LValorCan06.Caption := ''; LUnidadCan06.Caption := '';
-  LDescripcion07.Caption := ''; LValorCan07.Caption := ''; LUnidadCan07.Caption := '';
+  LDescripcionCan00.Caption := ''; LValorCan00.Caption := ''; LUnidadCan00.Caption := '';
+  LDescripcionCan01.Caption := ''; LValorCan01.Caption := ''; LUnidadCan01.Caption := '';
+  LDescripcionCan02.Caption := ''; LValorCan02.Caption := ''; LUnidadCan02.Caption := '';
+  LDescripcionCan03.Caption := ''; LValorCan03.Caption := ''; LUnidadCan03.Caption := '';
+  LDescripcionCan04.Caption := ''; LValorCan04.Caption := ''; LUnidadCan04.Caption := '';
+  LDescripcionCan05.Caption := ''; LValorCan05.Caption := ''; LUnidadCan05.Caption := '';
+  LDescripcionCan06.Caption := ''; LValorCan06.Caption := ''; LUnidadCan06.Caption := '';
+  LDescripcionCan07.Caption := ''; LValorCan07.Caption := ''; LUnidadCan07.Caption := '';
   
   // Canales 8-15 (Expansión 1 - GroupBoxCan14)
-  LDescripcion1.Caption := ''; LValorCan08.Caption := ''; LUnidadCan08.Caption := '';
-  LDescripcion2.Caption := ''; LValorCan09.Caption := ''; LUnidadCan09.Caption := '';
-  LDescripcion3.Caption := ''; LValorCan10.Caption := ''; LUnidadCan10.Caption := '';
-  LDescripcion4.Caption := ''; LValorCan11.Caption := ''; LUnidadCan11.Caption := '';
-  LDescripcion5.Caption := ''; LValorCan12.Caption := ''; LUnidadCan12.Caption := '';
-  LDescripcion6.Caption := ''; LValorCan13.Caption := ''; LUnidadCan13.Caption := '';
-  LDescripcion7.Caption := ''; LValorCan14.Caption := ''; LUnidadCan14.Caption := '';
-  LDescripcion8.Caption := ''; LValorCan15.Caption := ''; LUnidadCan15.Caption := '';
+  LDescripcionCan08.Caption := ''; LValorCan08.Caption := ''; LUnidadCan08.Caption := '';
+  LDescripcionCan09.Caption := ''; LValorCan09.Caption := ''; LUnidadCan09.Caption := '';
+  LDescripcionCan10.Caption := ''; LValorCan10.Caption := ''; LUnidadCan10.Caption := '';
+  LDescripcionCan11.Caption := ''; LValorCan11.Caption := ''; LUnidadCan11.Caption := '';
+  LDescripcionCan12.Caption := ''; LValorCan12.Caption := ''; LUnidadCan12.Caption := '';
+  LDescripcionCan13.Caption := ''; LValorCan13.Caption := ''; LUnidadCan13.Caption := '';
+  LDescripcionCan14.Caption := ''; LValorCan14.Caption := ''; LUnidadCan14.Caption := '';
+  LDescripcionCan15.Caption := ''; LValorCan15.Caption := ''; LUnidadCan15.Caption := '';
   // ========= FIN LIMPIEZA CANALES =========
 
   // Limpio la info de los valores calculados
@@ -1740,10 +1765,10 @@ begin
      // LUnidadCan08.AutoSize := False; LUnidadCan08.Width := LUnidadCan00.Width; LUnidadCan08.Height := LUnidadCan00.Height;
      // LUnidadCan08.Alignment := taCenter; LUnidadCan08.Font := LUnidadCan00.Font;
      
-     LDescripcion09 := TLabel.Create(Self); LDescripcion09.Parent := LDescripcion00.Parent;
-     LDescripcion09.Left := LDescripcion00.Left; LDescripcion09.Top := TopBase + DeltaY;
-     LDescripcion09.AutoSize := False; LDescripcion09.Width := LDescripcion00.Width; LDescripcion09.Height := LDescripcion00.Height;
-     LDescripcion09.Alignment := taCenter; LDescripcion09.Font := LDescripcion00.Font;
+     LDescripcion09 := TLabel.Create(Self); LDescripcion09.Parent := LDescripcionCan00.Parent;
+     LDescripcion09.Left := LDescripcionCan00.Left; LDescripcion09.Top := TopBase + DeltaY;
+     LDescripcion09.AutoSize := False; LDescripcion09.Width := LDescripcionCan00.Width; LDescripcion09.Height := LDescripcionCan00.Height;
+     LDescripcion09.Alignment := taCenter; LDescripcion09.Font := LDescripcionCan00.Font;
 
      sbGrafico09 := TSpeedButton.Create(Self); sbGrafico09.Parent := sbGrafico00.Parent;
      sbGrafico09.Left := sbGrafico00.Left; sbGrafico09.Top := TopBase + DeltaY;
@@ -1769,10 +1794,10 @@ begin
      // LUnidad10.AutoSize := False; LUnidad10.Width := LUnidadCan00.Width; LUnidad10.Height := LUnidadCan00.Height;
      // LUnidad10.Alignment := taCenter; LUnidad10.Font := LUnidadCan00.Font;
 
-     LDescripcion10 := TLabel.Create(Self); LDescripcion10.Parent := LDescripcion00.Parent;
-     LDescripcion10.Left := LDescripcion00.Left; LDescripcion10.Top := TopBase + DeltaY*2;
-     LDescripcion10.AutoSize := False; LDescripcion10.Width := LDescripcion00.Width; LDescripcion10.Height := LDescripcion00.Height;
-     LDescripcion10.Alignment := taCenter; LDescripcion10.Font := LDescripcion00.Font;
+     LDescripcion10 := TLabel.Create(Self); LDescripcion10.Parent := LDescripcionCan00.Parent;
+     LDescripcion10.Left := LDescripcionCan00.Left; LDescripcion10.Top := TopBase + DeltaY*2;
+     LDescripcion10.AutoSize := False; LDescripcion10.Width := LDescripcionCan00.Width; LDescripcion10.Height := LDescripcionCan00.Height;
+     LDescripcion10.Alignment := taCenter; LDescripcion10.Font := LDescripcionCan00.Font;
 
      sbGrafico10 := TSpeedButton.Create(Self); sbGrafico10.Parent := sbGrafico00.Parent;
      sbGrafico10.Left := sbGrafico00.Left; sbGrafico10.Top := TopBase + DeltaY*2;
@@ -1799,10 +1824,10 @@ begin
      // LUnidad11.AutoSize := False; LUnidad11.Width := LUnidadCan00.Width; LUnidad11.Height := LUnidadCan00.Height;
      // LUnidad11.Alignment := taCenter; LUnidad11.Font := LUnidadCan00.Font;
 
-     LDescripcion11 := TLabel.Create(Self); LDescripcion11.Parent := LDescripcion00.Parent;
-     LDescripcion11.Left := LDescripcion00.Left; LDescripcion11.Top := TopBase + DeltaY*3;
-     LDescripcion11.AutoSize := False; LDescripcion11.Width := LDescripcion00.Width; LDescripcion11.Height := LDescripcion00.Height;
-     LDescripcion11.Alignment := taCenter; LDescripcion11.Font := LDescripcion00.Font;
+     LDescripcion11 := TLabel.Create(Self); LDescripcion11.Parent := LDescripcionCan00.Parent;
+     LDescripcion11.Left := LDescripcionCan00.Left; LDescripcion11.Top := TopBase + DeltaY*3;
+     LDescripcion11.AutoSize := False; LDescripcion11.Width := LDescripcionCan00.Width; LDescripcion11.Height := LDescripcionCan00.Height;
+     LDescripcion11.Alignment := taCenter; LDescripcion11.Font := LDescripcionCan00.Font;
      
      sbGrafico11 := TSpeedButton.Create(Self); sbGrafico11.Parent := sbGrafico00.Parent; 
      sbGrafico11.Left := sbGrafico00.Left; sbGrafico11.Top := TopBase + DeltaY*3;
@@ -1826,10 +1851,10 @@ begin
      // LUnidad12.AutoSize := False; LUnidad12.Width := LUnidadCan00.Width; LUnidad12.Height := LUnidadCan00.Height;
      // LUnidad12.Alignment := taCenter; LUnidad12.Font := LUnidadCan00.Font;
 
-     LDescripcion12 := TLabel.Create(Self); LDescripcion12.Parent := LDescripcion00.Parent;
-     LDescripcion12.Left := LDescripcion00.Left; LDescripcion12.Top := TopBase + DeltaY*4;
-     LDescripcion12.AutoSize := False; LDescripcion12.Width := LDescripcion00.Width; LDescripcion12.Height := LDescripcion00.Height;
-     LDescripcion12.Alignment := taCenter; LDescripcion12.Font := LDescripcion00.Font;
+     LDescripcion12 := TLabel.Create(Self); LDescripcion12.Parent := LDescripcionCan00.Parent;
+     LDescripcion12.Left := LDescripcionCan00.Left; LDescripcion12.Top := TopBase + DeltaY*4;
+     LDescripcion12.AutoSize := False; LDescripcion12.Width := LDescripcionCan00.Width; LDescripcion12.Height := LDescripcionCan00.Height;
+     LDescripcion12.Alignment := taCenter; LDescripcion12.Font := LDescripcionCan00.Font;
 
      sbGrafico12 := TSpeedButton.Create(Self); sbGrafico12.Parent := sbGrafico00.Parent;
      sbGrafico12.Left := sbGrafico00.Left; sbGrafico12.Top := TopBase + DeltaY*4;
@@ -1853,10 +1878,10 @@ begin
      // LUnidad13.AutoSize := False; LUnidad13.Width := LUnidadCan00.Width; LUnidad13.Height := LUnidadCan00.Height;
      // LUnidad13.Alignment := taCenter; LUnidad13.Font := LUnidadCan00.Font;
 
-     LDescripcion13 := TLabel.Create(Self); LDescripcion13.Parent := LDescripcion00.Parent;
-     LDescripcion13.Left := LDescripcion00.Left; LDescripcion13.Top := TopBase + DeltaY*5;
-     LDescripcion13.AutoSize := False; LDescripcion13.Width := LDescripcion00.Width; LDescripcion13.Height := LDescripcion00.Height;
-     LDescripcion13.Alignment := taCenter; LDescripcion13.Font := LDescripcion00.Font;
+     LDescripcion13 := TLabel.Create(Self); LDescripcion13.Parent := LDescripcionCan00.Parent;
+     LDescripcion13.Left := LDescripcionCan00.Left; LDescripcion13.Top := TopBase + DeltaY*5;
+     LDescripcion13.AutoSize := False; LDescripcion13.Width := LDescripcionCan00.Width; LDescripcion13.Height := LDescripcionCan00.Height;
+     LDescripcion13.Alignment := taCenter; LDescripcion13.Font := LDescripcionCan00.Font;
 
      sbGrafico13 := TSpeedButton.Create(Self); sbGrafico13.Parent := sbGrafico00.Parent;
      sbGrafico13.Left := sbGrafico00.Left; sbGrafico13.Top := TopBase + DeltaY*5;
@@ -1880,10 +1905,10 @@ begin
      // LUnidad14.AutoSize := False; LUnidad14.Width := LUnidadCan00.Width; LUnidad14.Height := LUnidadCan00.Height;
      // LUnidad14.Alignment := taCenter; LUnidad14.Font := LUnidadCan00.Font;
 
-     LDescripcion14 := TLabel.Create(Self); LDescripcion14.Parent := LDescripcion00.Parent;
-     LDescripcion14.Left := LDescripcion00.Left; LDescripcion14.Top := TopBase + DeltaY*6;
-     LDescripcion14.AutoSize := False; LDescripcion14.Width := LDescripcion00.Width; LDescripcion14.Height := LDescripcion00.Height;
-     LDescripcion14.Alignment := taCenter; LDescripcion14.Font := LDescripcion00.Font;
+     LDescripcion14 := TLabel.Create(Self); LDescripcion14.Parent := LDescripcionCan00.Parent;
+     LDescripcion14.Left := LDescripcionCan00.Left; LDescripcion14.Top := TopBase + DeltaY*6;
+     LDescripcion14.AutoSize := False; LDescripcion14.Width := LDescripcionCan00.Width; LDescripcion14.Height := LDescripcionCan00.Height;
+     LDescripcion14.Alignment := taCenter; LDescripcion14.Font := LDescripcionCan00.Font;
 
      sbGrafico14 := TSpeedButton.Create(Self); sbGrafico14.Parent := sbGrafico00.Parent;
      sbGrafico14.Left := sbGrafico00.Left; sbGrafico14.Top := TopBase + DeltaY*6;
@@ -1907,10 +1932,10 @@ begin
      // LUnidad15.AutoSize := False; LUnidad15.Width := LUnidadCan00.Width; LUnidad15.Height := LUnidadCan00.Height;
      // LUnidad15.Alignment := taCenter; LUnidad15.Font := LUnidadCan00.Font;
 
-     LDescripcion15 := TLabel.Create(Self); LDescripcion15.Parent := LDescripcion00.Parent;
-     LDescripcion15.Left := LDescripcion00.Left; LDescripcion15.Top := TopBase + DeltaY*7;
-     LDescripcion15.AutoSize := False; LDescripcion15.Width := LDescripcion00.Width; LDescripcion15.Height := LDescripcion00.Height;
-     LDescripcion15.Alignment := taCenter; LDescripcion15.Font := LDescripcion00.Font;
+     LDescripcion15 := TLabel.Create(Self); LDescripcion15.Parent := LDescripcionCan00.Parent;
+     LDescripcion15.Left := LDescripcionCan00.Left; LDescripcion15.Top := TopBase + DeltaY*7;
+     LDescripcion15.AutoSize := False; LDescripcion15.Width := LDescripcionCan00.Width; LDescripcion15.Height := LDescripcionCan00.Height;
+     LDescripcion15.Alignment := taCenter; LDescripcion15.Font := LDescripcionCan00.Font;
      
      sbGrafico15 := TSpeedButton.Create(Self); sbGrafico15.Parent := sbGrafico00.Parent;
      sbGrafico15.Left := sbGrafico00.Left; sbGrafico15.Top := TopBase + DeltaY*7;
@@ -3145,49 +3170,49 @@ begin
   // Canal 8
   if Assigned(LValorCan08) then LValorCan08.Visible := Es16Canales;
   if Assigned(LUnidadCan08) then LUnidadCan08.Visible := Es16Canales;
-  if Assigned(LDescripcion1) then LDescripcion1.Visible := Es16Canales;
+  if Assigned(LDescripcionCan08) then LDescripcionCan08.Visible := Es16Canales;
   if Assigned(LNombreCanal09) then LNombreCanal09.Visible := Es16Canales;
   
   // Canal 9
   if Assigned(LValorCan09) then LValorCan09.Visible := Es16Canales;
   if Assigned(LUnidadCan09) then LUnidadCan09.Visible := Es16Canales;
-  if Assigned(LDescripcion2) then LDescripcion2.Visible := Es16Canales;
+  if Assigned(LDescripcionCan09) then LDescripcionCan09.Visible := Es16Canales;
   if Assigned(LNombreCanal10) then LNombreCanal10.Visible := Es16Canales;
   
   // Canal 10
   if Assigned(LValorCan10) then LValorCan10.Visible := Es16Canales;
   if Assigned(LUnidadCan10) then LUnidadCan10.Visible := Es16Canales;
-  if Assigned(LDescripcion3) then LDescripcion3.Visible := Es16Canales;
+  if Assigned(LDescripcionCan10) then LDescripcionCan10.Visible := Es16Canales;
   if Assigned(LNombreCanal11) then LNombreCanal11.Visible := Es16Canales;
   
   // Canal 11
   if Assigned(LValorCan11) then LValorCan11.Visible := Es16Canales;
   if Assigned(LUnidadCan11) then LUnidadCan11.Visible := Es16Canales;
-  if Assigned(LDescripcion4) then LDescripcion4.Visible := Es16Canales;
+  if Assigned(LDescripcionCan11) then LDescripcionCan11.Visible := Es16Canales;
   if Assigned(LNombreCanal12) then LNombreCanal12.Visible := Es16Canales;
   
   // Canal 12
   if Assigned(LValorCan12) then LValorCan12.Visible := Es16Canales;
   if Assigned(LUnidadCan12) then LUnidadCan12.Visible := Es16Canales;
-  if Assigned(LDescripcion5) then LDescripcion5.Visible := Es16Canales;
+  if Assigned(LDescripcionCan12) then LDescripcionCan12.Visible := Es16Canales;
   if Assigned(LNombreCanal13) then LNombreCanal13.Visible := Es16Canales;
   
   // Canal 13
   if Assigned(LValorCan13) then LValorCan13.Visible := Es16Canales;
   if Assigned(LUnidadCan13) then LUnidadCan13.Visible := Es16Canales;
-  if Assigned(LDescripcion6) then LDescripcion6.Visible := Es16Canales;
+  if Assigned(LDescripcionCan13) then LDescripcionCan13.Visible := Es16Canales;
   if Assigned(LNombreCanal14) then LNombreCanal14.Visible := Es16Canales;
   
   // Canal 14
   if Assigned(LValorCan14) then LValorCan14.Visible := Es16Canales;
   if Assigned(LUnidadCan14) then LUnidadCan14.Visible := Es16Canales;
-  if Assigned(LDescripcion7) then LDescripcion7.Visible := Es16Canales;
+  if Assigned(LDescripcionCan14) then LDescripcionCan14.Visible := Es16Canales;
   if Assigned(LNombreCanal15) then LNombreCanal15.Visible := Es16Canales;
   
   // Canal 15
   if Assigned(LValorCan15) then LValorCan15.Visible := Es16Canales;
   if Assigned(LUnidadCan15) then LUnidadCan15.Visible := Es16Canales;
-  if Assigned(LDescripcion8) then LDescripcion8.Visible := Es16Canales;
+  if Assigned(LDescripcionCan15) then LDescripcionCan15.Visible := Es16Canales;
   
   // Controlar la visibilidad del contenedor de los canales adicionales (GroupBoxCan14)
   if GroupBoxCan14 <> nil then

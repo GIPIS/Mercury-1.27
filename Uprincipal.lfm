@@ -1,7 +1,7 @@
 object Fprincipal: TFprincipal
-  Left = 967
+  Left = 650
   Height = 672
-  Top = 101
+  Top = 96
   Width = 630
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -12,7 +12,7 @@ object Fprincipal: TFprincipal
   DesignTimePPI = 120
   Font.CharSet = ANSI_CHARSET
   Font.Color = clWindowText
-  Font.Height = -3154
+  Font.Height = -4929
   Font.Name = 'Tahoma'
   Menu = MenuPrincipal
   Position = poScreenCenter
@@ -3503,7 +3503,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LDescripcion00: TLabel
+              object LDescripcionCan00: TLabel
                 Left = 122
                 Height = 16
                 Top = 24
@@ -3516,11 +3516,12 @@ object Fprincipal: TFprincipal
                 Font.Name = 'Tahoma'
                 Font.Style = [fsBold]
                 ParentFont = False
+                OnClick = LDescripcionCan00Click
               end
               object LUnidadCan00: TLabel
                 Left = 456
                 Height = 16
-                Top = 24
+                Top = 75
                 Width = 60
                 Alignment = taCenter
                 AutoSize = False
@@ -3557,7 +3558,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion01: TLabel
+              object LDescripcionCan01: TLabel
                 Tag = 1
                 Left = 122
                 Height = 16
@@ -3600,7 +3601,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion02: TLabel
+              object LDescripcionCan02: TLabel
                 Tag = 2
                 Left = 122
                 Height = 16
@@ -3618,8 +3619,8 @@ object Fprincipal: TFprincipal
               object LUnidadCan02: TLabel
                 Tag = 2
                 Left = 456
-                Height = 16
-                Top = 72
+                Height = 66
+                Top = 22
                 Width = 60
                 Alignment = taCenter
                 AutoSize = False
@@ -3643,7 +3644,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion03: TLabel
+              object LDescripcionCan03: TLabel
                 Tag = 3
                 Left = 122
                 Height = 16
@@ -3686,7 +3687,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion04: TLabel
+              object LDescripcionCan04: TLabel
                 Tag = 4
                 Left = 122
                 Height = 16
@@ -3729,7 +3730,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion05: TLabel
+              object LDescripcionCan05: TLabel
                 Tag = 5
                 Left = 122
                 Height = 16
@@ -3774,7 +3775,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion06: TLabel
+              object LDescripcionCan06: TLabel
                 Tag = 6
                 Left = 122
                 Height = 16
@@ -3828,7 +3829,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion08: TLabel
+              object LDescripcionCanDig08: TLabel
                 Tag = 8
                 Left = 122
                 Height = 16
@@ -3843,7 +3844,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion07: TLabel
+              object LDescripcionCan07: TLabel
                 Tag = 7
                 Left = 122
                 Height = 16
@@ -5152,58 +5153,58 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel31: TBevel
-                Left = 464
+                Left = 453
                 Height = 21
-                Top = -8
+                Top = 46
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel32: TBevel
-                Left = 448
+                Left = 453
                 Height = 21
-                Top = 0
+                Top = 190
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel33: TBevel
                 Left = 453
                 Height = 21
-                Top = -16
+                Top = 75
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel34: TBevel
-                Left = 440
+                Left = 454
                 Height = 21
-                Top = -24
+                Top = 96
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel35: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = -16
+                Top = 117
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel36: TBevel
-                Left = 440
+                Left = 453
                 Height = 21
-                Top = -24
+                Top = 141
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel37: TBevel
-                Left = 456
+                Left = 453
                 Height = 21
-                Top = -24
+                Top = 165
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel38: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = -8
+                Top = 216
                 Width = 63
                 Shape = bsFrame
               end
@@ -5226,6 +5227,13 @@ object Fprincipal: TFprincipal
                 Height = 21
                 Top = 24
                 Width = 101
+                Shape = bsFrame
+              end
+              object Bevel237: TBevel
+                Left = 454
+                Height = 21
+                Top = 21
+                Width = 63
                 Shape = bsFrame
               end
             end
@@ -5251,7 +5259,7 @@ object Fprincipal: TFprincipal
               ParentFont = False
               TabOrder = 0
               OnClick = GroupBoxCan14Click
-              object LDescripcion1: TLabel
+              object LDescripcionCan08: TLabel
                 Left = 122
                 Height = 16
                 Top = 24
@@ -5305,7 +5313,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion2: TLabel
+              object LDescripcionCan09: TLabel
                 Tag = 1
                 Left = 122
                 Height = 16
@@ -5348,7 +5356,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion3: TLabel
+              object LDescripcionCan10: TLabel
                 Tag = 2
                 Left = 122
                 Height = 16
@@ -5391,7 +5399,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion4: TLabel
+              object LDescripcionCan11: TLabel
                 Tag = 3
                 Left = 122
                 Height = 16
@@ -5434,7 +5442,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion5: TLabel
+              object LDescripcionCan12: TLabel
                 Tag = 4
                 Left = 122
                 Height = 16
@@ -5477,7 +5485,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion6: TLabel
+              object LDescripcionCan13: TLabel
                 Tag = 5
                 Left = 122
                 Height = 16
@@ -5522,7 +5530,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion7: TLabel
+              object LDescripcionCan14: TLabel
                 Tag = 6
                 Left = 122
                 Height = 16
@@ -5563,7 +5571,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion8: TLabel
+              object LDescripcionCan15: TLabel
                 Tag = 7
                 Left = 122
                 Height = 16
@@ -6639,56 +6647,56 @@ object Fprincipal: TFprincipal
               object Bevel109: TBevel
                 Left = 453
                 Height = 21
-                Top = 0
+                Top = 19
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel110: TBevel
-                Left = 448
+                Left = 453
                 Height = 21
-                Top = 0
+                Top = 43
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel111: TBevel
-                Left = 456
+                Left = 453
                 Height = 21
-                Top = 0
+                Top = 91
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel112: TBevel
-                Left = 464
+                Left = 453
                 Height = 21
-                Top = -8
+                Top = 67
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel113: TBevel
                 Left = 453
                 Height = 21
-                Top = -16
+                Top = 115
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel114: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = -16
+                Top = 139
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel115: TBevel
-                Left = 464
+                Left = 453
                 Height = 21
-                Top = -8
+                Top = 163
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel116: TBevel
-                Left = 456
+                Left = 453
                 Height = 21
-                Top = -8
+                Top = 189
                 Width = 63
                 Shape = bsFrame
               end
@@ -6927,7 +6935,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LDescripcion9: TLabel
+              object LDescripcionCan16: TLabel
                 Left = 122
                 Height = 16
                 Top = 24
@@ -6981,7 +6989,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion19: TLabel
+              object LDescripcionCan17: TLabel
                 Tag = 1
                 Left = 122
                 Height = 16
@@ -7024,7 +7032,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion20: TLabel
+              object LDescripcionCan18: TLabel
                 Tag = 2
                 Left = 122
                 Height = 16
@@ -7067,7 +7075,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion21: TLabel
+              object LDescripcionCan19: TLabel
                 Tag = 3
                 Left = 122
                 Height = 16
@@ -7110,7 +7118,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion22: TLabel
+              object LDescripcionCan20: TLabel
                 Tag = 4
                 Left = 122
                 Height = 16
@@ -7153,7 +7161,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion23: TLabel
+              object LDescripcionCan21: TLabel
                 Tag = 5
                 Left = 122
                 Height = 16
@@ -7198,7 +7206,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion24: TLabel
+              object LDescripcionCan22: TLabel
                 Tag = 6
                 Left = 122
                 Height = 16
@@ -7239,7 +7247,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion25: TLabel
+              object LDescripcionCan23: TLabel
                 Tag = 7
                 Left = 122
                 Height = 16
@@ -8164,9 +8172,9 @@ object Fprincipal: TFprincipal
               end
               object LValorCan17: TLabel
                 Tag = 1
-                Left = 344
+                Left = 345
                 Height = 20
-                Top = 46
+                Top = 44
                 Width = 100
                 Alignment = taCenter
                 AutoSize = False
@@ -8178,6 +8186,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentColor = False
                 ParentFont = False
+                OnClick = LValorCan17Click
               end
               object LValorCan18: TLabel
                 Tag = 2
@@ -8238,9 +8247,9 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel96: TBevel
-                Left = 343
+                Left = 344
                 Height = 21
-                Top = 69
+                Top = 70
                 Width = 101
                 Shape = bsFrame
               end
@@ -8252,9 +8261,9 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel168: TBevel
-                Left = 343
+                Left = 344
                 Height = 21
-                Top = 168
+                Top = 165
                 Width = 101
                 Shape = bsFrame
               end
@@ -8280,58 +8289,51 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel172: TBevel
-                Left = 119
+                Left = 120
                 Height = 21
-                Top = 190
+                Top = 24
                 Width = 216
                 Shape = bsFrame
               end
               object Bevel173: TBevel
-                Left = 119
+                Left = 120
                 Height = 21
-                Top = 166
+                Top = 48
                 Width = 216
                 Shape = bsFrame
               end
               object Bevel174: TBevel
-                Left = 119
+                Left = 122
                 Height = 21
-                Top = 142
+                Top = 72
                 Width = 216
                 Shape = bsFrame
               end
               object Bevel175: TBevel
-                Left = 119
-                Height = 21
-                Top = 118
-                Width = 216
-                Shape = bsFrame
-              end
-              object Bevel176: TBevel
-                Left = 119
+                Left = 122
                 Height = 21
                 Top = 94
                 Width = 216
                 Shape = bsFrame
               end
-              object Bevel177: TBevel
-                Left = 119
+              object Bevel176: TBevel
+                Left = 122
                 Height = 21
-                Top = 70
+                Top = 144
                 Width = 216
                 Shape = bsFrame
               end
               object Bevel178: TBevel
-                Left = 119
+                Left = 122
                 Height = 21
-                Top = 46
+                Top = 168
                 Width = 216
                 Shape = bsFrame
               end
               object Bevel179: TBevel
-                Left = 119
+                Left = 120
                 Height = 21
-                Top = 22
+                Top = 189
                 Width = 216
                 Shape = bsFrame
               end
@@ -8396,28 +8398,28 @@ object Fprincipal: TFprincipal
               object Bevel188: TBevel
                 Left = 448
                 Height = 21
-                Top = 0
+                Top = 115
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel189: TBevel
-                Left = 453
+                Left = 448
                 Height = 21
-                Top = -8
+                Top = 139
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel190: TBevel
-                Left = 456
+                Left = 448
                 Height = 21
-                Top = -16
+                Top = 46
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel191: TBevel
-                Left = 456
+                Left = 448
                 Height = 21
-                Top = -16
+                Top = 91
                 Width = 63
                 Shape = bsFrame
               end
@@ -8429,24 +8431,54 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel193: TBevel
-                Left = 456
+                Left = 448
                 Height = 21
-                Top = -24
+                Top = 67
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel194: TBevel
-                Left = 454
+                Left = 448
                 Height = 21
-                Top = 0
+                Top = 163
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel195: TBevel
-                Left = 464
+                Left = 448
                 Height = 21
-                Top = -16
+                Top = 187
                 Width = 63
+                Shape = bsFrame
+                OnChangeBounds = Bevel195ChangeBounds
+              end
+              object Bevel236: TBevel
+                Left = 448
+                Height = 21
+                Top = 24
+                Width = 63
+                Shape = bsFrame
+                OnChangeBounds = Bevel236ChangeBounds
+              end
+              object Bevel177: TBevel
+                Left = 122
+                Height = 21
+                Top = 120
+                Width = 216
+                Shape = bsFrame
+              end
+              object Bevel238: TBevel
+                Left = 344
+                Height = 21
+                Top = 24
+                Width = 101
+                Shape = bsFrame
+              end
+              object Bevel239: TBevel
+                Left = 344
+                Height = 21
+                Top = 187
+                Width = 101
                 Shape = bsFrame
               end
             end
@@ -8523,7 +8555,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LDescripcion26: TLabel
+              object LDescripcionCan24: TLabel
                 Left = 122
                 Height = 16
                 Top = 24
@@ -8538,9 +8570,9 @@ object Fprincipal: TFprincipal
                 ParentFont = False
               end
               object LUnidadCan24: TLabel
-                Left = 456
+                Left = 457
                 Height = 16
-                Top = 24
+                Top = 27
                 Width = 60
                 Alignment = taCenter
                 AutoSize = False
@@ -8577,7 +8609,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion27: TLabel
+              object LDescripcionCan25: TLabel
                 Tag = 1
                 Left = 122
                 Height = 16
@@ -8620,7 +8652,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion28: TLabel
+              object LDescripcionCan26: TLabel
                 Tag = 2
                 Left = 122
                 Height = 16
@@ -8663,7 +8695,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion29: TLabel
+              object LDescripcionCan27: TLabel
                 Tag = 3
                 Left = 122
                 Height = 16
@@ -8706,7 +8738,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion30: TLabel
+              object LDescripcionCan28: TLabel
                 Tag = 4
                 Left = 122
                 Height = 16
@@ -8749,7 +8781,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion31: TLabel
+              object LDescripcionCan29: TLabel
                 Tag = 5
                 Left = 122
                 Height = 16
@@ -8766,7 +8798,7 @@ object Fprincipal: TFprincipal
               end
               object LUnidadCan29: TLabel
                 Tag = 5
-                Left = 456
+                Left = 453
                 Height = 16
                 Top = 144
                 Width = 60
@@ -8794,7 +8826,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion32: TLabel
+              object LDescripcionCan30: TLabel
                 Tag = 6
                 Left = 122
                 Height = 16
@@ -8835,7 +8867,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LDescripcion33: TLabel
+              object LDescripcionCan31: TLabel
                 Tag = 7
                 Left = 122
                 Height = 16
@@ -9991,58 +10023,58 @@ object Fprincipal: TFprincipal
                 OnChangeBounds = Bevel107ChangeBounds
               end
               object Bevel220: TBevel
-                Left = 440
+                Left = 454
                 Height = 21
-                Top = 0
+                Top = 25
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel221: TBevel
-                Left = 440
+                Left = 453
                 Height = 21
-                Top = -8
+                Top = 48
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel222: TBevel
-                Left = 448
+                Left = 454
                 Height = 21
-                Top = 0
+                Top = 142
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel223: TBevel
-                Left = 440
+                Left = 454
                 Height = 21
-                Top = -16
+                Top = 72
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel224: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = -24
+                Top = 96
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel225: TBevel
                 Left = 453
                 Height = 21
-                Top = -16
+                Top = 118
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel226: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = -8
+                Top = 165
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel227: TBevel
                 Left = 453
                 Height = 21
-                Top = -16
+                Top = 189
                 Width = 63
                 Shape = bsFrame
               end
@@ -12965,9 +12997,9 @@ object Fprincipal: TFprincipal
     Shape = bsFrame
   end
   object Bevel234: TBevel
-    Left = 360
+    Left = 368
     Height = 21
-    Top = 240
+    Top = 520
     Width = 101
     Shape = bsFrame
   end
