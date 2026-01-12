@@ -55,7 +55,7 @@ var
 begin
   // Inicializo las variables mas importantes
   //SE ESTABLECEN VALORES POR DEFECTO PARA EVITAR VALORES BASURA
-  Nombre      := '    ';
+  Nombre      := 'TEST';
   Memoria     := 0;
   Hora        := now;
   HoraPC      := now;

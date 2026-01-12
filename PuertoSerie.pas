@@ -641,15 +641,24 @@ begin
   
   // Implementation note: The existing loop iterates 0 to length(pvalorCH)-1.
   // We need to manage the index 'i' carefully.
+  // DEBUG LOGGING START
+  AssignFile(fLog, 'debug_mercury.txt');
+  try
+    if FileExists('debug_mercury.txt') then Append(fLog) else Rewrite(fLog);
+    Writeln(fLog, '--- LECTURA CE (Values) --- Channels: ' + IntToStr(CantCanales));
+  except
+    // Safe fail if file access denied
+  end;
+
   for NCanal := 0 to CantCanales - 1 do begin
       // Read 2 bytes for channel data
-      num := Byte(auxStr[i]) + Byte(auxStr[i+1]) + Byte(auxStr[i+1])*255; // Logic looks weird in original (double add?), keeping original formula structure but cleaner:
-      // Original: Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255; -> This adds LowByte + HighByte + HighByte*255?
-      // Wait, original: Byte(auxStr[i]) + Byte(auxStr[i+1]) + Byte(auxStr[i+1])*255
-      // This is effectively: Low + High + High*255 = Low + High*256. Correct for Little Endian.
+      num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256; 
       
-      num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
-      // Write to debug file instead of console
+      // LOG VALUE
+      try
+        Writeln(fLog, Format('CH%d Val: %d (b1:%d b2:%d)', [NCanal, num, Byte(auxStr[i]), Byte(auxStr[i+1])]));
+      except
+      end;
       
       pvalorCH[NCanal]^ := num;
       inc(i, 2);
@@ -657,6 +666,11 @@ begin
       // ELIMINADO If we completed a block of 8 channels (e.g., ch 7, 15, 23...), skip 4 bytes of padding
       //if ((NCanal + 1) mod 8 = 0) then
       //   inc(i, 4); 
+  end;
+  
+  try
+    CloseFile(fLog);
+  except
   end;
   
   // Move 'i' to the next section start. 
@@ -720,7 +734,15 @@ begin
   i := 1 + BytesOcupadosData + 4 + 4 + 2 + BytesOcupadosConf;
 
   // 6. Read Equipment Name (4 bytes)
+  // 6. Read Equipment Name (4 bytes)
   pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
+  
+  // SANITIZE NAME: remove invalid chars for filenames
+  // Strict whitelist to avoid any filesystem errors
+  if not (pNombre^[1] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[1] := '_';
+  if not (pNombre^[2] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[2] := '_';
+  if not (pNombre^[3] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[3] := '_';
+  if not (pNombre^[4] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[4] := '_';
   inc(i, 4);
 
   // 7. Read Memory Used (4 bytes)

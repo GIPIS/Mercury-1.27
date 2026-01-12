@@ -6,7 +6,7 @@ import time
 PORT = 'COM2'
 BAUD = 9600
 NOMBRE_EQUIPO = b'TEST'
-CANALES_CONFIG = [58] * 16  # 16 canales activos (ejemplo: config 58)
+CANALES_CONFIG = [58] * 32  # 16 canales activos (ejemplo: config 58)
 # CANALES_CONFIG = [58] * 16 + [0] * 16 # Si se quisieran 32 con solo 16 activos, pero el usuario pidio "16 canales"
 
 INTERVALO_MUESTREO = 60
@@ -65,7 +65,7 @@ def generar_respuesta_CE():
     for i in range(len(CANALES_CONFIG)):
         valor = 1000 + i * 100
         respuesta.extend(struct.pack('<H', valor))
-    
+
     # 2. Hora
     hora = int(time.time()) - 946684800
     respuesta.extend(struct.pack('<I', hora))

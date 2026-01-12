@@ -147,7 +147,15 @@ type
     Bevel225: TBevel;
     Bevel226: TBevel;
     Bevel227: TBevel;
+    Bevel228: TBevel;
+    Bevel229: TBevel;
     Bevel23: TBevel;
+    Bevel230: TBevel;
+    Bevel231: TBevel;
+    Bevel232: TBevel;
+    Bevel233: TBevel;
+    Bevel234: TBevel;
+    Bevel235: TBevel;
     Bevel24: TBevel;
     Bevel25: TBevel;
     Bevel26: TBevel;
@@ -196,7 +204,7 @@ type
     GroupBox12: TGroupBox;
     GroupBox13: TGroupBox;
     GroupBox6: TGroupBox;
-    GroupBox9: TGroupBox;
+    GroupBoxCan14: TGroupBox;
     Label16: TLabel;
     Label17: TLabel;
     Label18: TLabel;
@@ -281,63 +289,65 @@ type
     LNombreCanal34: TLabel;
     LNombreCanal35: TLabel;
     LNombreCanal36: TLabel;
-    LUnidad00: TLabel;
-    LUnidad01: TLabel;
-    LUnidad02: TLabel;
-    LUnidad03: TLabel;
-    LUnidad04: TLabel;
-    LUnidad05: TLabel;
-    LUnidad06: TLabel;
-    LUnidad07: TLabel;
-    LUnidad08: TLabel;
-    LUnidad1: TLabel;
+    LUnidadCan00: TLabel;
+    LUnidadCan01: TLabel;
+    LUnidadCan02: TLabel;
+    LUnidadCan03: TLabel;
+    LUnidadCan04: TLabel;
+    LUnidadCan05: TLabel;
+    LUnidadCan06: TLabel;
+    LUnidadCan07: TLabel;
+    LUnidadDigCan00: TLabel;
+    LUnidadCan08: TLabel;
     LUnidad16: TLabel;
     LUnidad17: TLabel;
     LUnidad18: TLabel;
-    LUnidad19: TLabel;
-    LUnidad2: TLabel;
-    LUnidad20: TLabel;
-    LUnidad21: TLabel;
-    LUnidad22: TLabel;
-    LUnidad23: TLabel;
-    LUnidad24: TLabel;
-    LUnidad25: TLabel;
-    LUnidad26: TLabel;
-    LUnidad27: TLabel;
-    LUnidad28: TLabel;
-    LUnidad29: TLabel;
-    LUnidad3: TLabel;
-    LUnidad30: TLabel;
-    LUnidad31: TLabel;
-    LUnidad32: TLabel;
-    LUnidad33: TLabel;
-    LUnidad4: TLabel;
-    LUnidad5: TLabel;
-    LUnidad6: TLabel;
-    LUnidad7: TLabel;
-    LUnidad8: TLabel;
-    LUnidad9: TLabel;
+    LUnidadCan17: TLabel;
+    LUnidadCan09: TLabel;
+    LUnidadCan18: TLabel;
+    LUnidadCan19: TLabel;
+    LUnidadCan20: TLabel;
+    LUnidadCan21: TLabel;
+    LUnidadCan22: TLabel;
+    LUnidadCan23: TLabel;
+    LUnidadCan24: TLabel;
+    LUnidadCan25: TLabel;
+    LUnidadCan26: TLabel;
+    LUnidadCan27: TLabel;
+    LUnidadCan10: TLabel;
+    LUnidadCan28: TLabel;
+    LUnidadCan29: TLabel;
+    LUnidadCan30: TLabel;
+    LUnidadCan31: TLabel;
+    LUnidadCan11: TLabel;
+    LUnidadCan12: TLabel;
+    LUnidadCan13: TLabel;
+    LUnidadCan14: TLabel;
+    LUnidadCan15: TLabel;
+    LUnidadCan16: TLabel;
     LUnidadParam1: TLabel;
     LUnidadParam2: TLabel;
     LUnidadParam3: TLabel;
     LUnidadParam4: TLabel;
     LUnidadParam5: TLabel;
-    LValor00: TLabel;
-    LValor01: TLabel;
-    LValor02: TLabel;
-    LValor03: TLabel;
-    LValor04: TLabel;
-    LValor05: TLabel;
-    LValor06: TLabel;
-    LValor07: TLabel;
-    LValor08: TLabel;
-    LValor09: TLabel;
-    LValor10: TLabel;
-    LValor11: TLabel;
-    LValor12: TLabel;
-    LValor13: TLabel;
-    LValor14: TLabel;
-    LValor15: TLabel;
+    LValorCan00: TLabel;
+    LValorCan01: TLabel;
+    LValorCan02: TLabel;
+    LValorCan03: TLabel;
+    LValorCan04: TLabel;
+    LValorCan05: TLabel;
+    LValorCan06: TLabel;
+    LValorCan07: TLabel;
+    LValorCanDig00: TLabel;
+    LValorCan08: TLabel;
+    LValorCan15: TLabel;
+    LValorCan14: TLabel;
+    LValorCan13: TLabel;
+
+    LValorCan09: TLabel;
+    LValorCan10: TLabel;
+    LValorCan11: TLabel;
+    LValorCan12: TLabel;
     LValor16: TLabel;
     LValor17: TLabel;
     LValor18: TLabel;
@@ -345,26 +355,25 @@ type
     LValor20: TLabel;
     LValor21: TLabel;
     LValor22: TLabel;
-    LValor23: TLabel;
-    LValor24: TLabel;
-    LValor25: TLabel;
-    LValor26: TLabel;
-    LValor27: TLabel;
-    LValor28: TLabel;
-    LValor29: TLabel;
-    LValor30: TLabel;
-    LValor31: TLabel;
-    LValor32: TLabel;
-    LValor33: TLabel;
-    LValor34: TLabel;
-    LValor35: TLabel;
-    LValor36: TLabel;
-    LValor4: TLabel;
-    LValor5: TLabel;
+    LValorCan23: TLabel;
+    LValorCan22: TLabel;
+    LValorCan21: TLabel;
+    LValorCan16: TLabel;
+    LValorCan17: TLabel;
+    LValorCan18: TLabel;
+    LValorCan31: TLabel;
+    LValorCan30: TLabel;
+    LValorCan29: TLabel;
+    LValorCan24: TLabel;
+    LValorCan25: TLabel;
+    LValorCan26: TLabel;
+    LValorCan27: TLabel;
+    LValorCan28: TLabel;
+
     LValor6: TLabel;
     LValor7: TLabel;
-    LValor8: TLabel;
-    LValor9: TLabel;
+    LValorCan19: TLabel;
+    LValorCan20: TLabel;
     LValorParam1: TLabel;
     LValorParam2: TLabel;
     LValorParam3: TLabel;
@@ -632,13 +641,6 @@ type
     LDescripcion13: TLabel;
     LDescripcion14: TLabel;
     LDescripcion15: TLabel;
-    LUnidad09: TLabel;
-    LUnidad10: TLabel;
-    LUnidad11: TLabel;
-    LUnidad12: TLabel;
-    LUnidad13: TLabel;
-    LUnidad14: TLabel;
-    LUnidad15: TLabel;
     // Nuevos SpeedButtons comentarios para canales 09-15
     sbComentario09: TSpeedButton;
     sbComentario10: TSpeedButton;
@@ -720,10 +722,19 @@ type
     procedure Bevel27ChangeBounds(Sender: TObject);
     procedure Bevel28ChangeBounds(Sender: TObject);
     procedure Bevel29ChangeBounds(Sender: TObject);
+    procedure Bevel76ChangeBounds(Sender: TObject);
+    procedure Bevel77ChangeBounds(Sender: TObject);
+    procedure Bevel95ChangeBounds(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure GroupBox1Click(Sender: TObject);
     procedure GroupBox6Click(Sender: TObject);
-    procedure GroupBox9Click(Sender: TObject);
+    procedure GroupBoxCan14Click(Sender: TObject);
+    procedure LValorCan09Click(Sender: TObject);
+    procedure LValorCan10Click(Sender: TObject);
+    procedure LValorCan13Click(Sender: TObject);
+    procedure LValorCan24Click(Sender: TObject);
+    procedure LValorCan00Click(Sender: TObject);
+    procedure LValorCan08Click(Sender: TObject);
     procedure mSalirClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure IraSystemTray;
@@ -733,6 +744,7 @@ type
     procedure FormActivate(Sender: TObject);
     procedure ActualizarInfo(Sender: TObject);
     function  CentrarTexto(texto:string; Ancho:integer):string;
+    procedure ToolButton4Click(Sender: TObject);
     procedure tsConfiguracionShow(Sender: TObject);
     procedure cbSensoresCloseUp(Sender: TObject);
     procedure cbSensoresExit(Sender: TObject);
@@ -1013,12 +1025,57 @@ begin
 
 end;
 
-procedure TFprincipal.GroupBox9Click(Sender: TObject);
+procedure TFprincipal.GroupBoxCan14Click(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.LValorCan09Click(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.LValorCan10Click(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.LValorCan13Click(Sender: TObject);
+begin
+  // Click handler for LValorCan13
+end;
+
+procedure TFprincipal.LValorCan24Click(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.LValorCan00Click(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.LValorCan08Click(Sender: TObject);
 begin
 
 end;
 
 procedure TFprincipal.Bevel29ChangeBounds(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.Bevel76ChangeBounds(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.Bevel77ChangeBounds(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.Bevel95ChangeBounds(Sender: TObject);
 begin
 
 end;
@@ -1204,6 +1261,8 @@ procedure TFprincipal.ActualizarInfo(Sender: TObject);
 var
   i, j, k      : integer;
   ExisteSensor : boolean;
+  CompName, strDesc, strVal, strUnit, strGraph, strComm: string;
+  Comp: TComponent;
 
 begin
   if (Cerrando or Creando) then exit;
@@ -1212,7 +1271,7 @@ begin
   if not Equipo.ThreadComm.ONLine then begin
     StatusBar.Panels[0].Text    := 'Equipo fuera de Linea';
     ActualizarCHs               := true;
-    LimpiarMonitor;
+   // LimpiarMonitor;
     if (PageControl.ActivePageIndex = 2) then
       if PageControl.Pages[0].TabVisible then PageControl.ActivePageIndex := 0
       else PageControl.ActivePageIndex := 1;
@@ -1290,7 +1349,7 @@ begin
   end;  
 
   // Cargo la Info del Equipo en pantalla
-  LNombreEquipo.Caption  := Equipo.Nombre;
+  LNombreEquipo.Caption  := Equipo.Nombre + Format(' [NC:%d C8:%d]', [Equipo.NumCanales, Equipo.Canales[8].Config]);
   LHoraEquipo.Caption    := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm',Equipo.Hora);
   LNbytesEquipo.Caption  := IntToStr(Equipo.Memoria)+' bytes';
   Gauge.Position         := (Equipo.Memoria*100) div Equipo.CantMemory;
@@ -1301,52 +1360,129 @@ begin
   //IntToStr(Equipo.Tmuestreo div 60)+' min
 
   // Cargo la info de los canales en pantalla
-  for i:=0 to Equipo.NumCanales-1 do begin
-    // Determino el sufijo del componente (00, 01, ..., 31)
-    // Para simplificar, asumimos mapeo directo 1 a 1 para expansiones
-    // La logica de UsarCH9 "digital" se omite por pedido del usuario ("no tener en cuenta")
-    
-    // Genero el nombre del componente
-    // Format('%.2d', [i]) genera 00, 01, 10, 11, etc.
-    
-    // 1. Validar existencia del componente de Descripcion
-    if (FindComponent('LDescripcion' + Format('%.2d', [i])) is TLabel) then
-       TLabel(FindComponent('LDescripcion' + Format('%.2d', [i]))).Caption := Equipo.Canales[i].Descripcion;
+  // --- INICIO DE LA SECCIÓN DE CARGA DE CANALES ---
+  
+  for i := 0 to Equipo.NumCanales - 1 do begin
+    // 1. Calcular el valor real del canal
+    if Equipo.Canales[i].Config <> 0 then begin
+      Equipo.Canales[i].Escala := Equipo.Escala;
+      Equipo.Canales[i].ComputarValor(Equipo.Canales[i].ValorSensor);
+      
+      // 2. ASIGNACIÓN DIRECTA DE VALORES (Caption y BringToFront)
+      case i of
+        // Pestaña Monitoreo (canales 0-7)
+        0:  if Assigned(LValorCan00) then begin LValorCan00.Caption := Equipo.Canales[i].ValorReal; LValorCan00.BringToFront; end;
+        1:  if Assigned(LValorCan01) then begin LValorCan01.Caption := Equipo.Canales[i].ValorReal; LValorCan01.BringToFront; end;
+        2:  if Assigned(LValorCan02) then begin LValorCan02.Caption := Equipo.Canales[i].ValorReal; LValorCan02.BringToFront; end;
+        3:  if Assigned(LValorCan03) then begin LValorCan03.Caption := Equipo.Canales[i].ValorReal; LValorCan03.BringToFront; end;
+        4:  if Assigned(LValorCan04) then begin LValorCan04.Caption := Equipo.Canales[i].ValorReal; LValorCan04.BringToFront; end;
+        5:  if Assigned(LValorCan05) then begin LValorCan05.Caption := Equipo.Canales[i].ValorReal; LValorCan05.BringToFront; end;
+        6:  if Assigned(LValorCan06) then begin LValorCan06.Caption := Equipo.Canales[i].ValorReal; LValorCan06.BringToFront; end;
+        7:  if Assigned(LValorCan07) then begin LValorCan07.Caption := Equipo.Canales[i].ValorReal; LValorCan07.BringToFront; end;
+        // Pestaña Expansion 1 (canales 8-15)
+        8:  if Assigned(LValorCan08) then begin LValorCan08.Caption := Equipo.Canales[i].ValorReal; LValorCan08.BringToFront; end;
+        9:  if Assigned(LValorCan09) then begin LValorCan09.Caption := Equipo.Canales[i].ValorReal; LValorCan09.BringToFront; end;
+        10: if Assigned(LValorCan10) then begin LValorCan10.Caption := Equipo.Canales[i].ValorReal; LValorCan10.BringToFront; end;
+        11: if Assigned(LValorCan11) then begin LValorCan11.Caption := Equipo.Canales[i].ValorReal; LValorCan11.BringToFront; end;
+        12: if Assigned(LValorCan12) then begin LValorCan12.Caption := Equipo.Canales[i].ValorReal; LValorCan12.BringToFront; end;
+        13: if Assigned(LValorCan13) then begin LValorCan13.Caption := Equipo.Canales[i].ValorReal; LValorCan13.BringToFront; end;
+        14: if Assigned(LValorCan14) then begin LValorCan14.Caption := Equipo.Canales[i].ValorReal; LValorCan14.BringToFront; end;
+        15: if Assigned(LValorCan15) then begin LValorCan15.Caption := Equipo.Canales[i].ValorReal; LValorCan15.BringToFront; end;
+        // Pestaña Expansion 2 (canales 16-23)
+        16: if Assigned(LValorCan16) then begin LValorCan16.Caption := Equipo.Canales[i].ValorReal; LValorCan16.BringToFront; end;
+        17: if Assigned(LValorCan17) then begin LValorCan17.Caption := Equipo.Canales[i].ValorReal; LValorCan17.BringToFront; end;
+        18: if Assigned(LValorCan18) then begin LValorCan18.Caption := Equipo.Canales[i].ValorReal; LValorCan18.BringToFront; end;
+        19: if Assigned(LValorCan19) then begin LValorCan19.Caption := Equipo.Canales[i].ValorReal; LValorCan19.BringToFront; end;
+        20: if Assigned(LValorCan20) then begin LValorCan20.Caption := Equipo.Canales[i].ValorReal; LValorCan20.BringToFront; end;
+        21: if Assigned(LValorCan21) then begin LValorCan21.Caption := Equipo.Canales[i].ValorReal; LValorCan21.BringToFront; end;
+        22: if Assigned(LValorCan22) then begin LValorCan22.Caption := Equipo.Canales[i].ValorReal; LValorCan22.BringToFront; end;
+        23: if Assigned(LValorCan23) then begin LValorCan23.Caption := Equipo.Canales[i].ValorReal; LValorCan23.BringToFront; end;
+        // Pestaña Expansion 3 (canales 24-31)
+        24: if Assigned(LValorCan24) then begin LValorCan24.Caption := Equipo.Canales[i].ValorReal; LValorCan24.BringToFront; end;
+        25: if Assigned(LValorCan25) then begin LValorCan25.Caption := Equipo.Canales[i].ValorReal; LValorCan25.BringToFront; end;
+        26: if Assigned(LValorCan26) then begin LValorCan26.Caption := Equipo.Canales[i].ValorReal; LValorCan26.BringToFront; end;
+        27: if Assigned(LValorCan27) then begin LValorCan27.Caption := Equipo.Canales[i].ValorReal; LValorCan27.BringToFront; end;
+        28: if Assigned(LValorCan28) then begin LValorCan28.Caption := Equipo.Canales[i].ValorReal; LValorCan28.BringToFront; end;
+        29: if Assigned(LValorCan29) then begin LValorCan29.Caption := Equipo.Canales[i].ValorReal; LValorCan29.BringToFront; end;
+        30: if Assigned(LValorCan30) then begin LValorCan30.Caption := Equipo.Canales[i].ValorReal; LValorCan30.BringToFront; end;
+        31: if Assigned(LValorCan31) then begin LValorCan31.Caption := Equipo.Canales[i].ValorReal; LValorCan31.BringToFront; end;
+      end;
 
-    // 2. Actualizo Valor y Estado
-    if Equipo.Canales[i].Config<>0 then begin
-       // Calculo el valor
-       Equipo.Canales[i].Escala := Equipo.Escala;
-       Equipo.Canales[i].ComputarValor(Equipo.Canales[i].ValorSensor);
 
-       // Actualizo componentes si existen
-       if (FindComponent('LValor' + Format('%.2d', [i])) is TLabel) then
-          TLabel(FindComponent('LValor' + Format('%.2d', [i]))).Caption := Equipo.Canales[i].ValorReal;
+      // 3. ASIGNACIÓN DE DESCRIPCIONES (Directa para canales críticos)
+      case i of
+        0..7: begin
+          Comp := FindComponent(Format('LDescripcion%.2d', [i]));
+          if (Comp is TLabel) then TLabel(Comp).Caption := Equipo.Canales[i].Descripcion;
+        end;
+        8:  LDescripcion1.Caption := Equipo.Canales[i].Descripcion;
+        9:  LDescripcion2.Caption := Equipo.Canales[i].Descripcion;
+        10: LDescripcion3.Caption := Equipo.Canales[i].Descripcion;
+        11: LDescripcion4.Caption := Equipo.Canales[i].Descripcion;
+        12: LDescripcion5.Caption := Equipo.Canales[i].Descripcion;
+        13: LDescripcion6.Caption := Equipo.Canales[i].Descripcion;
+        14: LDescripcion7.Caption := Equipo.Canales[i].Descripcion;
+        15: LDescripcion8.Caption := Equipo.Canales[i].Descripcion;
+      end;
 
-       if (FindComponent('LUnidad' + Format('%.2d', [i])) is TLabel) then
-          TLabel(FindComponent('LUnidad' + Format('%.2d', [i]))).Caption := '['+Equipo.Canales[i].Unidad+']';
+      // 4. UNIDADES Y BOTONES (Búsqueda dinámica segura)
+      CompName := Format('LUnidadCan%.2d', [i]);
+      Comp := FindComponent(CompName);
+      if Comp = nil then Comp := FindComponent(Format('LUnidad%.2d', [i])); 
+      if (Comp is TLabel) then begin
+        TLabel(Comp).Caption := '[' + Equipo.Canales[i].Unidad + ']';
+        TLabel(Comp).BringToFront;
+      end;
+      // Asignación directa para canal 8 como fallback (FindComponent parece no encontrarlo)
+      if (i = 8) and Assigned(LUnidadCan08) then begin
+        LUnidadCan08.Caption := '[' + Equipo.Canales[i].Unidad + ']';
+        LUnidadCan08.BringToFront;
+      end;
 
-       if (FindComponent('sbGrafico' + Format('%.2d', [i])) is TSpeedButton) then
-          TSpeedButton(FindComponent('sbGrafico' + Format('%.2d', [i]))).Enabled := true;
-
-       if (FindComponent('sbComentario' + Format('%.2d', [i])) is TSpeedButton) then
-          TSpeedButton(FindComponent('sbComentario' + Format('%.2d', [i]))).Enabled := true;
-    end
-    else begin
-       // Limpio componentes si no esta configurado
-       if (FindComponent('LValor' + Format('%.2d', [i])) is TLabel) then
-          TLabel(FindComponent('LValor' + Format('%.2d', [i]))).Caption := '';
-
-       if (FindComponent('LUnidad' + Format('%.2d', [i])) is TLabel) then
-          TLabel(FindComponent('LUnidad' + Format('%.2d', [i]))).Caption := '';
-
-       if (FindComponent('sbGrafico' + Format('%.2d', [i])) is TSpeedButton) then
-          TSpeedButton(FindComponent('sbGrafico' + Format('%.2d', [i]))).Enabled := false;
-
-       if (FindComponent('sbComentario' + Format('%.2d', [i])) is TSpeedButton) then
-          TSpeedButton(FindComponent('sbComentario' + Format('%.2d', [i]))).Enabled := false;
+    end else begin
+      // Si el canal está desactivado (Config = 0)
+      case i of
+        // Pestaña Monitoreo (canales 0-7)
+        0:  if Assigned(LValorCan00) then LValorCan00.Caption := 'OFF';
+        1:  if Assigned(LValorCan01) then LValorCan01.Caption := 'OFF';
+        2:  if Assigned(LValorCan02) then LValorCan02.Caption := 'OFF';
+        3:  if Assigned(LValorCan03) then LValorCan03.Caption := 'OFF';
+        4:  if Assigned(LValorCan04) then LValorCan04.Caption := 'OFF';
+        5:  if Assigned(LValorCan05) then LValorCan05.Caption := 'OFF';
+        6:  if Assigned(LValorCan06) then LValorCan06.Caption := 'OFF';
+        7:  if Assigned(LValorCan07) then LValorCan07.Caption := 'OFF';
+        // Pestaña Expansion 1 (canales 8-15)
+        8:  if Assigned(LValorCan08) then LValorCan08.Caption := 'OFF';
+        9:  if Assigned(LValorCan09) then LValorCan09.Caption := 'OFF';
+        10: if Assigned(LValorCan10) then LValorCan10.Caption := 'OFF';
+        11: if Assigned(LValorCan11) then LValorCan11.Caption := 'OFF';
+        12: if Assigned(LValorCan12) then LValorCan12.Caption := 'OFF';
+        13: if Assigned(LValorCan13) then LValorCan13.Caption := 'OFF';
+        14: if Assigned(LValorCan14) then LValorCan14.Caption := 'OFF';
+        15: if Assigned(LValorCan15) then LValorCan15.Caption := 'OFF';
+        // Pestaña Expansion 2 (canales 16-23)
+        16: if Assigned(LValorCan16) then LValorCan16.Caption := 'OFF';
+        17: if Assigned(LValorCan17) then LValorCan17.Caption := 'OFF';
+        18: if Assigned(LValorCan18) then LValorCan18.Caption := 'OFF';
+        19: if Assigned(LValorCan19) then LValorCan19.Caption := 'OFF';
+        20: if Assigned(LValorCan20) then LValorCan20.Caption := 'OFF';
+        21: if Assigned(LValorCan21) then LValorCan21.Caption := 'OFF';
+        22: if Assigned(LValorCan22) then LValorCan22.Caption := 'OFF';
+        23: if Assigned(LValorCan23) then LValorCan23.Caption := 'OFF';
+        // Pestaña Expansion 3 (canales 24-31)
+        24: if Assigned(LValorCan24) then LValorCan24.Caption := 'OFF';
+        25: if Assigned(LValorCan25) then LValorCan25.Caption := 'OFF';
+        26: if Assigned(LValorCan26) then LValorCan26.Caption := 'OFF';
+        27: if Assigned(LValorCan27) then LValorCan27.Caption := 'OFF';
+        28: if Assigned(LValorCan28) then LValorCan28.Caption := 'OFF';
+        29: if Assigned(LValorCan29) then LValorCan29.Caption := 'OFF';
+        30: if Assigned(LValorCan30) then LValorCan30.Caption := 'OFF';
+        31: if Assigned(LValorCan31) then LValorCan31.Caption := 'OFF';
+      end;
     end;
   end;
+
+  // --- FIN DE LA SECCIÓN DE CARGA DE CANALES ---
 
   // Actualizo la info y el valor de los parametros calculados
   for i:=0 to Equipo.CalcParam.CantParm-1 do begin
@@ -1443,25 +1579,27 @@ begin
   Gauge.Position         := 0;
   LIniMuesEquipo.Caption := '';
 
-  // Limpio la info de los canales
-  LDescripcion00.Caption := ''; LValor00.Caption := ''; LUnidad00.Caption := ''; sbGrafico00.Enabled := false; sbComentario00.Enabled := false;
-  LDescripcion01.Caption := ''; LValor01.Caption := ''; LUnidad01.Caption := ''; sbGrafico01.Enabled := false; sbComentario01.Enabled := false;
-  LDescripcion02.Caption := ''; LValor02.Caption := ''; LUnidad02.Caption := ''; sbGrafico02.Enabled := false; sbComentario02.Enabled := false;
-  LDescripcion03.Caption := ''; LValor03.Caption := ''; LUnidad03.Caption := ''; sbGrafico03.Enabled := false; sbComentario03.Enabled := false;
-  LDescripcion04.Caption := ''; LValor04.Caption := ''; LUnidad04.Caption := ''; sbGrafico04.Enabled := false; sbComentario04.Enabled := false;
-  LDescripcion05.Caption := ''; LValor05.Caption := ''; LUnidad05.Caption := ''; sbGrafico05.Enabled := false; sbComentario05.Enabled := false;
-  LDescripcion06.Caption := ''; LValor06.Caption := ''; LUnidad06.Caption := ''; sbGrafico06.Enabled := false; sbComentario06.Enabled := false;
-  LDescripcion07.Caption := ''; LValor07.Caption := ''; LUnidad07.Caption := ''; sbGrafico07.Enabled := false; sbComentario07.Enabled := false;
-  LDescripcion08.Caption := ''; LValor08.Caption := ''; LUnidad08.Caption := ''; sbGrafico08.Enabled := false; sbComentario08.Enabled := false;
-
-  // Inicialización de canales visuales adicionales (09-15) - Solo visuales, sin lógica
-  LDescripcion09.Caption := 'Canal 09 (Visual)'; LValor09.Caption := '---'; LUnidad09.Caption := '[---]'; sbGrafico09.Enabled := false; sbComentario09.Enabled := false;
-  LDescripcion10.Caption := 'Canal 10 (Visual)'; LValor10.Caption := '---'; LUnidad10.Caption := '[---]'; sbGrafico10.Enabled := false; sbComentario10.Enabled := false;
-  LDescripcion11.Caption := 'Canal 11 (Visual)'; LValor11.Caption := '---'; LUnidad11.Caption := '[---]'; sbGrafico11.Enabled := false; sbComentario11.Enabled := false;
-  LDescripcion12.Caption := 'Canal 12 (Visual)'; LValor12.Caption := '---'; LUnidad12.Caption := '[---]'; sbGrafico12.Enabled := false; sbComentario12.Enabled := false;
-  LDescripcion13.Caption := 'Canal 13 (Visual)'; LValor13.Caption := '---'; LUnidad13.Caption := '[---]'; sbGrafico13.Enabled := false; sbComentario13.Enabled := false;
-  LDescripcion14.Caption := 'Canal 14 (Visual)'; LValor14.Caption := '---'; LUnidad14.Caption := '[---]'; sbGrafico14.Enabled := false; sbComentario14.Enabled := false;
-  LDescripcion15.Caption := 'Canal 15 (Visual)'; LValor15.Caption := '---'; LUnidad15.Caption := '[---]'; sbGrafico15.Enabled := false; sbComentario15.Enabled := false;
+  // ========= LIMPIEZA EXPLÍCITA DE CANALES 0-15 =========
+  // Canales 0-7 (Monitoreo principal)
+  LDescripcion00.Caption := ''; LValorCan00.Caption := ''; LUnidadCan00.Caption := '';
+  LDescripcion01.Caption := ''; LValorCan01.Caption := ''; LUnidadCan01.Caption := '';
+  LDescripcion02.Caption := ''; LValorCan02.Caption := ''; LUnidadCan02.Caption := '';
+  LDescripcion03.Caption := ''; LValorCan03.Caption := ''; LUnidadCan03.Caption := '';
+  LDescripcion04.Caption := ''; LValorCan04.Caption := ''; LUnidadCan04.Caption := '';
+  LDescripcion05.Caption := ''; LValorCan05.Caption := ''; LUnidadCan05.Caption := '';
+  LDescripcion06.Caption := ''; LValorCan06.Caption := ''; LUnidadCan06.Caption := '';
+  LDescripcion07.Caption := ''; LValorCan07.Caption := ''; LUnidadCan07.Caption := '';
+  
+  // Canales 8-15 (Expansión 1 - GroupBoxCan14)
+  LDescripcion1.Caption := ''; LValorCan08.Caption := ''; LUnidadCan08.Caption := '';
+  LDescripcion2.Caption := ''; LValorCan09.Caption := ''; LUnidadCan09.Caption := '';
+  LDescripcion3.Caption := ''; LValorCan10.Caption := ''; LUnidadCan10.Caption := '';
+  LDescripcion4.Caption := ''; LValorCan11.Caption := ''; LUnidadCan11.Caption := '';
+  LDescripcion5.Caption := ''; LValorCan12.Caption := ''; LUnidadCan12.Caption := '';
+  LDescripcion6.Caption := ''; LValorCan13.Caption := ''; LUnidadCan13.Caption := '';
+  LDescripcion7.Caption := ''; LValorCan14.Caption := ''; LUnidadCan14.Caption := '';
+  LDescripcion8.Caption := ''; LValorCan15.Caption := ''; LUnidadCan15.Caption := '';
+  // ========= FIN LIMPIEZA CANALES =========
 
   // Limpio la info de los valores calculados
   LDescripcionParam00.Caption := ''; LValorParam00.Caption := ''; LUnidadParam00.Caption := ''; sbGraficoParam00.Enabled := false;
@@ -1586,19 +1724,21 @@ begin
 
 
      // --- VISUALIZACION (LValorXX, LUnidadXX, LDescripcionXX, sbGraficoXX, sbComentarioXX) ---
-     // Uso LValor08 como base si existe.
-     if LValor08 <> nil then TopBase := LValor08.Top else TopBase := 214;
+     // Uso LValorCanDig00 como base si existe.
+     if LValorCanDig00 <> nil then TopBase := LValorCanDig00.Top else TopBase := 214;
 
-     // Canal 09 (Visual)
-     LValor09 := TLabel.Create(Self); LValor09.Parent := LValor00.Parent;
-     LValor09.Left := LValor00.Left; LValor09.Top := TopBase + DeltaY;
-     LValor09.AutoSize := False; LValor09.Width := LValor00.Width; LValor09.Height := LValor00.Height; 
-     LValor09.Alignment := taCenter; LValor09.Font := LValor00.Font; LValor09.Color := LValor00.Color; LValor09.Transparent := False;
+     // Canal 09 (Visual) - COMENTADO: LValorCan08 ya existe en LFM con GroupBoxCan14 como Parent
+     // LValorCan08 := TLabel.Create(Self); LValorCan08.Parent := LValorCan00.Parent;
+     // LValorCan08.Left := LValorCan00.Left; LValorCan08.Top := TopBase + DeltaY;
+     // LValorCan08.AutoSize := False; LValorCan08.Width := LValorCan00.Width; LValorCan08.Height := LValorCan00.Height;
+     // LValorCan08.Alignment := taCenter; LValorCan08.Font := LValorCan00.Font; LValorCan08.Color := LValorCan00.Color; LValorCan08.Transparent := False;
      
-     LUnidad09 := TLabel.Create(Self); LUnidad09.Parent := LUnidad00.Parent;
-     LUnidad09.Left := LUnidad00.Left; LUnidad09.Top := TopBase + DeltaY;
-     LUnidad09.AutoSize := False; LUnidad09.Width := LUnidad00.Width; LUnidad09.Height := LUnidad00.Height;
-     LUnidad09.Alignment := taCenter; LUnidad09.Font := LUnidad00.Font;
+     // COMENTADO: LUnidadCan08 ya existe en LFM con GroupBoxCan14 como Parent (Expansion 1)
+     // Este código lo ponía incorrectamente en el parent de Canal 0 (Monitoreo)
+     // LUnidadCan08 := TLabel.Create(Self); LUnidadCan08.Parent := LUnidadCan00.Parent;
+     // LUnidadCan08.Left := LUnidadCan00.Left; LUnidadCan08.Top := TopBase + DeltaY;
+     // LUnidadCan08.AutoSize := False; LUnidadCan08.Width := LUnidadCan00.Width; LUnidadCan08.Height := LUnidadCan00.Height;
+     // LUnidadCan08.Alignment := taCenter; LUnidadCan08.Font := LUnidadCan00.Font;
      
      LDescripcion09 := TLabel.Create(Self); LDescripcion09.Parent := LDescripcion00.Parent;
      LDescripcion09.Left := LDescripcion00.Left; LDescripcion09.Top := TopBase + DeltaY;
@@ -1617,16 +1757,17 @@ begin
 
      sbComentario09.NumGlyphs := sbComentario00.NumGlyphs; sbComentario09.Flat := sbComentario00.Flat;
 
-     // Canal 10
-     LValor10 := TLabel.Create(Self); LValor10.Parent := LValor00.Parent;
-     LValor10.Left := LValor00.Left; LValor10.Top := TopBase + DeltaY*2;
-     LValor10.AutoSize := False; LValor10.Width := LValor00.Width; LValor10.Height := LValor00.Height;
-     LValor10.Alignment := taCenter; LValor10.Font := LValor00.Font; LValor10.Color := LValor00.Color; LValor10.Transparent := False;
+     // Canal 10 - COMENTADO: Esto creaba LValorCan15 con Parent incorrecto (bug copia-pega)
+     // LValorCan15 := TLabel.Create(Self); LValorCan15.Parent := LValorCan00.Parent;
+     // LValorCan15.Left := LValorCan00.Left; LValorCan15.Top := TopBase + DeltaY*2;
+     // LValorCan15.AutoSize := False; LValorCan15.Width := LValorCan00.Width; LValorCan15.Height := LValorCan00.Height;
+     // LValorCan15.Alignment := taCenter; LValorCan15.Font := LValorCan00.Font; LValorCan15.Color := LValorCan00.Color; LValorCan15.Transparent := False;
 
-     LUnidad10 := TLabel.Create(Self); LUnidad10.Parent := LUnidad00.Parent;
-     LUnidad10.Left := LUnidad00.Left; LUnidad10.Top := TopBase + DeltaY*2;
-     LUnidad10.AutoSize := False; LUnidad10.Width := LUnidad00.Width; LUnidad10.Height := LUnidad00.Height;
-     LUnidad10.Alignment := taCenter; LUnidad10.Font := LUnidad00.Font;
+     // COMENTADO: LUnidadCan10 ya existe en LFM
+     // LUnidad10 := TLabel.Create(Self); LUnidad10.Parent := LUnidadCan00.Parent;
+     // LUnidad10.Left := LUnidadCan00.Left; LUnidad10.Top := TopBase + DeltaY*2;
+     // LUnidad10.AutoSize := False; LUnidad10.Width := LUnidadCan00.Width; LUnidad10.Height := LUnidadCan00.Height;
+     // LUnidad10.Alignment := taCenter; LUnidad10.Font := LUnidadCan00.Font;
 
      LDescripcion10 := TLabel.Create(Self); LDescripcion10.Parent := LDescripcion00.Parent;
      LDescripcion10.Left := LDescripcion00.Left; LDescripcion10.Top := TopBase + DeltaY*2;
@@ -1646,16 +1787,17 @@ begin
      sbComentario10.Width := sbComentario00.Width; sbComentario10.Height := sbComentario00.Height;
      sbComentario10.Flat := sbComentario00.Flat;
 
-     // Canal 11
-     LValor11 := TLabel.Create(Self); LValor11.Parent := LValor00.Parent;
-     LValor11.Left := LValor00.Left; LValor11.Top := TopBase + DeltaY*3;
-     LValor11.AutoSize := False; LValor11.Width := LValor00.Width; LValor11.Height := LValor00.Height;
-     LValor11.Alignment := taCenter; LValor11.Font := LValor00.Font; LValor11.Color := LValor00.Color; LValor11.Transparent := False;
+     // Canal 11 - COMENTADO: Esto creaba LValorCan14 con Parent incorrecto (bug copia-pega)
+     // LValorCan14 := TLabel.Create(Self); LValorCan14.Parent := LValorCan00.Parent;
+     // LValorCan14.Left := LValorCan00.Left; LValorCan14.Top := TopBase + DeltaY*3;
+     // LValorCan14.AutoSize := False; LValorCan14.Width := LValorCan00.Width; LValorCan14.Height := LValorCan00.Height;
+     // LValorCan14.Alignment := taCenter; LValorCan14.Font := LValorCan00.Font; LValorCan14.Color := LValorCan00.Color; LValorCan14.Transparent := False;
 
-     LUnidad11 := TLabel.Create(Self); LUnidad11.Parent := LUnidad00.Parent;
-     LUnidad11.Left := LUnidad00.Left; LUnidad11.Top := TopBase + DeltaY*3;
-     LUnidad11.AutoSize := False; LUnidad11.Width := LUnidad00.Width; LUnidad11.Height := LUnidad00.Height;
-     LUnidad11.Alignment := taCenter; LUnidad11.Font := LUnidad00.Font;
+     // COMENTADO: LUnidadCan11 ya existe en LFM
+     // LUnidad11 := TLabel.Create(Self); LUnidad11.Parent := LUnidadCan00.Parent;
+     // LUnidad11.Left := LUnidadCan00.Left; LUnidad11.Top := TopBase + DeltaY*3;
+     // LUnidad11.AutoSize := False; LUnidad11.Width := LUnidadCan00.Width; LUnidad11.Height := LUnidadCan00.Height;
+     // LUnidad11.Alignment := taCenter; LUnidad11.Font := LUnidadCan00.Font;
 
      LDescripcion11 := TLabel.Create(Self); LDescripcion11.Parent := LDescripcion00.Parent;
      LDescripcion11.Left := LDescripcion00.Left; LDescripcion11.Top := TopBase + DeltaY*3;
@@ -1672,16 +1814,17 @@ begin
 
      sbComentario11.Width := sbComentario00.Width; sbComentario11.Height := sbComentario00.Height; sbComentario11.Flat := sbComentario00.Flat;
 
-     // Canal 12
-     LValor12 := TLabel.Create(Self); LValor12.Parent := LValor00.Parent;
-     LValor12.Left := LValor00.Left; LValor12.Top := TopBase + DeltaY*4;
-     LValor12.AutoSize := False; LValor12.Width := LValor00.Width; LValor12.Height := LValor00.Height;
-     LValor12.Alignment := taCenter; LValor12.Font := LValor00.Font; LValor12.Color := LValor00.Color; LValor12.Transparent := False;
+     // Canal 12 - COMENTADO: Esto creaba LValorCan13 con Parent incorrecto (bug copia-pega)
+     // LValorCan13 := TLabel.Create(Self); LValorCan13.Parent := LValorCan00.Parent;
+     // LValorCan13.Left := LValorCan00.Left; LValorCan13.Top := TopBase + DeltaY*4;
+     // LValorCan13.AutoSize := False; LValorCan13.Width := LValorCan00.Width; LValorCan13.Height := LValorCan00.Height;
+     // LValorCan13.Alignment := taCenter; LValorCan13.Font := LValorCan00.Font; LValorCan13.Color := LValorCan00.Color; LValorCan13.Transparent := False;
 
-     LUnidad12 := TLabel.Create(Self); LUnidad12.Parent := LUnidad00.Parent;
-     LUnidad12.Left := LUnidad00.Left; LUnidad12.Top := TopBase + DeltaY*4;
-     LUnidad12.AutoSize := False; LUnidad12.Width := LUnidad00.Width; LUnidad12.Height := LUnidad00.Height;
-     LUnidad12.Alignment := taCenter; LUnidad12.Font := LUnidad00.Font;
+     // COMENTADO: LUnidadCan12 ya existe en LFM
+     // LUnidad12 := TLabel.Create(Self); LUnidad12.Parent := LUnidadCan00.Parent;
+     // LUnidad12.Left := LUnidadCan00.Left; LUnidad12.Top := TopBase + DeltaY*4;
+     // LUnidad12.AutoSize := False; LUnidad12.Width := LUnidadCan00.Width; LUnidad12.Height := LUnidadCan00.Height;
+     // LUnidad12.Alignment := taCenter; LUnidad12.Font := LUnidadCan00.Font;
 
      LDescripcion12 := TLabel.Create(Self); LDescripcion12.Parent := LDescripcion00.Parent;
      LDescripcion12.Left := LDescripcion00.Left; LDescripcion12.Top := TopBase + DeltaY*4;
@@ -1698,16 +1841,17 @@ begin
 
      sbComentario12.Width := sbComentario00.Width; sbComentario12.Height := sbComentario00.Height; sbComentario12.Flat := sbComentario00.Flat;
 
-     // Canal 13
-     LValor13 := TLabel.Create(Self); LValor13.Parent := LValor00.Parent;
-     LValor13.Left := LValor00.Left; LValor13.Top := TopBase + DeltaY*5;
-     LValor13.AutoSize := False; LValor13.Width := LValor00.Width; LValor13.Height := LValor00.Height;
-     LValor13.Alignment := taCenter; LValor13.Font := LValor00.Font; LValor13.Color := LValor00.Color; LValor13.Transparent := False;
+     // Canal 13 - COMENTADO: LValorCan08 ya existe en LFM (esto era un bug - asignaba a LValorCan08 en lugar de LValorCan13)
+     // LValorCan08 := TLabel.Create(Self); LValorCan08.Parent := LValorCan00.Parent;
+     // LValorCan08.Left := LValorCan00.Left; LValorCan08.Top := TopBase + DeltaY*5;
+     // LValorCan08.AutoSize := False; LValorCan08.Width := LValorCan00.Width; LValorCan08.Height := LValorCan00.Height;
+     // LValorCan08.Alignment := taCenter; LValorCan08.Font := LValorCan00.Font; LValorCan08.Color := LValorCan00.Color; LValorCan08.Transparent := False;
 
-     LUnidad13 := TLabel.Create(Self); LUnidad13.Parent := LUnidad00.Parent;
-     LUnidad13.Left := LUnidad00.Left; LUnidad13.Top := TopBase + DeltaY*5;
-     LUnidad13.AutoSize := False; LUnidad13.Width := LUnidad00.Width; LUnidad13.Height := LUnidad00.Height;
-     LUnidad13.Alignment := taCenter; LUnidad13.Font := LUnidad00.Font;
+     // COMENTADO: LUnidadCan13 ya existe en LFM
+     // LUnidad13 := TLabel.Create(Self); LUnidad13.Parent := LUnidadCan00.Parent;
+     // LUnidad13.Left := LUnidadCan00.Left; LUnidad13.Top := TopBase + DeltaY*5;
+     // LUnidad13.AutoSize := False; LUnidad13.Width := LUnidadCan00.Width; LUnidad13.Height := LUnidadCan00.Height;
+     // LUnidad13.Alignment := taCenter; LUnidad13.Font := LUnidadCan00.Font;
 
      LDescripcion13 := TLabel.Create(Self); LDescripcion13.Parent := LDescripcion00.Parent;
      LDescripcion13.Left := LDescripcion00.Left; LDescripcion13.Top := TopBase + DeltaY*5;
@@ -1724,16 +1868,17 @@ begin
 
      sbComentario13.Width := sbComentario00.Width; sbComentario13.Height := sbComentario00.Height; sbComentario13.Flat := sbComentario00.Flat;
 
-     // Canal 14
-     LValor14 := TLabel.Create(Self); LValor14.Parent := LValor00.Parent;
-     LValor14.Left := LValor00.Left; LValor14.Top := TopBase + DeltaY*6;
-     LValor14.AutoSize := False; LValor14.Width := LValor00.Width; LValor14.Height := LValor00.Height;
-     LValor14.Alignment := taCenter; LValor14.Font := LValor00.Font; LValor14.Color := LValor00.Color; LValor14.Transparent := False;
+     // Canal 14 - COMENTADO: LValorCan09 ya existe en LFM (esto era un bug - asignaba a LValorCan09 en lugar de LValorCan14)
+     // LValorCan09 := TLabel.Create(Self); LValorCan09.Parent := LValorCan00.Parent;
+     // LValorCan09.Left := LValorCan00.Left; LValorCan09.Top := TopBase + DeltaY*6;
+     // LValorCan09.AutoSize := False; LValorCan09.Width := LValorCan00.Width; LValorCan09.Height := LValorCan00.Height;
+     // LValorCan09.Alignment := taCenter; LValorCan09.Font := LValorCan00.Font; LValorCan09.Color := LValorCan00.Color; LValorCan09.Transparent := False;
 
-     LUnidad14 := TLabel.Create(Self); LUnidad14.Parent := LUnidad00.Parent;
-     LUnidad14.Left := LUnidad00.Left; LUnidad14.Top := TopBase + DeltaY*6;
-     LUnidad14.AutoSize := False; LUnidad14.Width := LUnidad00.Width; LUnidad14.Height := LUnidad00.Height;
-     LUnidad14.Alignment := taCenter; LUnidad14.Font := LUnidad00.Font;
+     // COMENTADO: LUnidadCan14 ya existe en LFM
+     // LUnidad14 := TLabel.Create(Self); LUnidad14.Parent := LUnidadCan00.Parent;
+     // LUnidad14.Left := LUnidadCan00.Left; LUnidad14.Top := TopBase + DeltaY*6;
+     // LUnidad14.AutoSize := False; LUnidad14.Width := LUnidadCan00.Width; LUnidad14.Height := LUnidadCan00.Height;
+     // LUnidad14.Alignment := taCenter; LUnidad14.Font := LUnidadCan00.Font;
 
      LDescripcion14 := TLabel.Create(Self); LDescripcion14.Parent := LDescripcion00.Parent;
      LDescripcion14.Left := LDescripcion00.Left; LDescripcion14.Top := TopBase + DeltaY*6;
@@ -1750,16 +1895,17 @@ begin
 
      sbComentario14.Width := sbComentario00.Width; sbComentario14.Height := sbComentario00.Height; sbComentario14.Flat := sbComentario00.Flat;
 
-     // Canal 15
-     LValor15 := TLabel.Create(Self); LValor15.Parent := LValor00.Parent;
-     LValor15.Left := LValor00.Left; LValor15.Top := TopBase + DeltaY*7;
-     LValor15.AutoSize := False; LValor15.Width := LValor00.Width; LValor15.Height := LValor00.Height;
-     LValor15.Alignment := taCenter; LValor15.Font := LValor00.Font; LValor15.Color := LValor00.Color; LValor15.Transparent := False;
+     // Canal 15 - COMENTADO: LValorCan10 ya existe en LFM con GroupBoxCan14 como Parent
+     // LValorCan10 := TLabel.Create(Self); LValorCan10.Parent := LValorCan00.Parent;
+     // LValorCan10.Left := LValorCan00.Left; LValorCan10.Top := TopBase + DeltaY*7;
+     // LValorCan10.AutoSize := False; LValorCan10.Width := LValorCan00.Width; LValorCan10.Height := LValorCan00.Height;
+     // LValorCan10.Alignment := taCenter; LValorCan10.Font := LValorCan00.Font; LValorCan10.Color := LValorCan00.Color; LValorCan10.Transparent := False;
 
-     LUnidad15 := TLabel.Create(Self); LUnidad15.Parent := LUnidad00.Parent;
-     LUnidad15.Left := LUnidad00.Left; LUnidad15.Top := TopBase + DeltaY*7;
-     LUnidad15.AutoSize := False; LUnidad15.Width := LUnidad00.Width; LUnidad15.Height := LUnidad00.Height;
-     LUnidad15.Alignment := taCenter; LUnidad15.Font := LUnidad00.Font;
+     // COMENTADO: LUnidadCan15 ya existe en LFM
+     // LUnidad15 := TLabel.Create(Self); LUnidad15.Parent := LUnidadCan00.Parent;
+     // LUnidad15.Left := LUnidadCan00.Left; LUnidad15.Top := TopBase + DeltaY*7;
+     // LUnidad15.AutoSize := False; LUnidad15.Width := LUnidadCan00.Width; LUnidad15.Height := LUnidadCan00.Height;
+     // LUnidad15.Alignment := taCenter; LUnidad15.Font := LUnidadCan00.Font;
 
      LDescripcion15 := TLabel.Create(Self); LDescripcion15.Parent := LDescripcion00.Parent;
      LDescripcion15.Left := LDescripcion00.Left; LDescripcion15.Top := TopBase + DeltaY*7;
@@ -1785,7 +1931,10 @@ begin
      LConfig14.Visible := False; LDescConfig14.Visible := False;
      LConfig15.Visible := False; LDescConfig15.Visible := False;
      
-     LValor15.Visible := False; LUnidad15.Visible := False; LDescripcion15.Visible := False; sbGrafico15.Visible := False; sbComentario15.Visible := False; LNombreCanal15.Visible := False;
+     // COMENTADO: Ya no creamos LValorCan10 dinámicamente, no ocultarlo aquí
+     // LValorCan10.Visible := False; 
+     // COMENTADO: LUnidad15 ya no existe, usa LUnidadCan15 desde LFM
+     // LUnidad15.Visible := False; LDescripcion15.Visible := False; sbGrafico15.Visible := False; sbComentario15.Visible := False; LNombreCanal15.Visible := False;
      // Hide new LFM labels by default
      LNombreCanal09.Visible := False; LNombreCanal10.Visible := False; LNombreCanal11.Visible := False;
      LNombreCanal12.Visible := False; LNombreCanal13.Visible := False; LNombreCanal14.Visible := False;
@@ -1810,6 +1959,11 @@ begin
 
   if N>0 then result := auxText
   else result := texto;
+end;
+
+procedure TFprincipal.ToolButton4Click(Sender: TObject);
+begin
+
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2986,37 +3140,64 @@ begin
   if Assigned(LConfig14) then LConfig14.Visible := Es16Canales; if Assigned(LDescConfig14) then LDescConfig14.Visible := Es16Canales;
   if Assigned(LConfig15) then LConfig15.Visible := Es16Canales; if Assigned(LDescConfig15) then LDescConfig15.Visible := Es16Canales;
 
-  // Visualizacion (Valores, Unidades, Descripciones, Graficos, Comentarios, Nombres)
-  if Assigned(LValor09) then LValor09.Visible := Es16Canales; if Assigned(LUnidad09) then LUnidad09.Visible := Es16Canales; if Assigned(LDescripcion09) then LDescripcion09.Visible := Es16Canales;
-  if Assigned(sbGrafico09) then sbGrafico09.Visible := Es16Canales; if Assigned(sbComentario09) then sbComentario09.Visible := Es16Canales; if Assigned(LNombreCanal09) then LNombreCanal09.Visible := Es16Canales;
-
-  if Assigned(LValor10) then LValor10.Visible := Es16Canales; if Assigned(LUnidad10) then LUnidad10.Visible := Es16Canales; if Assigned(LDescripcion10) then LDescripcion10.Visible := Es16Canales;
-  if Assigned(sbGrafico10) then sbGrafico10.Visible := Es16Canales; if Assigned(sbComentario10) then sbComentario10.Visible := Es16Canales; if Assigned(LNombreCanal10) then LNombreCanal10.Visible := Es16Canales;
-
-  if Assigned(LValor11) then LValor11.Visible := Es16Canales; if Assigned(LUnidad11) then LUnidad11.Visible := Es16Canales; if Assigned(LDescripcion11) then LDescripcion11.Visible := Es16Canales;
-  if Assigned(sbGrafico11) then sbGrafico11.Visible := Es16Canales; if Assigned(sbComentario11) then sbComentario11.Visible := Es16Canales; if Assigned(LNombreCanal11) then LNombreCanal11.Visible := Es16Canales;
-
-  if Assigned(LValor12) then LValor12.Visible := Es16Canales; if Assigned(LUnidad12) then LUnidad12.Visible := Es16Canales; if Assigned(LDescripcion12) then LDescripcion12.Visible := Es16Canales;
-  if Assigned(sbGrafico12) then sbGrafico12.Visible := Es16Canales; if Assigned(sbComentario12) then sbComentario12.Visible := Es16Canales; if Assigned(LNombreCanal12) then LNombreCanal12.Visible := Es16Canales;
-
-  if Assigned(LValor13) then LValor13.Visible := Es16Canales; if Assigned(LUnidad13) then LUnidad13.Visible := Es16Canales; if Assigned(LDescripcion13) then LDescripcion13.Visible := Es16Canales;
-  if Assigned(sbGrafico13) then sbGrafico13.Visible := Es16Canales; if Assigned(sbComentario13) then sbComentario13.Visible := Es16Canales; if Assigned(LNombreCanal13) then LNombreCanal13.Visible := Es16Canales;
-
-  if Assigned(LValor14) then LValor14.Visible := Es16Canales; if Assigned(LUnidad14) then LUnidad14.Visible := Es16Canales; if Assigned(LDescripcion14) then LDescripcion14.Visible := Es16Canales;
-  if Assigned(sbGrafico14) then sbGrafico14.Visible := Es16Canales; if Assigned(sbComentario14) then sbComentario14.Visible := Es16Canales; if Assigned(LNombreCanal14) then LNombreCanal14.Visible := Es16Canales;
-
-  if Assigned(LValor15) then LValor15.Visible := Es16Canales; if Assigned(LUnidad15) then LUnidad15.Visible := Es16Canales; if Assigned(LDescripcion15) then LDescripcion15.Visible := Es16Canales;
-  if Assigned(sbGrafico15) then sbGrafico15.Visible := Es16Canales; if Assigned(sbComentario15) then sbComentario15.Visible := Es16Canales; if Assigned(LNombreCanal15) then LNombreCanal15.Visible := Es16Canales;
+  // Visualizacion (Valores, Unidades, Descripciones) para Canales 8-15 (Expansion 1)
+  // NOTA: En Expansion 1, LDescripcionX y LUnidadX (1-8) corresponden a canales 8-15
+  // Canal 8
+  if Assigned(LValorCan08) then LValorCan08.Visible := Es16Canales;
+  if Assigned(LUnidadCan08) then LUnidadCan08.Visible := Es16Canales;
+  if Assigned(LDescripcion1) then LDescripcion1.Visible := Es16Canales;
+  if Assigned(LNombreCanal09) then LNombreCanal09.Visible := Es16Canales;
   
-  // Controlar la visibilidad del contenedor de los canales adicionales (GroupBox9)
-  if GroupBox9 <> nil then
-     GroupBox9.Visible := Es16Canales;
+  // Canal 9
+  if Assigned(LValorCan09) then LValorCan09.Visible := Es16Canales;
+  if Assigned(LUnidadCan09) then LUnidadCan09.Visible := Es16Canales;
+  if Assigned(LDescripcion2) then LDescripcion2.Visible := Es16Canales;
+  if Assigned(LNombreCanal10) then LNombreCanal10.Visible := Es16Canales;
+  
+  // Canal 10
+  if Assigned(LValorCan10) then LValorCan10.Visible := Es16Canales;
+  if Assigned(LUnidadCan10) then LUnidadCan10.Visible := Es16Canales;
+  if Assigned(LDescripcion3) then LDescripcion3.Visible := Es16Canales;
+  if Assigned(LNombreCanal11) then LNombreCanal11.Visible := Es16Canales;
+  
+  // Canal 11
+  if Assigned(LValorCan11) then LValorCan11.Visible := Es16Canales;
+  if Assigned(LUnidadCan11) then LUnidadCan11.Visible := Es16Canales;
+  if Assigned(LDescripcion4) then LDescripcion4.Visible := Es16Canales;
+  if Assigned(LNombreCanal12) then LNombreCanal12.Visible := Es16Canales;
+  
+  // Canal 12
+  if Assigned(LValorCan12) then LValorCan12.Visible := Es16Canales;
+  if Assigned(LUnidadCan12) then LUnidadCan12.Visible := Es16Canales;
+  if Assigned(LDescripcion5) then LDescripcion5.Visible := Es16Canales;
+  if Assigned(LNombreCanal13) then LNombreCanal13.Visible := Es16Canales;
+  
+  // Canal 13
+  if Assigned(LValorCan13) then LValorCan13.Visible := Es16Canales;
+  if Assigned(LUnidadCan13) then LUnidadCan13.Visible := Es16Canales;
+  if Assigned(LDescripcion6) then LDescripcion6.Visible := Es16Canales;
+  if Assigned(LNombreCanal14) then LNombreCanal14.Visible := Es16Canales;
+  
+  // Canal 14
+  if Assigned(LValorCan14) then LValorCan14.Visible := Es16Canales;
+  if Assigned(LUnidadCan14) then LUnidadCan14.Visible := Es16Canales;
+  if Assigned(LDescripcion7) then LDescripcion7.Visible := Es16Canales;
+  if Assigned(LNombreCanal15) then LNombreCanal15.Visible := Es16Canales;
+  
+  // Canal 15
+  if Assigned(LValorCan15) then LValorCan15.Visible := Es16Canales;
+  if Assigned(LUnidadCan15) then LUnidadCan15.Visible := Es16Canales;
+  if Assigned(LDescripcion8) then LDescripcion8.Visible := Es16Canales;
+  
+  // Controlar la visibilidad del contenedor de los canales adicionales (GroupBoxCan14)
+  if GroupBoxCan14 <> nil then
+     GroupBoxCan14.Visible := Es16Canales;
 
   // Ajustar la posición de GroupBox8
   if GroupBox8 <> nil then begin
      if Es16Canales then begin
-        if GroupBox9 <> nil then
-           GroupBox8.Top := GroupBox9.Top + GroupBox9.Height + 50;
+        if GroupBoxCan14 <> nil then
+           GroupBox8.Top := GroupBoxCan14.Top + GroupBoxCan14.Height + 50;
      end else begin
         if GroupBox6 <> nil then
            GroupBox8.Top := GroupBox6.Top + GroupBox6.Height + 50;
@@ -3027,7 +3208,7 @@ begin
   // tsMon siempre visible (8 canales base)
   tsMon.TabVisible := True;
 
-  // tsExp0 visible si 16 o más (nota: coincide con GroupBox9)
+  // tsExp0 visible si 16 o más (nota: coincide con GroupBoxCan14)
   tsExp0.TabVisible := (CantidadCanales >= 16);
 
   // tsExp1 visible si 24 o más
@@ -3051,6 +3232,9 @@ begin
         tsMon.PageControl.ActivePage := tsMon;
   end;
 end;
+
+
+
 
 
 

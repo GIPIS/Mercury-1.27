@@ -1,18 +1,18 @@
 object Fprincipal: TFprincipal
-  Left = 721
-  Height = 695
-  Top = 43
+  Left = 967
+  Height = 672
+  Top = 101
   Width = 630
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'EMAC MERCURY v1.27 (rev 20240621) '
-  ClientHeight = 695
+  ClientHeight = 672
   ClientWidth = 630
   Color = clBtnFace
   DesignTimePPI = 120
   Font.CharSet = ANSI_CHARSET
   Font.Color = clWindowText
-  Font.Height = -216
+  Font.Height = -3154
   Font.Name = 'Tahoma'
   Menu = MenuPrincipal
   Position = poScreenCenter
@@ -25,7 +25,7 @@ object Fprincipal: TFprincipal
   object StatusBar: TStatusBar
     Left = 0
     Height = 29
-    Top = 666
+    Top = 643
     Width = 630
     Panels = <    
       item
@@ -149,6 +149,7 @@ object Fprincipal: TFprincipal
         Caption = 'ToolButton4'
         ImageIndex = 6
         Style = tbsSeparator
+        OnClick = ToolButton4Click
       end
       object ToolButton3: TToolButton
         Left = 259
@@ -205,7 +206,7 @@ object Fprincipal: TFprincipal
   end
   object PageControl: TPageControl
     Left = 0
-    Height = 620
+    Height = 597
     Top = 46
     Width = 630
     ActivePage = tsMonitoreo
@@ -226,7 +227,7 @@ object Fprincipal: TFprincipal
     OnChanging = PageControlChanging
     object tsMonitoreo: TTabSheet
       Caption = 'Monitoreo'
-      ClientHeight = 594
+      ClientHeight = 571
       ClientWidth = 622
       Font.CharSet = ANSI_CHARSET
       Font.Color = clWindowText
@@ -368,25 +369,25 @@ object Fprincipal: TFprincipal
       end
       object ScrollBox: TScrollBox
         Left = 0
-        Height = 514
+        Height = 491
         Top = 80
         Width = 622
         HorzScrollBar.Page = 1
         HorzScrollBar.Visible = False
-        VertScrollBar.Increment = 45
-        VertScrollBar.Page = 450
+        VertScrollBar.Increment = 30
+        VertScrollBar.Page = 304
         VertScrollBar.Smooth = True
         VertScrollBar.Tracking = True
         Align = alClient
         BorderStyle = bsNone
-        ClientHeight = 514
+        ClientHeight = 491
         ClientWidth = 622
         ParentBackground = False
         TabOrder = 1
         object GroupBox8: TGroupBox
-          Left = 18
+          Left = -8
           Height = 160
-          Top = 290
+          Top = 80
           Width = 593
           Caption = ' Parámetros Cálculados '
           ClientHeight = 142
@@ -994,7 +995,7 @@ object Fprincipal: TFprincipal
         object ScrollBox1: TScrollBox
           Left = 0
           Height = 32
-          Top = 482
+          Top = 459
           Width = 622
           HorzScrollBar.Page = 1
           HorzScrollBar.Visible = False
@@ -1632,7 +1633,7 @@ object Fprincipal: TFprincipal
             ParentBackground = False
             ParentFont = False
             TabOrder = 1
-            OnClick = GroupBox9Click
+            OnClick = GroupBoxCan14Click
             object LValor16: TLabel
               Tag = 8
               Left = 344
@@ -3406,12 +3407,12 @@ object Fprincipal: TFprincipal
           end
         end
         object PageControl1: TPageControl
-          Left = 0
+          Left = 8
           Height = 280
-          Top = 0
+          Top = 24
           Width = 610
-          ActivePage = tsExp2
-          TabIndex = 3
+          ActivePage = tsExp0
+          TabIndex = 1
           TabOrder = 2
           object tsMon: TTabSheet
             Caption = 'Monitoreo '
@@ -3433,11 +3434,12 @@ object Fprincipal: TFprincipal
               ParentBackground = False
               ParentFont = False
               TabOrder = 0
-              object LValor08: TLabel
+              OnClick = GroupBox6Click
+              object LValorCanDig00: TLabel
                 Tag = 8
                 Left = 344
                 Height = 20
-                Top = 214
+                Top = 213
                 Width = 100
                 Alignment = taCenter
                 AutoSize = False
@@ -3450,7 +3452,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor07: TLabel
+              object LValorCan07: TLabel
                 Tag = 7
                 Left = 344
                 Height = 20
@@ -3467,7 +3469,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor06: TLabel
+              object LValorCan06: TLabel
                 Tag = 6
                 Left = 344
                 Height = 20
@@ -3484,7 +3486,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor05: TLabel
+              object LValorCan05: TLabel
                 Tag = 5
                 Left = 344
                 Height = 20
@@ -3515,7 +3517,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad00: TLabel
+              object LUnidadCan00: TLabel
                 Left = 456
                 Height = 16
                 Top = 24
@@ -3570,7 +3572,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad01: TLabel
+              object LUnidadCan01: TLabel
                 Tag = 1
                 Left = 456
                 Height = 16
@@ -3613,7 +3615,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad02: TLabel
+              object LUnidadCan02: TLabel
                 Tag = 2
                 Left = 456
                 Height = 16
@@ -3656,7 +3658,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad03: TLabel
+              object LUnidadCan03: TLabel
                 Tag = 3
                 Left = 456
                 Height = 16
@@ -3699,7 +3701,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad04: TLabel
+              object LUnidadCan04: TLabel
                 Tag = 4
                 Left = 456
                 Height = 16
@@ -3742,7 +3744,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad05: TLabel
+              object LUnidadCan05: TLabel
                 Tag = 5
                 Left = 456
                 Height = 16
@@ -3757,7 +3759,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad06: TLabel
+              object LUnidadCan06: TLabel
                 Tag = 6
                 Left = 456
                 Height = 16
@@ -3856,7 +3858,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad08: TLabel
+              object LUnidadDigCan00: TLabel
                 Tag = 8
                 Left = 456
                 Height = 16
@@ -3871,7 +3873,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad07: TLabel
+              object LUnidadCan07: TLabel
                 Tag = 7
                 Left = 456
                 Height = 16
@@ -4865,10 +4867,10 @@ object Fprincipal: TFprincipal
                 ParentShowHint = False
                 OnClick = sbComentarioClick
               end
-              object LValor00: TLabel
-                Left = 344
+              object LValorCan00: TLabel
+                Left = 343
                 Height = 20
-                Top = 22
+                Top = 24
                 Width = 100
                 Alignment = taCenter
                 AutoSize = False
@@ -4880,17 +4882,18 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentColor = False
                 ParentFont = False
+                OnClick = LValorCan00Click
               end
               object Bevel3: TBevel
-                Left = 344
+                Left = 384
                 Height = 21
-                Top = 22
+                Top = 248
                 Width = 101
                 Shape = bsFrame
               end
-              object LValor01: TLabel
+              object LValorCan01: TLabel
                 Tag = 1
-                Left = 344
+                Left = 343
                 Height = 20
                 Top = 46
                 Width = 100
@@ -4905,7 +4908,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor02: TLabel
+              object LValorCan02: TLabel
                 Tag = 2
                 Left = 344
                 Height = 20
@@ -4922,7 +4925,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor03: TLabel
+              object LValorCan03: TLabel
                 Tag = 3
                 Left = 344
                 Height = 20
@@ -4939,7 +4942,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor04: TLabel
+              object LValorCan04: TLabel
                 Tag = 4
                 Left = 344
                 Height = 20
@@ -4957,58 +4960,58 @@ object Fprincipal: TFprincipal
                 ParentFont = False
               end
               object Bevel4: TBevel
-                Left = 344
-                Height = 21
-                Top = 46
+                Left = 343
+                Height = 24
+                Top = 48
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel5: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 70
+                Top = 72
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel6: TBevel
-                Left = 344
+                Left = 384
                 Height = 21
-                Top = 94
+                Top = 248
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel7: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 118
+                Top = 117
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel8: TBevel
                 Left = 344
                 Height = 21
-                Top = 142
+                Top = 141
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel9: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 166
+                Top = 165
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel10: TBevel
                 Left = 344
                 Height = 21
-                Top = 190
+                Top = 189
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel11: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 214
+                Top = 216
                 Width = 101
                 Shape = bsFrame
               end
@@ -5142,66 +5145,87 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel30: TBevel
-                Left = 454
+                Left = 464
                 Height = 21
-                Top = 214
+                Top = 256
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel31: TBevel
-                Left = 454
+                Left = 464
                 Height = 21
-                Top = 190
+                Top = -8
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel32: TBevel
-                Left = 454
+                Left = 448
                 Height = 21
-                Top = 166
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel33: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = 142
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel34: TBevel
-                Left = 454
+                Left = 440
                 Height = 21
-                Top = 118
+                Top = -24
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel35: TBevel
                 Left = 454
                 Height = 21
-                Top = 94
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel36: TBevel
-                Left = 454
+                Left = 440
                 Height = 21
-                Top = 70
+                Top = -24
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel37: TBevel
-                Left = 454
+                Left = 456
                 Height = 21
-                Top = 46
+                Top = -24
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel38: TBevel
                 Left = 454
                 Height = 21
-                Top = 22
+                Top = -8
                 Width = 63
+                Shape = bsFrame
+              end
+              object Bevel228: TBevel
+                Left = 416
+                Height = 21
+                Top = 280
+                Width = 101
+                Shape = bsFrame
+              end
+              object Bevel229: TBevel
+                Left = 343
+                Height = 21
+                Top = 96
+                Width = 101
+                Shape = bsFrame
+              end
+              object Bevel235: TBevel
+                Left = 344
+                Height = 21
+                Top = 24
+                Width = 101
                 Shape = bsFrame
               end
             end
@@ -5210,7 +5234,7 @@ object Fprincipal: TFprincipal
             Caption = 'Expansion 1'
             ClientHeight = 254
             ClientWidth = 602
-            object GroupBox9: TGroupBox
+            object GroupBoxCan14: TGroupBox
               Left = 0
               Height = 255
               Top = 0
@@ -5226,58 +5250,7 @@ object Fprincipal: TFprincipal
               ParentBackground = False
               ParentFont = False
               TabOrder = 0
-              OnClick = GroupBox9Click
-              object LValor10: TLabel
-                Tag = 7
-                Left = 344
-                Height = 20
-                Top = 190
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
-              end
-              object LValor11: TLabel
-                Tag = 6
-                Left = 344
-                Height = 20
-                Top = 166
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
-              end
-              object LValor12: TLabel
-                Tag = 5
-                Left = 344
-                Height = 20
-                Top = 142
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
-              end
+              OnClick = GroupBoxCan14Click
               object LDescripcion1: TLabel
                 Left = 122
                 Height = 16
@@ -5292,7 +5265,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad1: TLabel
+              object LUnidadCan08: TLabel
                 Left = 456
                 Height = 16
                 Top = 24
@@ -5347,7 +5320,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad2: TLabel
+              object LUnidadCan09: TLabel
                 Tag = 1
                 Left = 456
                 Height = 16
@@ -5390,7 +5363,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad3: TLabel
+              object LUnidadCan10: TLabel
                 Tag = 2
                 Left = 456
                 Height = 16
@@ -5433,9 +5406,9 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad4: TLabel
+              object LUnidadCan11: TLabel
                 Tag = 3
-                Left = 456
+                Left = 459
                 Height = 16
                 Top = 96
                 Width = 60
@@ -5476,7 +5449,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad5: TLabel
+              object LUnidadCan12: TLabel
                 Tag = 4
                 Left = 456
                 Height = 16
@@ -5519,7 +5492,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad6: TLabel
+              object LUnidadCan13: TLabel
                 Tag = 5
                 Left = 456
                 Height = 16
@@ -5534,7 +5507,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad7: TLabel
+              object LUnidadCan14: TLabel
                 Tag = 6
                 Left = 456
                 Height = 16
@@ -5605,7 +5578,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad8: TLabel
+              object LUnidadCan15: TLabel
                 Tag = 7
                 Left = 456
                 Height = 16
@@ -6490,143 +6463,61 @@ object Fprincipal: TFprincipal
                 ParentShowHint = False
                 OnClick = sbComentarioClick
               end
-              object LValor13: TLabel
-                Left = 344
-                Height = 20
-                Top = 22
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
-              end
               object Bevel75: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 22
+                Top = 165
                 Width = 101
                 Shape = bsFrame
-              end
-              object LValor14: TLabel
-                Tag = 1
-                Left = 344
-                Height = 20
-                Top = 46
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
-              end
-              object LValor15: TLabel
-                Tag = 2
-                Left = 344
-                Height = 20
-                Top = 70
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
-              end
-              object LValor4: TLabel
-                Tag = 3
-                Left = 344
-                Height = 20
-                Top = 94
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
-              end
-              object LValor5: TLabel
-                Tag = 4
-                Left = 344
-                Height = 20
-                Top = 118
-                Width = 100
-                Alignment = taCenter
-                AutoSize = False
-                Color = 10939374
-                Font.CharSet = ANSI_CHARSET
-                Font.Color = clBlack
-                Font.Height = -13
-                Font.Name = 'Tahoma'
-                Font.Style = [fsBold]
-                ParentColor = False
-                ParentFont = False
               end
               object Bevel76: TBevel
-                Left = 344
-                Height = 21
-                Top = 46
+                Left = 360
+                Height = 101
+                Top = 240
                 Width = 101
                 Shape = bsFrame
+                OnChangeBounds = Bevel76ChangeBounds
               end
               object Bevel77: TBevel
                 Left = 344
                 Height = 21
-                Top = 70
+                Top = 187
                 Width = 101
                 Shape = bsFrame
+                OnChangeBounds = Bevel77ChangeBounds
               end
               object Bevel78: TBevel
                 Left = 344
                 Height = 21
-                Top = 94
+                Top = 144
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel79: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 118
+                Top = 45
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel80: TBevel
                 Left = 344
                 Height = 21
-                Top = 142
+                Top = 96
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel84: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 166
+                Top = 72
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel85: TBevel
-                Left = 344
+                Left = 368
                 Height = 21
-                Top = 190
+                Top = 240
                 Width = 101
                 Shape = bsFrame
               end
@@ -6685,6 +6576,7 @@ object Fprincipal: TFprincipal
                 Top = 22
                 Width = 216
                 Shape = bsFrame
+                OnChangeBounds = Bevel95ChangeBounds
               end
               object Bevel97: TBevel
                 Left = 20
@@ -6745,59 +6637,220 @@ object Fprincipal: TFprincipal
                 OnChangeBounds = Bevel107ChangeBounds
               end
               object Bevel109: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = 190
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel110: TBevel
-                Left = 454
+                Left = 448
                 Height = 21
-                Top = 166
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel111: TBevel
-                Left = 454
+                Left = 456
                 Height = 21
-                Top = 142
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel112: TBevel
-                Left = 454
+                Left = 464
                 Height = 21
-                Top = 118
+                Top = -8
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel113: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = 94
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel114: TBevel
                 Left = 454
                 Height = 21
-                Top = 70
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel115: TBevel
-                Left = 454
+                Left = 464
                 Height = 21
-                Top = 46
+                Top = -8
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel116: TBevel
-                Left = 454
+                Left = 456
                 Height = 21
-                Top = 22
+                Top = -8
                 Width = 63
+                Shape = bsFrame
+              end
+              object LValorCan08: TLabel
+                Left = 344
+                Height = 20
+                Top = 22
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+                OnClick = LValorCan08Click
+              end
+              object LValorCan09: TLabel
+                Tag = 1
+                Left = 344
+                Height = 20
+                Top = 46
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+                OnClick = LValorCan09Click
+              end
+              object LValorCan10: TLabel
+                Tag = 2
+                Left = 344
+                Height = 20
+                Top = 70
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+                OnClick = LValorCan10Click
+              end
+              object LValorCan11: TLabel
+                Tag = 3
+                Left = 344
+                Height = 20
+                Top = 94
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+              end
+              object LValorCan12: TLabel
+                Tag = 4
+                Left = 344
+                Height = 20
+                Top = 118
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+              end
+              object LValorCan14: TLabel
+                Tag = 6
+                Left = 344
+                Height = 20
+                Top = 166
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+              end
+              object LValorCan15: TLabel
+                Tag = 7
+                Left = 344
+                Height = 20
+                Top = 190
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+              end
+              object Bevel230: TBevel
+                Left = 343
+                Height = 21
+                Top = 117
+                Width = 101
+                Shape = bsFrame
+              end
+              object LValorCan13: TLabel
+                Tag = 5
+                Left = 344
+                Height = 20
+                Top = 142
+                Width = 100
+                Alignment = taCenter
+                AutoSize = False
+                Caption = 'prueba'
+                Color = 10939374
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = clBlack
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentColor = False
+                ParentFont = False
+                OnClick = LValorCan13Click
+              end
+              object Bevel231: TBevel
+                Left = 344
+                Height = 21
+                Top = 21
+                Width = 101
                 Shape = bsFrame
               end
             end
@@ -6822,8 +6875,8 @@ object Fprincipal: TFprincipal
               ParentBackground = False
               ParentFont = False
               TabOrder = 0
-              OnClick = GroupBox9Click
-              object LValor23: TLabel
+              OnClick = GroupBoxCan14Click
+              object LValorCan23: TLabel
                 Tag = 7
                 Left = 344
                 Height = 20
@@ -6840,7 +6893,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor24: TLabel
+              object LValorCan22: TLabel
                 Tag = 6
                 Left = 344
                 Height = 20
@@ -6857,7 +6910,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor25: TLabel
+              object LValorCan21: TLabel
                 Tag = 5
                 Left = 344
                 Height = 20
@@ -6888,7 +6941,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad9: TLabel
+              object LUnidadCan16: TLabel
                 Left = 456
                 Height = 16
                 Top = 24
@@ -6943,7 +6996,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad19: TLabel
+              object LUnidadCan17: TLabel
                 Tag = 1
                 Left = 456
                 Height = 16
@@ -6986,7 +7039,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad20: TLabel
+              object LUnidadCan18: TLabel
                 Tag = 2
                 Left = 456
                 Height = 16
@@ -7029,7 +7082,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad21: TLabel
+              object LUnidadCan19: TLabel
                 Tag = 3
                 Left = 456
                 Height = 16
@@ -7072,7 +7125,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad22: TLabel
+              object LUnidadCan20: TLabel
                 Tag = 4
                 Left = 456
                 Height = 16
@@ -7115,7 +7168,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad23: TLabel
+              object LUnidadCan21: TLabel
                 Tag = 5
                 Left = 456
                 Height = 16
@@ -7130,7 +7183,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad24: TLabel
+              object LUnidadCan22: TLabel
                 Tag = 6
                 Left = 456
                 Height = 16
@@ -7201,7 +7254,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad25: TLabel
+              object LUnidadCan23: TLabel
                 Tag = 7
                 Left = 456
                 Height = 16
@@ -8086,7 +8139,7 @@ object Fprincipal: TFprincipal
                 ParentShowHint = False
                 OnClick = sbComentarioClick
               end
-              object LValor26: TLabel
+              object LValorCan16: TLabel
                 Left = 344
                 Height = 20
                 Top = 22
@@ -8103,13 +8156,13 @@ object Fprincipal: TFprincipal
                 ParentFont = False
               end
               object Bevel86: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 22
+                Top = 48
                 Width = 101
                 Shape = bsFrame
               end
-              object LValor27: TLabel
+              object LValorCan17: TLabel
                 Tag = 1
                 Left = 344
                 Height = 20
@@ -8126,7 +8179,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor28: TLabel
+              object LValorCan18: TLabel
                 Tag = 2
                 Left = 344
                 Height = 20
@@ -8143,7 +8196,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor8: TLabel
+              object LValorCan19: TLabel
                 Tag = 3
                 Left = 344
                 Height = 20
@@ -8160,7 +8213,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor9: TLabel
+              object LValorCan20: TLabel
                 Tag = 4
                 Left = 344
                 Height = 20
@@ -8178,16 +8231,16 @@ object Fprincipal: TFprincipal
                 ParentFont = False
               end
               object Bevel87: TBevel
-                Left = 344
+                Left = 336
                 Height = 21
-                Top = 46
+                Top = 240
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel96: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 70
+                Top = 69
                 Width = 101
                 Shape = bsFrame
               end
@@ -8199,30 +8252,30 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel168: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 118
+                Top = 168
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel169: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 142
+                Top = 120
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel170: TBevel
-                Left = 344
+                Left = 343
                 Height = 21
-                Top = 166
+                Top = 141
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel171: TBevel
-                Left = 344
+                Left = 472
                 Height = 21
-                Top = 190
+                Top = 256
                 Width = 101
                 Shape = bsFrame
               end
@@ -8341,58 +8394,58 @@ object Fprincipal: TFprincipal
                 OnChangeBounds = Bevel107ChangeBounds
               end
               object Bevel188: TBevel
-                Left = 454
+                Left = 448
                 Height = 21
-                Top = 190
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel189: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = 166
+                Top = -8
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel190: TBevel
-                Left = 454
+                Left = 456
                 Height = 21
-                Top = 142
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel191: TBevel
-                Left = 454
+                Left = 456
                 Height = 21
-                Top = 118
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel192: TBevel
-                Left = 454
+                Left = 464
                 Height = 21
-                Top = 94
+                Top = -40
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel193: TBevel
-                Left = 454
+                Left = 456
                 Height = 21
-                Top = 70
+                Top = -24
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel194: TBevel
                 Left = 454
                 Height = 21
-                Top = 46
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel195: TBevel
-                Left = 454
+                Left = 464
                 Height = 21
-                Top = 22
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
@@ -8418,8 +8471,8 @@ object Fprincipal: TFprincipal
               ParentBackground = False
               ParentFont = False
               TabOrder = 0
-              OnClick = GroupBox9Click
-              object LValor29: TLabel
+              OnClick = GroupBoxCan14Click
+              object LValorCan31: TLabel
                 Tag = 7
                 Left = 344
                 Height = 20
@@ -8436,7 +8489,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor30: TLabel
+              object LValorCan30: TLabel
                 Tag = 6
                 Left = 344
                 Height = 20
@@ -8453,7 +8506,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor31: TLabel
+              object LValorCan29: TLabel
                 Tag = 5
                 Left = 344
                 Height = 20
@@ -8484,7 +8537,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad26: TLabel
+              object LUnidadCan24: TLabel
                 Left = 456
                 Height = 16
                 Top = 24
@@ -8539,7 +8592,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad27: TLabel
+              object LUnidadCan25: TLabel
                 Tag = 1
                 Left = 456
                 Height = 16
@@ -8582,7 +8635,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad28: TLabel
+              object LUnidadCan26: TLabel
                 Tag = 2
                 Left = 456
                 Height = 16
@@ -8625,7 +8678,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad29: TLabel
+              object LUnidadCan27: TLabel
                 Tag = 3
                 Left = 456
                 Height = 16
@@ -8668,7 +8721,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad30: TLabel
+              object LUnidadCan28: TLabel
                 Tag = 4
                 Left = 456
                 Height = 16
@@ -8711,7 +8764,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad31: TLabel
+              object LUnidadCan29: TLabel
                 Tag = 5
                 Left = 456
                 Height = 16
@@ -8726,7 +8779,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad32: TLabel
+              object LUnidadCan30: TLabel
                 Tag = 6
                 Left = 456
                 Height = 16
@@ -8797,7 +8850,7 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
-              object LUnidad33: TLabel
+              object LUnidadCan31: TLabel
                 Tag = 7
                 Left = 456
                 Height = 16
@@ -9682,10 +9735,10 @@ object Fprincipal: TFprincipal
                 ParentShowHint = False
                 OnClick = sbComentarioClick
               end
-              object LValor32: TLabel
-                Left = 344
+              object LValorCan24: TLabel
+                Left = 343
                 Height = 20
-                Top = 22
+                Top = 92
                 Width = 100
                 Alignment = taCenter
                 AutoSize = False
@@ -9697,17 +9750,18 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentColor = False
                 ParentFont = False
+                OnClick = LValorCan24Click
               end
               object Bevel196: TBevel
                 Left = 344
                 Height = 21
-                Top = 22
+                Top = 24
                 Width = 101
                 Shape = bsFrame
               end
-              object LValor33: TLabel
+              object LValorCan25: TLabel
                 Tag = 1
-                Left = 344
+                Left = 343
                 Height = 20
                 Top = 46
                 Width = 100
@@ -9722,7 +9776,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor34: TLabel
+              object LValorCan26: TLabel
                 Tag = 2
                 Left = 344
                 Height = 20
@@ -9739,11 +9793,11 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor35: TLabel
+              object LValorCan27: TLabel
                 Tag = 3
-                Left = 344
+                Left = 345
                 Height = 20
-                Top = 94
+                Top = 25
                 Width = 100
                 Alignment = taCenter
                 AutoSize = False
@@ -9756,7 +9810,7 @@ object Fprincipal: TFprincipal
                 ParentColor = False
                 ParentFont = False
               end
-              object LValor36: TLabel
+              object LValorCan28: TLabel
                 Tag = 4
                 Left = 344
                 Height = 20
@@ -9776,49 +9830,49 @@ object Fprincipal: TFprincipal
               object Bevel197: TBevel
                 Left = 344
                 Height = 21
-                Top = 46
+                Top = 45
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel198: TBevel
                 Left = 344
                 Height = 21
-                Top = 70
+                Top = 72
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel199: TBevel
-                Left = 344
+                Left = 345
                 Height = 21
-                Top = 94
+                Top = 96
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel200: TBevel
-                Left = 344
+                Left = 345
                 Height = 21
-                Top = 118
+                Top = 120
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel201: TBevel
                 Left = 344
                 Height = 21
-                Top = 142
+                Top = 141
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel202: TBevel
                 Left = 344
                 Height = 21
-                Top = 166
+                Top = 187
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel203: TBevel
                 Left = 344
                 Height = 21
-                Top = 190
+                Top = 165
                 Width = 101
                 Shape = bsFrame
               end
@@ -9937,58 +9991,58 @@ object Fprincipal: TFprincipal
                 OnChangeBounds = Bevel107ChangeBounds
               end
               object Bevel220: TBevel
-                Left = 454
+                Left = 440
                 Height = 21
-                Top = 190
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel221: TBevel
-                Left = 454
+                Left = 440
                 Height = 21
-                Top = 166
+                Top = -8
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel222: TBevel
-                Left = 454
+                Left = 448
                 Height = 21
-                Top = 142
+                Top = 0
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel223: TBevel
-                Left = 454
+                Left = 440
                 Height = 21
-                Top = 118
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel224: TBevel
                 Left = 454
                 Height = 21
-                Top = 94
+                Top = -24
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel225: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = 70
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel226: TBevel
                 Left = 454
                 Height = 21
-                Top = 46
+                Top = -8
                 Width = 63
                 Shape = bsFrame
               end
               object Bevel227: TBevel
-                Left = 454
+                Left = 453
                 Height = 21
-                Top = 22
+                Top = -16
                 Width = 63
                 Shape = bsFrame
               end
@@ -9999,7 +10053,7 @@ object Fprincipal: TFprincipal
     end
     object tsMonitorOnLine: TTabSheet
       Caption = 'Monitoreo en Linea'
-      ClientHeight = 594
+      ClientHeight = 571
       ClientWidth = 622
       ImageIndex = 2
       OnShow = tsMonitorOnLineShow
@@ -12118,7 +12172,7 @@ object Fprincipal: TFprincipal
     end
     object tsConfiguracion: TTabSheet
       Caption = 'Configuración del Equipo'
-      ClientHeight = 594
+      ClientHeight = 571
       ClientWidth = 622
       ImageIndex = 1
       OnShow = tsConfiguracionShow
@@ -12881,12 +12935,12 @@ object Fprincipal: TFprincipal
     end
     object tsInternet: TTabSheet
       Caption = 'Conexión por Internet'
-      ClientHeight = 594
+      ClientHeight = 571
       ClientWidth = 622
       ImageIndex = 3
       object mHistorialInternet: TMemo
         Left = 0
-        Height = 594
+        Height = 571
         Top = 0
         Width = 622
         Align = alClient
@@ -12902,6 +12956,27 @@ object Fprincipal: TFprincipal
         OnChange = mHistorialInternetChange
       end
     end
+  end
+  object Bevel233: TBevel
+    Left = 343
+    Height = 21
+    Top = 72
+    Width = 101
+    Shape = bsFrame
+  end
+  object Bevel234: TBevel
+    Left = 360
+    Height = 21
+    Top = 240
+    Width = 101
+    Shape = bsFrame
+  end
+  object Bevel232: TBevel
+    Left = 343
+    Height = 5
+    Top = 200
+    Width = 101
+    Shape = bsFrame
   end
   object MenuPrincipal: TMainMenu
     Images = DataModule1.ImageList18x18

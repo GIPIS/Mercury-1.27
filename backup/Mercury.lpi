@@ -114,7 +114,9 @@
       <Unit>
         <Filename Value="UConfiguracionInternet.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FConfiguracionInternet"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="UServerSocket.pas"/>
