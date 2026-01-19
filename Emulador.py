@@ -6,8 +6,9 @@ import time
 PORT = 'COM2'
 BAUD = 9600
 NOMBRE_EQUIPO = b'TEST'
-CANALES_CONFIG = [58] * 32  # 16 canales activos (ejemplo: config 58)
-# CANALES_CONFIG = [58] * 16 + [0] * 16 # Si se quisieran 32 con solo 16 activos, pero el usuario pidio "16 canales"
+
+CANTIDAD_BLOQUES = 1
+CANALES_CONFIG = [58,1,2,3,4,5,6,7,8,9] * CANTIDAD_BLOQUES  # 8 analógicos y 2 digitales por bloque
 
 INTERVALO_MUESTREO = 60
 
@@ -21,7 +22,7 @@ def generar_respuesta_CE():
     respuesta = bytearray()
     
     num_canales = len(CANALES_CONFIG)
-    num_bloques = (num_canales + 7) // 8  # Round up to blocks of 8
+    num_bloques = CANTIDAD_BLOQUES
     
     # 1. Datos de Canales por bloques
     for bloque in range(num_bloques):
@@ -50,10 +51,13 @@ def generar_respuesta_CE():
     # 4. Intervalo (2 bytes)
     respuesta.extend(struct.pack('<H', INTERVALO_MUESTREO))
     
+    # 2 bytes por Firmware
+    respuesta.extend(struct.pack('<H', 0))
+
     # 5. Configuración de Canales (1 byte c/u)
     for config in CANALES_CONFIG:
         respuesta.append(config)
-        
+
     # 6. Nombre (4 bytes)
     respuesta.extend(NOMBRE_EQUIPO)
     
@@ -96,8 +100,7 @@ try:
             ser.write(b'CE')
             ser.write(generar_respuesta_CE())
             ser.flush() # Asegura el envío
-            print("Enviado: CE + 50 bytes")
-        
+            print("Enviado: CE + "+str(len(generar_respuesta_CE()))+" bytes")
         elif data == b'L':
             next_byte = ser.read(1)
             if next_byte == b'D':

@@ -1394,7 +1394,7 @@ begin
   end;  
 
   // Cargo la Info del Equipo en pantalla
-  LNombreEquipo.Caption  := Equipo.Nombre + Format(' [NC:%d C8:%d]', [Equipo.NumCanales, Equipo.Canales[8].Config]);
+  LNombreEquipo.Caption  := Equipo.Nombre + Format(' [NC:%d C8:%d]', [Equipo.NumCanales, Equipo.Canales[7].Config]);
   LHoraEquipo.Caption    := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm',Equipo.Hora);
   LNbytesEquipo.Caption  := IntToStr(Equipo.Memoria)+' bytes';
   Gauge.Position         := (Equipo.Memoria*100) div Equipo.CantMemory;
