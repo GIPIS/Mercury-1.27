@@ -629,14 +629,14 @@ begin
   // Data bytes: analog + digital channels
   // Each block has 8 analog (16 bytes) + 2 digital (4 bytes) = 20 bytes per block
   BytesOcupadosData := NumBloques * 20;
-  BytesOcupadosConf := CantCanales * 1;
+  BytesOcupadosConf := CantCanales * 1 + 2 * NumBloques; // 2 digitales por bloque
   
   // Total Frame calculation:
   // Data (BytesOcupadosData) + 
-  // Time (4) + StartTime (4) + Interval (2) + 
+  // Time (4) + StartTime (4) + Interval (2) + Bytes Skipped (2) +
   // Config (BytesOcupadosConf) + 
   // Name (4) + Memory (4)
-  BytesToRead := BytesOcupadosData + 4 + 4 + 2 + BytesOcupadosConf + 4 + 4;
+  BytesToRead := BytesOcupadosData + 4 + 4 + 2 + 2 + BytesOcupadosConf + 4 + 4;
 
   if not PSerie.LeerDelPuertoSerie(auxStr, BytesToRead) then exit;
   
@@ -662,10 +662,10 @@ begin
   end;
 
   // Process each 8-channel block (analog + digital)
-  for NBloque := 0 to NumBloques - 1 do begin
+  for NBloque := 1 to NumBloques do begin
     // Read 8 analog channels for this block
     for NCanal := 0 to 7 do begin
-      IndiceCanalReal := (NBloque * 8) + NCanal;
+      IndiceCanalReal := ((NBloque - 1) * 8) + NCanal;
       
       // Only read if this channel exists in our configuration
       if IndiceCanalReal < CantCanales then begin
@@ -682,8 +682,8 @@ begin
       end;
       inc(i, 2);
     end;
-    
     // Read 2 digital channels for this block (alternatives A and B)
+
     // Digital A (e.g., ch 8 for block 0, ch 16 for block 1...)
     num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
     pvalorDigA[NBloque] := num;
@@ -701,6 +701,7 @@ begin
     except
     end;
     inc(i, 2);
+
   end;
   
   try
@@ -710,7 +711,7 @@ begin
   
   // Safety sync: Data section ends at Start + BytesOcupadosData
   // i started at 1. It should now be 1 + BytesOcupadosData.
-  i := 1 + BytesOcupadosData; 
+  //i := 1 + BytesOcupadosData; 
 
   // 2. Read Time (4 bytes)
   // ... rest of the function ... (Keeping original structure for now)
@@ -718,7 +719,7 @@ begin
   
   // Since original code hardcoded indices (21, 25...), we must update them to be relative to 'i'.
   
-  // Leeo la Hora del Equipo (4 bytes)
+  // Leo la Hora del Equipo (4 bytes)
   numDate := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
              Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215; // Original weird formula
              
@@ -746,12 +747,16 @@ begin
   pTmuestreo^ := (Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255);
   inc(i, 2);
 
+  // Bytes skipped for firmware (2 bytes)
+  inc(i, 2);
+
   // 5. Read Channel Config (10 bytes per block -> 8 bytes config + 2 bytes padding)
   for NCanal := 0 to CantCanales - 1 do begin
       pCH_conf[NCanal]^ := Byte(auxStr[i]);
       inc(i, 1);
       
-      // ELIMINADO If end of block (every 8 channels), skip 2 bytes padding
+      // ACÁ DEBERÍA VER CONFIGURACIÓN DE DIGITALES
+      // If end of block (every 8 channels), skip 2 bytes padding
       //if ((NCanal + 1) mod 8 = 0) then
       //   inc(i, 2);
   end;
@@ -760,9 +765,8 @@ begin
   // Start of Config was at: 1 + BytesOcupadosData + 4 + 4 + 2
   // End of Config is at: Start + BytesOcupadosConf
   // Current i should match that.
-  i := 1 + BytesOcupadosData + 4 + 4 + 2 + BytesOcupadosConf;
+  i := 1 + BytesOcupadosData + 4 + 4 + 2 + 2 + BytesOcupadosConf;
 
-  // 6. Read Equipment Name (4 bytes)
   // 6. Read Equipment Name (4 bytes)
   pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
   
@@ -788,8 +792,9 @@ begin
   // 31..32 (Gap?) Original i=33 for config. 31,32 skipped?
   // 33..42 (Config 10ch)
   // 43..46 (Nombre)
-  // 47..?? (Memoria)
-  
+  // 47..49 (Memoria Ocupada)
+  // 50 (Memoria Total)
+
   // User instruction: "4 bytes para la memoria ocupada".
   // Let's explicitly read 4 bytes for memory.
   // Keeping safe implementation.
