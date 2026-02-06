@@ -10,7 +10,7 @@ uses
   UConexionesRemotas, UConexionAuto, UConfiguracionInternet, Types;
 
 const
-  WM_ICONTRAY = WM_USER + 1;   
+  WM_ICONTRAY = WM_USER + 1;
 
 type
 
@@ -767,7 +767,7 @@ type
     procedure SalirClick(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure ActualizarInfo(Sender: TObject);
-    function  CentrarTexto(texto:string; Ancho:integer):string;
+    function CentrarTexto(texto: string; Ancho: integer): string;
     procedure ToolButton4Click(Sender: TObject);
     procedure tsConfiguracionShow(Sender: TObject);
     procedure cbSensoresCloseUp(Sender: TObject);
@@ -776,8 +776,8 @@ type
     procedure CrearListaSensores;
     procedure mAcercaClick(Sender: TObject);
     procedure mDescargarDatosClick(Sender: TObject);
-    procedure StatusBarDrawPanel(StatusBar: TStatusBar;
-      Panel: TStatusPanel; const Rect: TRect);
+    procedure StatusBarDrawPanel(StatusBar: TStatusBar; Panel: TStatusPanel;
+      const Rect: TRect);
     procedure ActualizarProgreso(Sender: TObject);
     procedure CargarDatosConfig;
     procedure mAutoDescargarDatosClick(Sender: TObject);
@@ -785,13 +785,13 @@ type
     procedure mSalirDescargaClick(Sender: TObject);
     procedure PuertoSerieClick(Sender: TObject);
     procedure mPreferenciasClick(Sender: TObject);
-    procedure tbExpansionClick (Sender:Tobject);
+    procedure tbExpansionClick(Sender: TObject);
 
     procedure TimerCierreTimer(Sender: TObject);
     procedure LimpiarMonitor;
     procedure sbGrabarClick(Sender: TObject);
     procedure tsMonitoreoContextPopup(Sender: TObject; MousePos: TPoint;
-      var Handled: Boolean);
+      var Handled: boolean);
     procedure tsMonitorOnLineShow(Sender: TObject);
     procedure sbDirDatosClick(Sender: TObject);
     procedure MonitoreoEnLinea;
@@ -805,19 +805,19 @@ type
     procedure mConexionesTelefonicasClick(Sender: TObject);
     procedure mConexionAutoClick(Sender: TObject);
     procedure ConexionManualClick(Sender: TObject);
-    procedure ConcectarConRemoto(index : integer;  AutoDesconecDesc, AutoDesconecConf : boolean);
+    procedure ConcectarConRemoto(index: integer;
+      AutoDesconecDesc, AutoDesconecConf: boolean);
     procedure DesconcectarConRemoto;
     procedure mDesconectarClick(Sender: TObject);
     procedure ConexionAutomatica(Sender: TObject);
     procedure ONConexionRemota(Sender: TObject);
     procedure ONDesconexionRemota(Sender: TObject);
     procedure mConfiguracionDeInternetClick(Sender: TObject);
-    procedure PageControlChanging(Sender: TObject;
-      var AllowChange: Boolean);
+    procedure PageControlChanging(Sender: TObject; var AllowChange: boolean);
     procedure PageControlChange(Sender: TObject);
     procedure mHistorialInternetChange(Sender: TObject);
     procedure mBorrarHistorialClick(Sender: TObject);
-    
+
     // Procedimientos para los nuevos canales visuales (09-15)
     procedure sbGrafico09Click(Sender: TObject);
     procedure sbGrafico10Click(Sender: TObject);
@@ -839,37 +839,38 @@ type
     { Private declarations }
   public
     procedure TrayMessage(var Msg: TMessage); message WM_ICONTRAY;
-    procedure ActualizarVisibilidadCanales(CantidadCanales: Integer);
+    procedure ActualizarVisibilidadCanales(CantidadCanales: integer);
     procedure InstanciarComponentesFaltantes;
     { Public declarations }
   end;
 
 var
-  Fprincipal    : TFprincipal;
-  PSerie        : TPuertoSerie;  
-  PorPrimerVez  : boolean;
-  Cerrando      : boolean;
-  Creando       : boolean;
-  ActualizarCHs : boolean;                  // Carga los sensores al Equipo
-  Equipo        : TEquipo;                  // Objeto que realiza toda la intefaze con el equipo fisico
+  Fprincipal: TFprincipal;
+  PSerie: TPuertoSerie;
+  PorPrimerVez: boolean;
+  Cerrando: boolean;
+  Creando: boolean;
+  ActualizarCHs: boolean;                  // Carga los sensores al Equipo
+  Equipo: TEquipo;
+  // Objeto que realiza toda la intefaze con el equipo fisico
   //Server        : TServer;                  // Objeto que administra la conexin por Internet
-  NCanal        : integer;                  // Numero del Canal Activo por el ComboBox de Config
-  TagOLD        : integer;
-  OnCambio      : boolean;
-  IniLine       : integer;                  // Ultima linea del log guardada en file
+  NCanal: integer;
+  // Numero del Canal Activo por el ComboBox de Config
+  TagOLD: integer;
+  OnCambio: boolean;
+  IniLine: integer;                  // Ultima linea del log guardada en file
 
 implementation
 
 uses UFormulas, UConexiones;
 
-{$R *.lfm}
+  {$R *.lfm}
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.FormCreate(Sender: TObject);
 var
-  NewItem : TMenuItem;
-  i       : integer;
-
+  NewItem: TMenuItem;
+  i: integer;
 begin
   //show;      
 
@@ -879,23 +880,23 @@ begin
   FPresentacion.Repaint;
 
   // Configuro las variables globales
-  DefaultFormatSettings.DateSeparator      := '/';
-  DefaultFormatSettings.DecimalSeparator   := '.';
-  DefaultFormatSettings.ShortDateFormat    := 'dd/mm/yyyy';
-  DefaultFormatSettings.LongDateFormat     := 'dd/mm/yyyy';
-  PageControl.ActivePageIndex      := 0;
+  DefaultFormatSettings.DateSeparator := '/';
+  DefaultFormatSettings.DecimalSeparator := '.';
+  DefaultFormatSettings.ShortDateFormat := 'dd/mm/yyyy';
+  DefaultFormatSettings.LongDateFormat := 'dd/mm/yyyy';
+  PageControl.ActivePageIndex := 0;
   ScrollBox.VertScrollBar.Position := 0;
-  TagOLD                           := 0;
-  GraficosOpen                     := 0;
-  PorPrimerVez                     := true;
-  Cerrando                         := false;
-  OnCambio                         := false;
-  IniLine                          := 0;
-  Creando                          := true;
-  ActualizarCHs                    := true;
+  TagOLD := 0;
+  GraficosOpen := 0;
+  PorPrimerVez := True;
+  Cerrando := False;
+  OnCambio := False;
+  IniLine := 0;
+  Creando := True;
+  ActualizarCHs := True;
   //SE CREA EL OBJETO ADMINISTRATIVO GLOBAL
-  Mercury                          := TMercury.Crear;
-  Equipo                           := nil;
+  Mercury := TMercury.Crear;
+  Equipo := nil;
   //Server                           := nil;
 
   // Cargo la configuraci�n del programa guardada en el Archivo INI
@@ -908,7 +909,7 @@ begin
 
   // Cargo la config a la aplicaci�n, a las vantanas, etc
   CargarDatosConfig;
-  
+
   // Inicializo la visibilidad de canales (8 por defecto)
   ActualizarVisibilidadCanales(8);
 
@@ -920,28 +921,47 @@ begin
 
   // Cargo la lista de puertos serie en el men�
   mConexionMan.Clear;
-  for i:=0 to Mercury.ConexTelefon.NumConex-1 do begin
-    NewItem         := TMenuItem.Create(Self);
-    NewItem.Tag     := i;
-    NewItem.Checked := false;
+  for i := 0 to Mercury.ConexTelefon.NumConex - 1 do
+  begin
+    NewItem := TMenuItem.Create(Self);
+    NewItem.Tag := i;
+    NewItem.Checked := False;
     NewItem.Caption := Mercury.ConexTelefon.AConexiones[i].Nombre;
     NewItem.OnClick := ConexionManualClick;
-    mConexionMan.Add(NewItem);    
+    mConexionMan.Add(NewItem);
   end;
   Retardo(200);
-  
+
   // Creo la tabla de perioodos de muestreo del Monitoreo en Linea
-  TablaTMonitor[0] := 0.45/86400; TablaTMonitor[1] := 0.9/86400;  TablaTMonitor[2] := 4.9/86400;
-  TablaTMonitor[3] := 9.9/86400;  TablaTMonitor[4] := 29.9/86400; TablaTMonitor[5] := 1/1440;
-  TablaTMonitor[6] := 2/1440;     TablaTMonitor[7] := 5/1440;     TablaTMonitor[8] := 10/1440;
-  TablaTMonitor[9] := 15/1440;    TablaTMonitor[10]:= 20/1440;    TablaTMonitor[11]:= 30/1440;
-  TablaTMonitor[12]:= 1/24;
+  TablaTMonitor[0] := 0.45 / 86400;
+  TablaTMonitor[1] := 0.9 / 86400;
+  TablaTMonitor[2] := 4.9 / 86400;
+  TablaTMonitor[3] := 9.9 / 86400;
+  TablaTMonitor[4] := 29.9 / 86400;
+  TablaTMonitor[5] := 1 / 1440;
+  TablaTMonitor[6] := 2 / 1440;
+  TablaTMonitor[7] := 5 / 1440;
+  TablaTMonitor[8] := 10 / 1440;
+  TablaTMonitor[9] := 15 / 1440;
+  TablaTMonitor[10] := 20 / 1440;
+  TablaTMonitor[11] := 30 / 1440;
+  TablaTMonitor[12] := 1 / 24;
 
   // Creo la tabla de perioodos de muestreo.
-  TablaT[0] := 0;    TablaT[1] := 1;     TablaT[2] := 2;     TablaT[3] := 5;  TablaT[4] := 10;
-  TablaT[5] := 60;   TablaT[6] := 120;   TablaT[7] := 300;   TablaT[8] := 600;
-  TablaT[9] := 900;  TablaT[10]:= 1800; TablaT[11]:= 3600;  TablaT[12]:= 5400;
-  TablaT[13]:= 7200;
+  TablaT[0] := 0;
+  TablaT[1] := 1;
+  TablaT[2] := 2;
+  TablaT[3] := 5;
+  TablaT[4] := 10;
+  TablaT[5] := 60;
+  TablaT[6] := 120;
+  TablaT[7] := 300;
+  TablaT[8] := 600;
+  TablaT[9] := 900;
+  TablaT[10] := 1800;
+  TablaT[11] := 3600;
+  TablaT[12] := 5400;
+  TablaT[13] := 7200;
 
   // Obtengo la lista de Puerto serie que tiene la PC
   FPresentacion.LMensaje.Caption := 'Buscando Puertos Serie...';
@@ -952,27 +972,28 @@ begin
 
   // Cargo la lista de puertos serie en el men�
   mPuertoSerie.Clear;
-  for i:=0 to PSerie.ListaPorts.Count-1 do begin
-    NewItem         := TMenuItem.Create(Self);
-    NewItem.Checked := false;
+  for i := 0 to PSerie.ListaPorts.Count - 1 do
+  begin
+    NewItem := TMenuItem.Create(Self);
+    NewItem.Checked := False;
     NewItem.Caption := PSerie.ListaPorts.Strings[i];
     NewItem.OnClick := PuertoSerieClick;
-    if (PSerie.ListaPorts.Strings[i] = Mercury.PuertoSerie) then NewItem.Checked := true;
+    if (PSerie.ListaPorts.Strings[i] = Mercury.PuertoSerie) then NewItem.Checked := True;
     mPuertoSerie.Add(NewItem);
   end;
 
   // Inicializo el Tipo de Comunicaci�n SERIE O CELULAR
   FPresentacion.LMensaje.Caption := 'Iniciando el motor de comunicaciones ...';
   FPresentacion.Repaint;
-  mDirectaCableSERIE.Checked := false;
-  mTelefoniaCelular.Checked  := false;
+  mDirectaCableSERIE.Checked := False;
+  mTelefoniaCelular.Checked := False;
 
   case Mercury.TipoDeComm of
-    0 : mDirectaCableSERIE.Checked := true;
-    1 : mTelefoniaCelular.Checked  := true;
-    2 : mInternet.Checked          := true;
-  else
-    mDirectaCableSERIE.Checked := true;
+    0: mDirectaCableSERIE.Checked := True;
+    1: mTelefoniaCelular.Checked := True;
+    2: mInternet.Checked := True;
+    else
+      mDirectaCableSERIE.Checked := True;
   end;
   Retardo(200);
 
@@ -988,15 +1009,17 @@ begin
   //VERIFICA SI VALE LA PENA CREAR EL OBJETO FISICO
   //SI TipoDeComm FUESE (SOLO Internet/TCP-IP) SE SALTA TODO ESTO Y NO TOCA LOS PUERTOS SERIE
   //SI ES 0 (CABLE SERIE DIRECTO) O  1 (MODEM) ENTRA 
-  if (Mercury.TipoDeComm <> 2) then begin
-  //TEquipo.crear, 1O ES LA CANTIDAD DE CANALES BASE, Mercury.PuertoSerie EL STRING "COM1"
-  //Y TIPO DE COM, EL TIPO DE COMUNICACION
-    Equipo                           := TEquipo.crear(Mercury.NumCanales,Mercury.PuertoSerie, Mercury.TipoDeComm);
-    Equipo.ThreadComm.pProgreso      := @statusbar.Tag;
-    Equipo.ThreadComm.pActualizar    := ActualizarInfo;
+  if (Mercury.TipoDeComm <> 2) then
+  begin
+    //TEquipo.crear, 1O ES LA CANTIDAD DE CANALES BASE, Mercury.PuertoSerie EL STRING "COM1"
+    //Y TIPO DE COM, EL TIPO DE COMUNICACION
+    Equipo :=
+      TEquipo.crear(Mercury.NumCanales, Mercury.PuertoSerie, Mercury.TipoDeComm);
+    Equipo.ThreadComm.pProgreso := @statusbar.Tag;
+    Equipo.ThreadComm.pActualizar := ActualizarInfo;
     Equipo.ThreadComm.pActualProgres := ActualizarProgreso;
-    Equipo.ThreadComm.POnConectRemoto:= ONConexionRemota;
-    Equipo.ThreadComm.POnDesConRemoto:= ONDesconexionRemota;
+    Equipo.ThreadComm.POnConectRemoto := ONConexionRemota;
+    Equipo.ThreadComm.POnDesConRemoto := ONDesconexionRemota;
   end;
 
   // Creo y configuro el Socket si es necesario para porder comunicarme por internet
@@ -1009,12 +1032,12 @@ begin
   Retardo(200);
 
   // Configuro las opciones de captura
-  tsMonitorOnLineShow(sender);
+  tsMonitorOnLineShow(Sender);
 
   // Libero la Ventana de Presentaci�n (sola se libera despues de 500ms)
   FPresentacion.Timer1.Interval := 500;
-  FPresentacion.Timer1.Enabled  := true;
-  Creando                       := false;
+  FPresentacion.Timer1.Enabled := True;
+  Creando := False;
 
 
   // Estado inicial: Canales visibles segun configuracion
@@ -1022,13 +1045,15 @@ begin
   ActualizarVisibilidadCanales(Mercury.NumCanales);
 
   // Manera de iniciar la ventana Principal Inicio
-  if UpCase(Mercury.IniciarMinimizado)='S' then begin
+  if UpCase(Mercury.IniciarMinimizado) = 'S' then
+  begin
     Fprincipal.WindowState := wsMinimized;
-    Fprincipal.show;
+    Fprincipal.Show;
     exit;
   end;
 
-  if UpCase(Mercury.IniciarTray)      ='S' then begin
+  if UpCase(Mercury.IniciarTray) = 'S' then
+  begin
     IraSystemTray;
     Fprincipal.WindowState := wsMinimized;
     exit;
@@ -1152,17 +1177,17 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 var
-  i      : integer;
-  AFiles : AFilesOfDir;
-
+  i: integer;
+  AFiles: AFilesOfDir;
 begin
-  Cerrando := true;
+  Cerrando := True;
 
   // Borro todos los archivos del Directorio Temporal
-  if DirectoryExists(Mercury.DirTemp) then begin
+  if DirectoryExists(Mercury.DirTemp) then
+  begin
     SetLength(AFiles, 0); // Inicializar el array
     ExtractFilesOfDir(Mercury.DirTemp + '*.*', AFiles);
-    for i:=0 to length(AFiles)-1 do DeleteFile(PChar(Mercury.DirTemp + AFiles[i].Name));
+    for i := 0 to length(AFiles) - 1 do DeleteFile(PChar(Mercury.DirTemp + AFiles[i].Name));
   end;
 
   // Borro el icono de la barra de tareas
@@ -1173,7 +1198,8 @@ begin
   Mercury.Destruir;
 
   // Libero la lista de Sensores
-  for i:=length(ListaSensores)-1 downto 0 do begin
+  for i := length(ListaSensores) - 1 downto 0 do
+  begin
     if Assigned(ListaSensores[i]) then
       ListaSensores[i].Destruir;
   end;
@@ -1186,22 +1212,21 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.CargarDatosConfig;
 begin
-  if (UpCase(Mercury.AutoDescargarDatos) = 'S') then mAutoDescargarDatos.Checked := true;
-  if (UpCase(Mercury.AutoConfigurar)     = 'S') then mAutoConfigurar.Checked     := true;
-  if (UpCase(Mercury.SalirDescarga)      = 'S') then mSalirDescarga.Checked      := true;
+  if (UpCase(Mercury.AutoDescargarDatos) = 'S') then mAutoDescargarDatos.Checked := True;
+  if (UpCase(Mercury.AutoConfigurar) = 'S') then mAutoConfigurar.Checked := True;
+  if (UpCase(Mercury.SalirDescarga) = 'S') then mSalirDescarga.Checked := True;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mSalirClick(Sender: TObject);
 begin
-  close;
+  Close;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.TrayMessage(var Msg: TMessage);
 var
-  CursorPos : TPoint;
-
+  CursorPos: TPoint;
 begin
   case Msg.lParam of
     WM_LBUTTONDOWN:
@@ -1215,7 +1240,7 @@ begin
     WM_RBUTTONDOWN:
     begin
       GetCursorPos(CursorPos);
-      PopupMenuST.Popup(CursorPos.X,CursorPos.Y);
+      PopupMenuST.Popup(CursorPos.X, CursorPos.Y);
     end;
   end;
 end;
@@ -1223,13 +1248,14 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.IraSystemTray;
 begin
-  with TrayIconData do begin
-    cbSize           := SizeOf(TrayIconData);
-    hWnd             := Handle;
-    uID              := 0;
-    uFlags           := NIF_MESSAGE + NIF_ICON + NIF_TIP;
+  with TrayIconData do
+  begin
+    cbSize := SizeOf(TrayIconData);
+    hWnd := Handle;
+    uID := 0;
+    uFlags := NIF_MESSAGE + NIF_ICON + NIF_TIP;
     uCallbackMessage := WM_ICONTRAY;
-    hIcon            := Application.Icon.Handle;
+    hIcon := Application.Icon.Handle;
     StrPCopy(szTip, Caption);
   end;
 
@@ -1247,37 +1273,40 @@ end;
 procedure TFprincipal.RestaurarClick(Sender: TObject);
 begin
   WindowState := wsNormal;
-  show;
+  Show;
   Shell_NotifyIcon(NIM_DELETE, PNOTIFYICONDATAA(@TrayIconData));
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.SalirClick(Sender: TObject);
 begin
-  close;
+  Close;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.FormActivate(Sender: TObject);
 begin
   if not PorPrimerVez then exit;
-  PorPrimerVez := false;
+  PorPrimerVez := False;
 
   // habilito el bot�n para indicar que est� habilitada la conexi�n auto
-  if (Mercury.ConexAuto.intervalo > 0) then begin
-    tbConexAutoEN.Enabled := true;
-    tbConexAutoEN.Hint    := 'Conexiones automaticas habilitadas';
+  if (Mercury.ConexAuto.intervalo > 0) then
+  begin
+    tbConexAutoEN.Enabled := True;
+    tbConexAutoEN.Hint := 'Conexiones automaticas habilitadas';
   end
-  else begin
-    tbConexAutoEN.Enabled := false;
-    tbConexAutoEN.Hint    := 'Conexiones automaticas deshabilitadas';
+  else
+  begin
+    tbConexAutoEN.Enabled := False;
+    tbConexAutoEN.Hint := 'Conexiones automaticas deshabilitadas';
   end;
 
   // Si estoy en modalidad "Telefonia Celular" habilito los menus de conexiones remotas
-  if (Mercury.TipoDeComm = 1) then begin
-    mConexionesTelefonicas.Enabled := true;
-    mConexionAuto.Enabled          := true;
-    mConexionMan.Enabled           := true;
+  if (Mercury.TipoDeComm = 1) then
+  begin
+    mConexionesTelefonicas.Enabled := True;
+    mConexionAuto.Enabled := True;
+    mConexionMan.Enabled := True;
   end;
 
   // Chequeo los par�metros de la conexi�n autom�tica y habilito la timer para la conexi�n
@@ -1286,14 +1315,16 @@ begin
   Mercury.ConexAuto.CalcularMomentoConx;
 
   // Inicio la cuenta regreciva de ser necesario
-  if (Mercury.TipoDeComm = 1) and (Mercury.ConexAuto.intervalo>0) then Mercury.ConexAuto.IniciarCuentaRegreciva;
+  if (Mercury.TipoDeComm = 1) and (Mercury.ConexAuto.intervalo > 0) then
+    Mercury.ConexAuto.IniciarCuentaRegreciva;
 
   // Si est� habilitada la conexi�n por internet desabilito todas la paginas.
-  if (Mercury.TipoDeComm = 2) then begin
+  if (Mercury.TipoDeComm = 2) then
+  begin
     PageControl.ActivePageIndex := 3;
-    tsMonitoreo.Enabled         := false;
-    tsConfiguracion.Enabled     := false;
-    tsMonitorOnLine.Enabled     := false;
+    tsMonitoreo.Enabled := False;
+    tsConfiguracion.Enabled := False;
+    tsMonitorOnLine.Enabled := False;
 
     // Activo el Server para que se ponga a escuchar en el puerto predeterminado
     //Server.SrvSocket.Active     := true;
@@ -1303,26 +1334,27 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.ActualizarInfo(Sender: TObject);
 var
-  i, j, k      : integer;
-  ExisteSensor : boolean;
+  i, j, k: integer;
+  ExisteSensor: boolean;
   CompName, strDesc, strVal, strUnit, strGraph, strComm: string;
-  Comp: TComponent;
+  comp: TComponent;
   fLog: TextFile;
-
 begin
   if (Cerrando or Creando) then exit;
 
   // Procedimiento que actualiza la info del equipo en la pantalla
-  if not Equipo.ThreadComm.ONLine then begin
-    StatusBar.Panels[0].Text    := 'Equipo fuera de Linea';
-    ActualizarCHs               := true;
-   // LimpiarMonitor;
+  if not Equipo.ThreadComm.ONLine then
+  begin
+    StatusBar.Panels[0].Text := 'Equipo fuera de Linea';
+    ActualizarCHs := True;
+    // LimpiarMonitor;
     if (PageControl.ActivePageIndex = 2) then
       if PageControl.Pages[0].TabVisible then PageControl.ActivePageIndex := 0
-      else PageControl.ActivePageIndex := 1;
+      else
+        PageControl.ActivePageIndex := 1;
     // Desabilito los botones del monitoreo en linea
-    sbGrabar.Enabled := false;
-    tbGrabar.Enabled := false;
+    sbGrabar.Enabled := False;
+    tbGrabar.Enabled := False;
     // Detengo el monitoreo en Linea
     if Mercury.Grabando then sbGrabarClick(Sender);
     exit;
@@ -1333,19 +1365,24 @@ begin
     StatusBar.Panels[0].Text := 'Conectado con "' + Equipo.Nombre + '"';
 
   // Cargo los sensores al equipo
-  if ActualizarCHs and (not Equipo.ThreadComm.ConfigEquipo) then begin
+  if ActualizarCHs and (not Equipo.ThreadComm.ConfigEquipo) then
+  begin
     Equipo.CargarEquipo(Mercury.DirEquipos);
-    for i:=0 to Equipo.NumCanales-1 do begin
-      ExisteSensor := false; //Flag para determinar si no existe el archivo del sensor
-      for j:=0 to length(ListaSensores)-1 do begin
+    for i := 0 to Equipo.NumCanales - 1 do
+    begin
+      ExisteSensor := False; //Flag para determinar si no existe el archivo del sensor
+      for j := 0 to length(ListaSensores) - 1 do
+      begin
         if (Equipo.Canales[i].Config = ListaSensores[j].Config) then
         begin
           // Asigno el sensor al canal
           Equipo.Canales[i].Asignar(ListaSensores[j]);
 
           // Chequeo antes de asignar si el sensor no lo tengo en el dir del Equipo
-          for k:=0 to length(Equipo.ListaSenDir)-1 do begin
-            if Equipo.Canales[i].Config = Equipo.ListaSenDir[k].Config then begin
+          for k := 0 to length(Equipo.ListaSenDir) - 1 do
+          begin
+            if Equipo.Canales[i].Config = Equipo.ListaSenDir[k].Config then
+            begin
               Equipo.Canales[i].Asignar(Equipo.ListaSenDir[k]);
               break;
             end;
@@ -1356,16 +1393,17 @@ begin
 
           // Levanto la descripci�n de cada canal del archivo
           if (Equipo.Canales[i].Config = Equipo.Canales[i].ConfigINI) and
-             (length(Equipo.Canales[i].DescrINI)>0) then
+            (length(Equipo.Canales[i].DescrINI) > 0) then
             Equipo.Canales[i].Descripcion := Equipo.Canales[i].DescrINI;
 
           // Cambio el flag para indicar que exite el archivo del sensor.
-          ExisteSensor := true;
+          ExisteSensor := True;
         end;
       end;
 
       //Si no encuentro el archivo del sensor... asigno uno generico ("DATO ORIGINAL")
-      if not ExisteSensor then begin
+      if not ExisteSensor then
+      begin
         // Asigno el sensor al canal
         Equipo.Canales[i].Asignar(ListaSensores[1]);
 
@@ -1374,122 +1412,260 @@ begin
       end;
     end;
     // Me fijo que canal digital Uso...  
-    if (Equipo.Canales[Equipo.NumCanales-1].Config<>0) then Equipo.UsarCH9 := true
-    else Equipo.UsarCH9 := false;
-    //
+    if (Equipo.Canales[Equipo.NumCanales - 1].Config <> 0) then Equipo.UsarCH9 := True
+    else
+      Equipo.UsarCH9 := False;
+
     Equipo.GuardarEquipo(Mercury.DirEquipos);
     Equipo.CargarEquipo(Mercury.DirEquipos);
-    ActualizarCHs := false;
+    ActualizarCHs := False;
   end;
 
   // Habilito los Botones
-  tbDescargar.Enabled              := true;
-  mDescargarDatos.Enabled          := true;
-  mConfiguracionDeInternet.Enabled := true;
+  tbDescargar.Enabled := True;
+  mDescargarDatos.Enabled := True;
+  mConfiguracionDeInternet.Enabled := True;
 
   // Habilito los Botones para el monitoreo en linea
-  if not Mercury.Grabando then begin
-    sbGrabar.Enabled := true;
-    tbGrabar.Enabled := true;
-  end;  
+  if not Mercury.Grabando then
+  begin
+    sbGrabar.Enabled := True;
+    tbGrabar.Enabled := True;
+  end;
 
   // Cargo la Info del Equipo en pantalla
-  LNombreEquipo.Caption  := Equipo.Nombre + Format(' [NC:%d C8:%d]', [Equipo.NumCanales, Equipo.Canales[8].Config]);
-  LHoraEquipo.Caption    := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm',Equipo.Hora);
-  LNbytesEquipo.Caption  := IntToStr(Equipo.Memoria)+' bytes';
-  Gauge.Position         := (Equipo.Memoria*100) div Equipo.CantMemory;
-  LIniMuesEquipo.Caption := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm',Equipo.iniMuestr)
-                            + ' - (int '+ Mercury.GenerarStrTmuest(Equipo.Tmuestreo) +')';
+  //  LNombreEquipo.Caption  := Equipo.Nombre + Format(' [NC:%d C8:%d]', [Equipo.NumCanales, Equipo.Canales[8].Config]);
+  LHoraEquipo.Caption := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm', Equipo.Hora);
+  LNbytesEquipo.Caption := IntToStr(Equipo.Memoria) + ' bytes';
+  Gauge.Position := (Equipo.Memoria * 100) div Equipo.CantMemory;
+  LIniMuesEquipo.Caption := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm',
+    Equipo.iniMuestr) + ' - (int ' +
+    Mercury.GenerarStrTmuest(Equipo.Tmuestreo) + ')';
 
 
   //IntToStr(Equipo.Tmuestreo div 60)+' min
 
   // Cargo la info de los canales en pantalla
   // --- INICIO DE LA SECCIÓN DE CARGA DE CANALES ---
-  
-  for i := 0 to Equipo.NumCanales - 1 do begin
+
+  for i := 0 to Equipo.NumCanales - 1 do
+  begin
     // 1. Calcular el valor real del canal
-    if Equipo.Canales[i].Config <> 0 then begin
+    if Equipo.Canales[i].Config <> 0 then
+    begin
       Equipo.Canales[i].Escala := Equipo.Escala;
       Equipo.Canales[i].ComputarValor(Equipo.Canales[i].ValorSensor);
-      
+
       // 2. ASIGNACIÓN DIRECTA DE VALORES (Caption y BringToFront)
       case i of
         // Pestaña Monitoreo (canales 0-7)
-        0:  if Assigned(LValorCan00) then begin LValorCan00.Caption := Equipo.Canales[i].ValorReal; LValorCan00.BringToFront; end;
-        1:  if Assigned(LValorCan01) then begin LValorCan01.Caption := Equipo.Canales[i].ValorReal; LValorCan01.BringToFront; end;
-        2:  if Assigned(LValorCan02) then begin LValorCan02.Caption := Equipo.Canales[i].ValorReal; LValorCan02.BringToFront; end;
-        3:  if Assigned(LValorCan03) then begin LValorCan03.Caption := Equipo.Canales[i].ValorReal; LValorCan03.BringToFront; end;
-        4:  if Assigned(LValorCan04) then begin LValorCan04.Caption := Equipo.Canales[i].ValorReal; LValorCan04.BringToFront; end;
-        5:  if Assigned(LValorCan05) then begin LValorCan05.Caption := Equipo.Canales[i].ValorReal; LValorCan05.BringToFront; end;
-        6:  if Assigned(LValorCan06) then begin LValorCan06.Caption := Equipo.Canales[i].ValorReal; LValorCan06.BringToFront; end;
-        7:  if Assigned(LValorCan07) then begin LValorCan07.Caption := Equipo.Canales[i].ValorReal; LValorCan07.BringToFront; end;
+        0: if Assigned(LValorCan00) then
+          begin
+            LValorCan00.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan00.BringToFront;
+          end;
+        1: if Assigned(LValorCan01) then
+          begin
+            LValorCan01.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan01.BringToFront;
+          end;
+        2: if Assigned(LValorCan02) then
+          begin
+            LValorCan02.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan02.BringToFront;
+          end;
+        3: if Assigned(LValorCan03) then
+          begin
+            LValorCan03.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan03.BringToFront;
+          end;
+        4: if Assigned(LValorCan04) then
+          begin
+            LValorCan04.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan04.BringToFront;
+          end;
+        5: if Assigned(LValorCan05) then
+          begin
+            LValorCan05.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan05.BringToFront;
+          end;
+        6: if Assigned(LValorCan06) then
+          begin
+            LValorCan06.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan06.BringToFront;
+          end;
+        7: if Assigned(LValorCan07) then
+          begin
+            LValorCan07.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan07.BringToFront;
+          end;
         // Pestaña Expansion 1 (canales 8-15)
-        8:  if Assigned(LValorCan08) then begin LValorCan08.Caption := Equipo.Canales[i].ValorReal; LValorCan08.BringToFront; end;
-        9:  if Assigned(LValorCan09) then begin LValorCan09.Caption := Equipo.Canales[i].ValorReal; LValorCan09.BringToFront; end;
-        10: if Assigned(LValorCan10) then begin LValorCan10.Caption := Equipo.Canales[i].ValorReal; LValorCan10.BringToFront; end;
-        11: if Assigned(LValorCan11) then begin LValorCan11.Caption := Equipo.Canales[i].ValorReal; LValorCan11.BringToFront; end;
-        12: if Assigned(LValorCan12) then begin LValorCan12.Caption := Equipo.Canales[i].ValorReal; LValorCan12.BringToFront; end;
-        13: if Assigned(LValorCan13) then begin LValorCan13.Caption := Equipo.Canales[i].ValorReal; LValorCan13.BringToFront; end;
-        14: if Assigned(LValorCan14) then begin LValorCan14.Caption := Equipo.Canales[i].ValorReal; LValorCan14.BringToFront; end;
-        15: if Assigned(LValorCan15) then begin LValorCan15.Caption := Equipo.Canales[i].ValorReal; LValorCan15.BringToFront; end;
+        8: if Assigned(LValorCan08) then
+          begin
+            LValorCan08.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan08.BringToFront;
+          end;
+        9: if Assigned(LValorCan09) then
+          begin
+            LValorCan09.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan09.BringToFront;
+          end;
+        10: if Assigned(LValorCan10) then
+          begin
+            LValorCan10.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan10.BringToFront;
+          end;
+        11: if Assigned(LValorCan11) then
+          begin
+            LValorCan11.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan11.BringToFront;
+          end;
+        12: if Assigned(LValorCan12) then
+          begin
+            LValorCan12.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan12.BringToFront;
+          end;
+        13: if Assigned(LValorCan13) then
+          begin
+            LValorCan13.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan13.BringToFront;
+          end;
+        14: if Assigned(LValorCan14) then
+          begin
+            LValorCan14.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan14.BringToFront;
+          end;
+        15: if Assigned(LValorCan15) then
+          begin
+            LValorCan15.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan15.BringToFront;
+          end;
         // Pestaña Expansion 2 (canales 16-23)
-        16: if Assigned(LValorCan16) then begin LValorCan16.Caption := Equipo.Canales[i].ValorReal; LValorCan16.BringToFront; end;
-        17: if Assigned(LValorCan17) then begin LValorCan17.Caption := Equipo.Canales[i].ValorReal; LValorCan17.BringToFront; end;
-        18: if Assigned(LValorCan18) then begin LValorCan18.Caption := Equipo.Canales[i].ValorReal; LValorCan18.BringToFront; end;
-        19: if Assigned(LValorCan19) then begin LValorCan19.Caption := Equipo.Canales[i].ValorReal; LValorCan19.BringToFront; end;
-        20: if Assigned(LValorCan20) then begin LValorCan20.Caption := Equipo.Canales[i].ValorReal; LValorCan20.BringToFront; end;
-        21: if Assigned(LValorCan21) then begin LValorCan21.Caption := Equipo.Canales[i].ValorReal; LValorCan21.BringToFront; end;
-        22: if Assigned(LValorCan22) then begin LValorCan22.Caption := Equipo.Canales[i].ValorReal; LValorCan22.BringToFront; end;
-        23: if Assigned(LValorCan23) then begin LValorCan23.Caption := Equipo.Canales[i].ValorReal; LValorCan23.BringToFront; end;
+        16: if Assigned(LValorCan16) then
+          begin
+            LValorCan16.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan16.BringToFront;
+          end;
+        17: if Assigned(LValorCan17) then
+          begin
+            LValorCan17.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan17.BringToFront;
+          end;
+        18: if Assigned(LValorCan18) then
+          begin
+            LValorCan18.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan18.BringToFront;
+          end;
+        19: if Assigned(LValorCan19) then
+          begin
+            LValorCan19.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan19.BringToFront;
+          end;
+        20: if Assigned(LValorCan20) then
+          begin
+            LValorCan20.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan20.BringToFront;
+          end;
+        21: if Assigned(LValorCan21) then
+          begin
+            LValorCan21.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan21.BringToFront;
+          end;
+        22: if Assigned(LValorCan22) then
+          begin
+            LValorCan22.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan22.BringToFront;
+          end;
+        23: if Assigned(LValorCan23) then
+          begin
+            LValorCan23.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan23.BringToFront;
+          end;
         // Pestaña Expansion 3 (canales 24-31)
-        24: if Assigned(LValorCan24) then begin LValorCan24.Caption := Equipo.Canales[i].ValorReal; LValorCan24.BringToFront; end;
-        25: if Assigned(LValorCan25) then begin LValorCan25.Caption := Equipo.Canales[i].ValorReal; LValorCan25.BringToFront; end;
-        26: if Assigned(LValorCan26) then begin LValorCan26.Caption := Equipo.Canales[i].ValorReal; LValorCan26.BringToFront; end;
-        27: if Assigned(LValorCan27) then begin LValorCan27.Caption := Equipo.Canales[i].ValorReal; LValorCan27.BringToFront; end;
-        28: if Assigned(LValorCan28) then begin LValorCan28.Caption := Equipo.Canales[i].ValorReal; LValorCan28.BringToFront; end;
-        29: if Assigned(LValorCan29) then begin LValorCan29.Caption := Equipo.Canales[i].ValorReal; LValorCan29.BringToFront; end;
-        30: if Assigned(LValorCan30) then begin LValorCan30.Caption := Equipo.Canales[i].ValorReal; LValorCan30.BringToFront; end;
-        31: if Assigned(LValorCan31) then begin LValorCan31.Caption := Equipo.Canales[i].ValorReal; LValorCan31.BringToFront; end;
+        24: if Assigned(LValorCan24) then
+          begin
+            LValorCan24.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan24.BringToFront;
+          end;
+        25: if Assigned(LValorCan25) then
+          begin
+            LValorCan25.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan25.BringToFront;
+          end;
+        26: if Assigned(LValorCan26) then
+          begin
+            LValorCan26.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan26.BringToFront;
+          end;
+        27: if Assigned(LValorCan27) then
+          begin
+            LValorCan27.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan27.BringToFront;
+          end;
+        28: if Assigned(LValorCan28) then
+          begin
+            LValorCan28.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan28.BringToFront;
+          end;
+        29: if Assigned(LValorCan29) then
+          begin
+            LValorCan29.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan29.BringToFront;
+          end;
+        30: if Assigned(LValorCan30) then
+          begin
+            LValorCan30.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan30.BringToFront;
+          end;
+        31: if Assigned(LValorCan31) then
+          begin
+            LValorCan31.Caption := Equipo.Canales[i].ValorReal;
+            LValorCan31.BringToFront;
+          end;
       end;
 
 
       // 3. ASIGNACIÓN DE DESCRIPCIONES (usando nombres coherentes LDescripcionCanXX)
-      Comp := FindComponent(Format('LDescripcionCan%.2d', [i]));
-      if (Comp is TLabel) then begin
-        TLabel(Comp).Caption := Equipo.Canales[i].Descripcion;
-        TLabel(Comp).BringToFront;
+      comp := FindComponent(Format('LDescripcionCan%.2d', [i]));
+      if (comp is TLabel) then
+      begin
+        TLabel(comp).Caption := Equipo.Canales[i].Descripcion;
+        TLabel(comp).BringToFront;
       end;
 
       // 4. UNIDADES Y BOTONES (Búsqueda dinámica segura)
       CompName := Format('LUnidadCan%.2d', [i]);
-      Comp := FindComponent(CompName);
-      if Comp = nil then Comp := FindComponent(Format('LUnidad%.2d', [i])); 
-      if (Comp is TLabel) then begin
-        TLabel(Comp).Caption := '[' + Equipo.Canales[i].Unidad + ']';
-        TLabel(Comp).BringToFront;
+      comp := FindComponent(CompName);
+      if comp = nil then comp := FindComponent(Format('LUnidad%.2d', [i]));
+      if (comp is TLabel) then
+      begin
+        TLabel(comp).Caption := '[' + Equipo.Canales[i].Unidad + ']';
+        TLabel(comp).BringToFront;
       end;
       // Asignación directa para canal 8 como fallback (FindComponent parece no encontrarlo)
-      if (i = 8) and Assigned(LUnidadCan08) then begin
+      if (i = 8) and Assigned(LUnidadCan08) then
+      begin
         LUnidadCan08.Caption := '[' + Equipo.Canales[i].Unidad + ']';
         LUnidadCan08.BringToFront;
       end;
 
-    end else begin
+    end
+    else
+    begin
       // Si el canal está desactivado (Config = 0)
       case i of
         // Pestaña Monitoreo (canales 0-7)
-        0:  if Assigned(LValorCan00) then LValorCan00.Caption := 'OFF';
-        1:  if Assigned(LValorCan01) then LValorCan01.Caption := 'OFF';
-        2:  if Assigned(LValorCan02) then LValorCan02.Caption := 'OFF';
-        3:  if Assigned(LValorCan03) then LValorCan03.Caption := 'OFF';
-        4:  if Assigned(LValorCan04) then LValorCan04.Caption := 'OFF';
-        5:  if Assigned(LValorCan05) then LValorCan05.Caption := 'OFF';
-        6:  if Assigned(LValorCan06) then LValorCan06.Caption := 'OFF';
-        7:  if Assigned(LValorCan07) then LValorCan07.Caption := 'OFF';
+        0: if Assigned(LValorCan00) then LValorCan00.Caption := 'OFF';
+        1: if Assigned(LValorCan01) then LValorCan01.Caption := 'OFF';
+        2: if Assigned(LValorCan02) then LValorCan02.Caption := 'OFF';
+        3: if Assigned(LValorCan03) then LValorCan03.Caption := 'OFF';
+        4: if Assigned(LValorCan04) then LValorCan04.Caption := 'OFF';
+        5: if Assigned(LValorCan05) then LValorCan05.Caption := 'OFF';
+        6: if Assigned(LValorCan06) then LValorCan06.Caption := 'OFF';
+        7: if Assigned(LValorCan07) then LValorCan07.Caption := 'OFF';
         // Pestaña Expansion 1 (canales 8-15)
-        8:  if Assigned(LValorCan08) then LValorCan08.Caption := 'OFF';
-        9:  if Assigned(LValorCan09) then LValorCan09.Caption := 'OFF';
+        8: if Assigned(LValorCan08) then LValorCan08.Caption := 'OFF';
+        9: if Assigned(LValorCan09) then LValorCan09.Caption := 'OFF';
         10: if Assigned(LValorCan10) then LValorCan10.Caption := 'OFF';
         11: if Assigned(LValorCan11) then LValorCan11.Caption := 'OFF';
         12: if Assigned(LValorCan12) then LValorCan12.Caption := 'OFF';
@@ -1522,35 +1698,42 @@ begin
   // DEBUG: Log digital values
   try
     AssignFile(fLog, 'debug_digital.txt');
-    if FileExists('debug_digital.txt') then Append(fLog) else Rewrite(fLog);
-    Writeln(fLog, Format('DigA[0]=%d DigB[0]=%d', [Equipo.ThreadComm.pvalorDigA[0], Equipo.ThreadComm.pvalorDigB[0]]));
+    if FileExists('debug_digital.txt') then Append(fLog)
+    else
+      Rewrite(fLog);
+    Writeln(fLog, Format('DigA[0]=%d DigB[0]=%d',
+      [Equipo.ThreadComm.pvalorDigA[0], Equipo.ThreadComm.pvalorDigB[0]]));
     CloseFile(fLog);
   except
   end;
-  
+
   // Display digital values in LValorCanDig00-03
-  if Assigned(LValorCanDig00) then begin
+  if Assigned(LValorCanDig00) then
+  begin
     if Equipo.ThreadComm.UsarCHDigB[0] then
       LValorCanDig00.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[0])
     else
       LValorCanDig00.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[0]);
   end;
-  
-  if (Equipo.NumCanales > 8) and Assigned(LValorCanDig01) then begin
+
+  if (Equipo.NumCanales > 8) and Assigned(LValorCanDig01) then
+  begin
     if Equipo.ThreadComm.UsarCHDigB[1] then
       LValorCanDig01.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[1])
     else
       LValorCanDig01.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[1]);
   end;
-  
-  if (Equipo.NumCanales > 16) and Assigned(LValorCanDig02) then begin
+
+  if (Equipo.NumCanales > 16) and Assigned(LValorCanDig02) then
+  begin
     if Equipo.ThreadComm.UsarCHDigB[2] then
       LValorCanDig02.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[2])
     else
       LValorCanDig02.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[2]);
   end;
-  
-  if (Equipo.NumCanales > 24) and Assigned(LValorCanDig03) then begin
+
+  if (Equipo.NumCanales > 24) and Assigned(LValorCanDig03) then
+  begin
     if Equipo.ThreadComm.UsarCHDigB[3] then
       LValorCanDig03.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[3])
     else
@@ -1560,23 +1743,31 @@ begin
   // --- FIN DE LA SECCIÓN DE CARGA DE CANALES ---
 
   // Actualizo la info y el valor de los parametros calculados
-  for i:=0 to Equipo.CalcParam.CantParm-1 do begin
-    with Equipo.CalcParam.Parametros[i] do begin
-      if Calcular = 1 then begin
-          // Cargo la info de los valores de entrada temp, cond, profundidad...
-        for j:=0 to Nparam-1 do begin
+  for i := 0 to Equipo.CalcParam.CantParm - 1 do
+  begin
+    with Equipo.CalcParam.Parametros[i] do
+    begin
+      if Calcular = 1 then
+      begin
+        // Cargo la info de los valores de entrada temp, cond, profundidad...
+        for j := 0 to Nparam - 1 do
+        begin
           // me aseguro que el canal est� habilitado
-          if (AParam[j].canal >= 0) then begin
+          if (AParam[j].canal >= 0) then
+          begin
             if (Equipo.Canales[AParam[j].canal].Config > 0) then
               AParam[j].valor := Equipo.Canales[AParam[j].canal].ValorNum
-            else begin
+            else
+            begin
               // Si falta un par�metro que no es necesario no importa
-              if (j<NparamNecesa) then Calcular := 0
-              else AParam[j].valor := 0;
+              if (j < NparamNecesa) then Calcular := 0
+              else
+                AParam[j].valor := 0;
             end;
           end
           // Si falta un par�metro que no es necesario no importa
-          else AParam[j].valor := 0;
+          else
+            AParam[j].valor := 0;
         end;
 
         // Calculo los par�metros salinidad, densidad.....
@@ -1584,22 +1775,74 @@ begin
       end;
 
       // Muestro la info de los par�metros calculados cuando es necesario
-      if (Calcular = 1) then begin
+      if (Calcular = 1) then
+      begin
         case i of
-          0 : begin LDescripcionParam00.Caption := Descripcion; LValorParam00.Caption:=ResultCalcStr; LUnidadParam00.Caption:='['+Unidad+']'; sbGraficoParam00.Enabled := false; end; //True
-          1 : begin LDescripcionParam01.Caption := Descripcion; LValorParam01.Caption:=ResultCalcStr; LUnidadParam01.Caption:='['+Unidad+']'; sbGraficoParam01.Enabled := false; end; //True
-          2 : begin LDescripcionParam02.Caption := Descripcion; LValorParam02.Caption:=ResultCalcStr; LUnidadParam02.Caption:='['+Unidad+']'; sbGraficoParam02.Enabled := false; end; //True
-          3 : begin LDescripcionParam03.Caption := Descripcion; LValorParam03.Caption:=ResultCalcStr; LUnidadParam03.Caption:='['+Unidad+']'; sbGraficoParam03.Enabled := false; end; //True
-          4 : begin LDescripcionParam04.Caption := Descripcion; LValorParam04.Caption:=ResultCalcStr; LUnidadParam04.Caption:='['+Unidad+']'; sbGraficoParam04.Enabled := false; end; //True
+          0: begin
+            LDescripcionParam00.Caption := Descripcion;
+            LValorParam00.Caption := ResultCalcStr;
+            LUnidadParam00.Caption := '[' + Unidad + ']';
+            sbGraficoParam00.Enabled := False;
+          end; //True
+          1: begin
+            LDescripcionParam01.Caption := Descripcion;
+            LValorParam01.Caption := ResultCalcStr;
+            LUnidadParam01.Caption := '[' + Unidad + ']';
+            sbGraficoParam01.Enabled := False;
+          end; //True
+          2: begin
+            LDescripcionParam02.Caption := Descripcion;
+            LValorParam02.Caption := ResultCalcStr;
+            LUnidadParam02.Caption := '[' + Unidad + ']';
+            sbGraficoParam02.Enabled := False;
+          end; //True
+          3: begin
+            LDescripcionParam03.Caption := Descripcion;
+            LValorParam03.Caption := ResultCalcStr;
+            LUnidadParam03.Caption := '[' + Unidad + ']';
+            sbGraficoParam03.Enabled := False;
+          end; //True
+          4: begin
+            LDescripcionParam04.Caption := Descripcion;
+            LValorParam04.Caption := ResultCalcStr;
+            LUnidadParam04.Caption := '[' + Unidad + ']';
+            sbGraficoParam04.Enabled := False;
+          end; //True
         end;
       end
-      else begin
+      else
+      begin
         case i of
-          0 : begin LDescripcionParam00.Caption := ''; LValorParam00.Caption:=''; LUnidadParam00.Caption:=''; sbGraficoParam00.Enabled := false; end;
-          1 : begin LDescripcionParam01.Caption := ''; LValorParam01.Caption:=''; LUnidadParam01.Caption:=''; sbGraficoParam01.Enabled := false; end;
-          2 : begin LDescripcionParam02.Caption := ''; LValorParam02.Caption:=''; LUnidadParam02.Caption:=''; sbGraficoParam02.Enabled := false; end;
-          3 : begin LDescripcionParam03.Caption := ''; LValorParam03.Caption:=''; LUnidadParam03.Caption:=''; sbGraficoParam03.Enabled := false; end;
-          4 : begin LDescripcionParam04.Caption := ''; LValorParam04.Caption:=''; LUnidadParam04.Caption:=''; sbGraficoParam04.Enabled := false; end;          
+          0: begin
+            LDescripcionParam00.Caption := '';
+            LValorParam00.Caption := '';
+            LUnidadParam00.Caption := '';
+            sbGraficoParam00.Enabled := False;
+          end;
+          1: begin
+            LDescripcionParam01.Caption := '';
+            LValorParam01.Caption := '';
+            LUnidadParam01.Caption := '';
+            sbGraficoParam01.Enabled := False;
+          end;
+          2: begin
+            LDescripcionParam02.Caption := '';
+            LValorParam02.Caption := '';
+            LUnidadParam02.Caption := '';
+            sbGraficoParam02.Enabled := False;
+          end;
+          3: begin
+            LDescripcionParam03.Caption := '';
+            LValorParam03.Caption := '';
+            LUnidadParam03.Caption := '';
+            sbGraficoParam03.Enabled := False;
+          end;
+          4: begin
+            LDescripcionParam04.Caption := '';
+            LValorParam04.Caption := '';
+            LUnidadParam04.Caption := '';
+            sbGraficoParam04.Enabled := False;
+          end;
         end;
       end;
     end;
@@ -1607,23 +1850,27 @@ begin
 
   // Realizo la tareas Predetermindas
   // AutoDescargarDatos
-  if Mercury.DescargarDatos then begin
-    mDescargarDatosClick(nil);          // Llamo al procedure que tengo para descargar datos.
-    Mercury.DescargarDatos := false;    // Borro el Flag.
+  if Mercury.DescargarDatos then
+  begin
+    mDescargarDatosClick(nil);
+    // Llamo al procedure que tengo para descargar datos.
+    Mercury.DescargarDatos := False;    // Borro el Flag.
   end;
 
   // AutoConfigurar 
-  if (Mercury.Configurar and (not Equipo.ThreadComm.DescargarDatos)) then begin
+  if (Mercury.Configurar and (not Equipo.ThreadComm.DescargarDatos)) then
+  begin
     tsConfiguracionShow(nil);          // Cargo los datos para trasmitir al equipo
     sbConfigurarClick(nil);            // Transmito al equipo los nuevos datos
-    Mercury.Configurar := false;
+    Mercury.Configurar := False;
   end;
 
   // SalirDescarga
-  if (Mercury.Salir and (not Equipo.ThreadComm.DescargarDatos)
-  and (not Equipo.ThreadComm.ConfigEquipo)) then begin
-    Mercury.Salir       := false;      // Me aseguro que no entre mas.
-    TimerCierre.Enabled := true;       // Despues de 50ms se cierra la aplicaci�n.
+  if (Mercury.Salir and (not Equipo.ThreadComm.DescargarDatos) and
+    (not Equipo.ThreadComm.ConfigEquipo)) then
+  begin
+    Mercury.Salir := False;      // Me aseguro que no entre mas.
+    TimerCierre.Enabled := True;       // Despues de 50ms se cierra la aplicaci�n.
   end;
 
   // Monitoreo en Linea
@@ -1642,46 +1889,93 @@ end;
 procedure TFprincipal.LimpiarMonitor;
 begin
   // Desabilito los botones
-  tbDescargar.Enabled              := false;
-//  tbGrabar.Enabled               := false;
-  mDescargarDatos.Enabled          := false;
-  mConfiguracionDeInternet.Enabled := false;
+  tbDescargar.Enabled := False;
+  //  tbGrabar.Enabled               := false;
+  mDescargarDatos.Enabled := False;
+  mConfiguracionDeInternet.Enabled := False;
 
   // Limpio la Info del Equipo en pantalla
-  LNombreEquipo.Caption  := '';
-  LHoraEquipo.Caption    := '';
-  LNbytesEquipo.Caption  := '';
-  Gauge.Position         := 0;
+  LNombreEquipo.Caption := '';
+  LHoraEquipo.Caption := '';
+  LNbytesEquipo.Caption := '';
+  Gauge.Position := 0;
   LIniMuesEquipo.Caption := '';
 
   // ========= LIMPIEZA EXPLÍCITA DE CANALES 0-15 =========
   // Canales 0-7 (Monitoreo principal)
-  LDescripcionCan00.Caption := ''; LValorCan00.Caption := ''; LUnidadCan00.Caption := '';
-  LDescripcionCan01.Caption := ''; LValorCan01.Caption := ''; LUnidadCan01.Caption := '';
-  LDescripcionCan02.Caption := ''; LValorCan02.Caption := ''; LUnidadCan02.Caption := '';
-  LDescripcionCan03.Caption := ''; LValorCan03.Caption := ''; LUnidadCan03.Caption := '';
-  LDescripcionCan04.Caption := ''; LValorCan04.Caption := ''; LUnidadCan04.Caption := '';
-  LDescripcionCan05.Caption := ''; LValorCan05.Caption := ''; LUnidadCan05.Caption := '';
-  LDescripcionCan06.Caption := ''; LValorCan06.Caption := ''; LUnidadCan06.Caption := '';
-  LDescripcionCan07.Caption := ''; LValorCan07.Caption := ''; LUnidadCan07.Caption := '';
-  
+  LDescripcionCan00.Caption := '';
+  LValorCan00.Caption := '';
+  LUnidadCan00.Caption := '';
+  LDescripcionCan01.Caption := '';
+  LValorCan01.Caption := '';
+  LUnidadCan01.Caption := '';
+  LDescripcionCan02.Caption := '';
+  LValorCan02.Caption := '';
+  LUnidadCan02.Caption := '';
+  LDescripcionCan03.Caption := '';
+  LValorCan03.Caption := '';
+  LUnidadCan03.Caption := '';
+  LDescripcionCan04.Caption := '';
+  LValorCan04.Caption := '';
+  LUnidadCan04.Caption := '';
+  LDescripcionCan05.Caption := '';
+  LValorCan05.Caption := '';
+  LUnidadCan05.Caption := '';
+  LDescripcionCan06.Caption := '';
+  LValorCan06.Caption := '';
+  LUnidadCan06.Caption := '';
+  LDescripcionCan07.Caption := '';
+  LValorCan07.Caption := '';
+  LUnidadCan07.Caption := '';
+
   // Canales 8-15 (Expansión 1 - GroupBoxCan14)
-  LDescripcionCan08.Caption := ''; LValorCan08.Caption := ''; LUnidadCan08.Caption := '';
-  LDescripcionCan09.Caption := ''; LValorCan09.Caption := ''; LUnidadCan09.Caption := '';
-  LDescripcionCan10.Caption := ''; LValorCan10.Caption := ''; LUnidadCan10.Caption := '';
-  LDescripcionCan11.Caption := ''; LValorCan11.Caption := ''; LUnidadCan11.Caption := '';
-  LDescripcionCan12.Caption := ''; LValorCan12.Caption := ''; LUnidadCan12.Caption := '';
-  LDescripcionCan13.Caption := ''; LValorCan13.Caption := ''; LUnidadCan13.Caption := '';
-  LDescripcionCan14.Caption := ''; LValorCan14.Caption := ''; LUnidadCan14.Caption := '';
-  LDescripcionCan15.Caption := ''; LValorCan15.Caption := ''; LUnidadCan15.Caption := '';
+  LDescripcionCan08.Caption := '';
+  LValorCan08.Caption := '';
+  LUnidadCan08.Caption := '';
+  LDescripcionCan09.Caption := '';
+  LValorCan09.Caption := '';
+  LUnidadCan09.Caption := '';
+  LDescripcionCan10.Caption := '';
+  LValorCan10.Caption := '';
+  LUnidadCan10.Caption := '';
+  LDescripcionCan11.Caption := '';
+  LValorCan11.Caption := '';
+  LUnidadCan11.Caption := '';
+  LDescripcionCan12.Caption := '';
+  LValorCan12.Caption := '';
+  LUnidadCan12.Caption := '';
+  LDescripcionCan13.Caption := '';
+  LValorCan13.Caption := '';
+  LUnidadCan13.Caption := '';
+  LDescripcionCan14.Caption := '';
+  LValorCan14.Caption := '';
+  LUnidadCan14.Caption := '';
+  LDescripcionCan15.Caption := '';
+  LValorCan15.Caption := '';
+  LUnidadCan15.Caption := '';
   // ========= FIN LIMPIEZA CANALES =========
 
   // Limpio la info de los valores calculados
-  LDescripcionParam00.Caption := ''; LValorParam00.Caption := ''; LUnidadParam00.Caption := ''; sbGraficoParam00.Enabled := false;
-  LDescripcionParam01.Caption := ''; LValorParam01.Caption := ''; LUnidadParam01.Caption := ''; sbGraficoParam01.Enabled := false;
-  LDescripcionParam02.Caption := ''; LValorParam02.Caption := ''; LUnidadParam02.Caption := ''; sbGraficoParam02.Enabled := false;
-  LDescripcionParam03.Caption := ''; LValorParam03.Caption := ''; LUnidadParam03.Caption := ''; sbGraficoParam03.Enabled := false;
-  LDescripcionParam04.Caption := ''; LValorParam04.Caption := ''; LUnidadParam04.Caption := ''; sbGraficoParam04.Enabled := false;  
+  LDescripcionParam00.Caption := '';
+  LValorParam00.Caption := '';
+  LUnidadParam00.Caption := '';
+  sbGraficoParam00.Enabled := False;
+  LDescripcionParam01.Caption := '';
+  LValorParam01.Caption := '';
+  LUnidadParam01.Caption := '';
+  sbGraficoParam01.Enabled := False;
+  LDescripcionParam02.Caption := '';
+  LValorParam02.Caption := '';
+  LUnidadParam02.Caption := '';
+  sbGraficoParam02.Enabled := False;
+  LDescripcionParam03.Caption := '';
+  LValorParam03.Caption := '';
+  LUnidadParam03.Caption := '';
+  sbGraficoParam03.Enabled := False;
+  LDescripcionParam04.Caption := '';
+  LValorParam04.Caption := '';
+  LUnidadParam04.Caption := '';
+  sbGraficoParam04.Enabled := False;
 
   // Limpio el equipo
   Equipo.Limpiar;
@@ -1690,7 +1984,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.InstanciarComponentesFaltantes;
 var
-  DeltaY, TopBase: Integer;
+  DeltaY, TopBase: integer;
 begin
   // Asegurar que las pestañas de expansión existan
   if (tsExp2 = nil) and (tsMon.PageControl <> nil) then
@@ -1703,316 +1997,511 @@ begin
   end;
 
   // Chequeo si faltan los componentes visuales (indicador de que no estan en el LFM)
-  if LConfig09 = nil then begin
-     // Calculo el espaciado basado en los canales anteriores (07 y 08)
-     // Asumo 24 pixels si no puedo calcular, pero trataré de usar LConfig00 y 01
-     DeltaY := 24;
-     if (LConfig01 <> nil) and (LConfig00 <> nil) then DeltaY := LConfig01.Top - LConfig00.Top;
-     
-     // --- CONFIGURACION (LConfigXX y LDescConfigXX) ---
-     // Uso LConfig07 como base si existe, sino LConfig00 (ajustando top)
-     if LConfig08 <> nil then TopBase := LConfig08.Top else TopBase := 216; // Fallback
-     
-     // Canal 09
-     LConfig09 := TLabel.Create(Self); LConfig09.Parent := LConfig00.Parent; 
-     LConfig09.Left := LConfig00.Left; LConfig09.Top := TopBase + DeltaY;
-     LConfig09.AutoSize := False; LConfig09.Width := LConfig00.Width; LConfig09.Height := LConfig00.Height;
-     LConfig09.Alignment := taCenter; LConfig09.Font := LConfig00.Font;
-     
-     LDescConfig09 := TLabel.Create(Self); LDescConfig09.Parent := LDescConfig00.Parent;
-     LDescConfig09.Left := LDescConfig00.Left; LDescConfig09.Top := TopBase + DeltaY;
-     LDescConfig09.AutoSize := False; LDescConfig09.Width := LDescConfig00.Width; LDescConfig09.Height := LDescConfig00.Height;
-     LDescConfig09.Alignment := taCenter; LDescConfig09.Font := LDescConfig00.Font;
-     LDescConfig09.Color := LDescConfig00.Color; LDescConfig09.Transparent := False;
+  if LConfig09 = nil then
+  begin
+    // Calculo el espaciado basado en los canales anteriores (07 y 08)
+    // Asumo 24 pixels si no puedo calcular, pero trataré de usar LConfig00 y 01
+    DeltaY := 24;
+    if (LConfig01 <> nil) and (LConfig00 <> nil) then
+      DeltaY := LConfig01.Top - LConfig00.Top;
 
-     // Canal 10
-     LConfig10 := TLabel.Create(Self); LConfig10.Parent := LConfig00.Parent;
-     LConfig10.Left := LConfig00.Left; LConfig10.Top := TopBase + DeltaY * 2;
-     LConfig10.AutoSize := False; LConfig10.Width := LConfig00.Width; LConfig10.Height := LConfig00.Height;
-     LConfig10.Alignment := taCenter; LConfig10.Font := LConfig00.Font;
+    // --- CONFIGURACION (LConfigXX y LDescConfigXX) ---
+    // Uso LConfig07 como base si existe, sino LConfig00 (ajustando top)
+    if LConfig08 <> nil then TopBase := LConfig08.Top
+    else
+      TopBase := 216; // Fallback
 
-     LDescConfig10 := TLabel.Create(Self); LDescConfig10.Parent := LDescConfig00.Parent;
-     LDescConfig10.Left := LDescConfig00.Left; LDescConfig10.Top := TopBase + DeltaY * 2;
-     LDescConfig10.AutoSize := False; LDescConfig10.Width := LDescConfig00.Width; LDescConfig10.Height := LDescConfig00.Height;
-     LDescConfig10.Alignment := taCenter; LDescConfig10.Font := LDescConfig00.Font;
-     LDescConfig10.Color := LDescConfig00.Color; LDescConfig10.Transparent := False;
+    // Canal 09
+    LConfig09 := TLabel.Create(Self);
+    LConfig09.Parent := LConfig00.Parent;
+    LConfig09.Left := LConfig00.Left;
+    LConfig09.Top := TopBase + DeltaY;
+    LConfig09.AutoSize := False;
+    LConfig09.Width := LConfig00.Width;
+    LConfig09.Height := LConfig00.Height;
+    LConfig09.Alignment := taCenter;
+    LConfig09.Font := LConfig00.Font;
 
-     // Canal 11
-     LConfig11 := TLabel.Create(Self); LConfig11.Parent := LConfig00.Parent;
-     LConfig11.Left := LConfig00.Left; LConfig11.Top := TopBase + DeltaY * 3;
-     LConfig11.AutoSize := False; LConfig11.Width := LConfig00.Width; LConfig11.Height := LConfig00.Height;
-     LConfig11.Alignment := taCenter; LConfig11.Font := LConfig00.Font;
+    LDescConfig09 := TLabel.Create(Self);
+    LDescConfig09.Parent := LDescConfig00.Parent;
+    LDescConfig09.Left := LDescConfig00.Left;
+    LDescConfig09.Top := TopBase + DeltaY;
+    LDescConfig09.AutoSize := False;
+    LDescConfig09.Width := LDescConfig00.Width;
+    LDescConfig09.Height := LDescConfig00.Height;
+    LDescConfig09.Alignment := taCenter;
+    LDescConfig09.Font := LDescConfig00.Font;
+    LDescConfig09.Color := LDescConfig00.Color;
+    LDescConfig09.Transparent := False;
 
-     LDescConfig11 := TLabel.Create(Self); LDescConfig11.Parent := LDescConfig00.Parent;
-     LDescConfig11.Left := LDescConfig00.Left; LDescConfig11.Top := TopBase + DeltaY * 3;
-     LDescConfig11.AutoSize := False; LDescConfig11.Width := LDescConfig00.Width; LDescConfig11.Height := LDescConfig00.Height;
-     LDescConfig11.Alignment := taCenter; LDescConfig11.Font := LDescConfig00.Font;
-     LDescConfig11.Color := LDescConfig00.Color; LDescConfig11.Transparent := False;
+    // Canal 10
+    LConfig10 := TLabel.Create(Self);
+    LConfig10.Parent := LConfig00.Parent;
+    LConfig10.Left := LConfig00.Left;
+    LConfig10.Top := TopBase + DeltaY * 2;
+    LConfig10.AutoSize := False;
+    LConfig10.Width := LConfig00.Width;
+    LConfig10.Height := LConfig00.Height;
+    LConfig10.Alignment := taCenter;
+    LConfig10.Font := LConfig00.Font;
 
-     // Canal 12
-     LConfig12 := TLabel.Create(Self); LConfig12.Parent := LConfig00.Parent;
-     LConfig12.Left := LConfig00.Left; LConfig12.Top := TopBase + DeltaY * 4;
-     LConfig12.AutoSize := False; LConfig12.Width := LConfig00.Width; LConfig12.Height := LConfig00.Height;
-     LConfig12.Alignment := taCenter; LConfig12.Font := LConfig00.Font;
+    LDescConfig10 := TLabel.Create(Self);
+    LDescConfig10.Parent := LDescConfig00.Parent;
+    LDescConfig10.Left := LDescConfig00.Left;
+    LDescConfig10.Top := TopBase + DeltaY * 2;
+    LDescConfig10.AutoSize := False;
+    LDescConfig10.Width := LDescConfig00.Width;
+    LDescConfig10.Height := LDescConfig00.Height;
+    LDescConfig10.Alignment := taCenter;
+    LDescConfig10.Font := LDescConfig00.Font;
+    LDescConfig10.Color := LDescConfig00.Color;
+    LDescConfig10.Transparent := False;
 
-     LDescConfig12 := TLabel.Create(Self); LDescConfig12.Parent := LDescConfig00.Parent;
-     LDescConfig12.Left := LDescConfig00.Left; LDescConfig12.Top := TopBase + DeltaY * 4;
-     LDescConfig12.AutoSize := False; LDescConfig12.Width := LDescConfig00.Width; LDescConfig12.Height := LDescConfig00.Height;
-     LDescConfig12.Alignment := taCenter; LDescConfig12.Font := LDescConfig00.Font;
-     LDescConfig12.Color := LDescConfig00.Color; LDescConfig12.Transparent := False;
+    // Canal 11
+    LConfig11 := TLabel.Create(Self);
+    LConfig11.Parent := LConfig00.Parent;
+    LConfig11.Left := LConfig00.Left;
+    LConfig11.Top := TopBase + DeltaY * 3;
+    LConfig11.AutoSize := False;
+    LConfig11.Width := LConfig00.Width;
+    LConfig11.Height := LConfig00.Height;
+    LConfig11.Alignment := taCenter;
+    LConfig11.Font := LConfig00.Font;
 
-     // Canal 13
-     LConfig13 := TLabel.Create(Self); LConfig13.Parent := LConfig00.Parent;
-     LConfig13.Left := LConfig00.Left; LConfig13.Top := TopBase + DeltaY * 5;
-     LConfig13.AutoSize := False; LConfig13.Width := LConfig00.Width; LConfig13.Height := LConfig00.Height;
-     LConfig13.Alignment := taCenter; LConfig13.Font := LConfig00.Font;
+    LDescConfig11 := TLabel.Create(Self);
+    LDescConfig11.Parent := LDescConfig00.Parent;
+    LDescConfig11.Left := LDescConfig00.Left;
+    LDescConfig11.Top := TopBase + DeltaY * 3;
+    LDescConfig11.AutoSize := False;
+    LDescConfig11.Width := LDescConfig00.Width;
+    LDescConfig11.Height := LDescConfig00.Height;
+    LDescConfig11.Alignment := taCenter;
+    LDescConfig11.Font := LDescConfig00.Font;
+    LDescConfig11.Color := LDescConfig00.Color;
+    LDescConfig11.Transparent := False;
 
-     LDescConfig13 := TLabel.Create(Self); LDescConfig13.Parent := LDescConfig00.Parent;
-     LDescConfig13.Left := LDescConfig00.Left; LDescConfig13.Top := TopBase + DeltaY * 5;
-     LDescConfig13.AutoSize := False; LDescConfig13.Width := LDescConfig00.Width; LDescConfig13.Height := LDescConfig00.Height;
-     LDescConfig13.Alignment := taCenter; LDescConfig13.Font := LDescConfig00.Font;
-     LDescConfig13.Color := LDescConfig00.Color; LDescConfig13.Transparent := False;
+    // Canal 12
+    LConfig12 := TLabel.Create(Self);
+    LConfig12.Parent := LConfig00.Parent;
+    LConfig12.Left := LConfig00.Left;
+    LConfig12.Top := TopBase + DeltaY * 4;
+    LConfig12.AutoSize := False;
+    LConfig12.Width := LConfig00.Width;
+    LConfig12.Height := LConfig00.Height;
+    LConfig12.Alignment := taCenter;
+    LConfig12.Font := LConfig00.Font;
 
-     // Canal 14
-     LConfig14 := TLabel.Create(Self); LConfig14.Parent := LConfig00.Parent;
-     LConfig14.Left := LConfig00.Left; LConfig14.Top := TopBase + DeltaY * 6;
-     LConfig14.AutoSize := False; LConfig14.Width := LConfig00.Width; LConfig14.Height := LConfig00.Height;
-     LConfig14.Alignment := taCenter; LConfig14.Font := LConfig00.Font;
+    LDescConfig12 := TLabel.Create(Self);
+    LDescConfig12.Parent := LDescConfig00.Parent;
+    LDescConfig12.Left := LDescConfig00.Left;
+    LDescConfig12.Top := TopBase + DeltaY * 4;
+    LDescConfig12.AutoSize := False;
+    LDescConfig12.Width := LDescConfig00.Width;
+    LDescConfig12.Height := LDescConfig00.Height;
+    LDescConfig12.Alignment := taCenter;
+    LDescConfig12.Font := LDescConfig00.Font;
+    LDescConfig12.Color := LDescConfig00.Color;
+    LDescConfig12.Transparent := False;
 
-     LDescConfig14 := TLabel.Create(Self); LDescConfig14.Parent := LDescConfig00.Parent;
-     LDescConfig14.Left := LDescConfig00.Left; LDescConfig14.Top := TopBase + DeltaY * 6;
-     LDescConfig14.AutoSize := False; LDescConfig14.Width := LDescConfig00.Width; LDescConfig14.Height := LDescConfig00.Height;
-     LDescConfig14.Alignment := taCenter; LDescConfig14.Font := LDescConfig00.Font;
-     LDescConfig14.Color := LDescConfig00.Color; LDescConfig14.Transparent := False;
+    // Canal 13
+    LConfig13 := TLabel.Create(Self);
+    LConfig13.Parent := LConfig00.Parent;
+    LConfig13.Left := LConfig00.Left;
+    LConfig13.Top := TopBase + DeltaY * 5;
+    LConfig13.AutoSize := False;
+    LConfig13.Width := LConfig00.Width;
+    LConfig13.Height := LConfig00.Height;
+    LConfig13.Alignment := taCenter;
+    LConfig13.Font := LConfig00.Font;
 
-     // Canal 15
-     LConfig15 := TLabel.Create(Self); LConfig15.Parent := LConfig00.Parent;
-     LConfig15.Left := LConfig00.Left; LConfig15.Top := TopBase + DeltaY * 7;
-     LConfig15.AutoSize := False; LConfig15.Width := LConfig00.Width; LConfig15.Height := LConfig00.Height;
-     LConfig15.Alignment := taCenter; LConfig15.Font := LConfig00.Font;
+    LDescConfig13 := TLabel.Create(Self);
+    LDescConfig13.Parent := LDescConfig00.Parent;
+    LDescConfig13.Left := LDescConfig00.Left;
+    LDescConfig13.Top := TopBase + DeltaY * 5;
+    LDescConfig13.AutoSize := False;
+    LDescConfig13.Width := LDescConfig00.Width;
+    LDescConfig13.Height := LDescConfig00.Height;
+    LDescConfig13.Alignment := taCenter;
+    LDescConfig13.Font := LDescConfig00.Font;
+    LDescConfig13.Color := LDescConfig00.Color;
+    LDescConfig13.Transparent := False;
 
-     LDescConfig15 := TLabel.Create(Self); LDescConfig15.Parent := LDescConfig00.Parent;
-     LDescConfig15.Left := LDescConfig00.Left; LDescConfig15.Top := TopBase + DeltaY * 7;
-     LDescConfig15.AutoSize := False; LDescConfig15.Width := LDescConfig00.Width; LDescConfig15.Height := LDescConfig00.Height;
-     LDescConfig15.Alignment := taCenter; LDescConfig15.Font := LDescConfig00.Font;
-     LDescConfig15.Color := LDescConfig00.Color; LDescConfig15.Transparent := False;
+    // Canal 14
+    LConfig14 := TLabel.Create(Self);
+    LConfig14.Parent := LConfig00.Parent;
+    LConfig14.Left := LConfig00.Left;
+    LConfig14.Top := TopBase + DeltaY * 6;
+    LConfig14.AutoSize := False;
+    LConfig14.Width := LConfig00.Width;
+    LConfig14.Height := LConfig00.Height;
+    LConfig14.Alignment := taCenter;
+    LConfig14.Font := LConfig00.Font;
+
+    LDescConfig14 := TLabel.Create(Self);
+    LDescConfig14.Parent := LDescConfig00.Parent;
+    LDescConfig14.Left := LDescConfig00.Left;
+    LDescConfig14.Top := TopBase + DeltaY * 6;
+    LDescConfig14.AutoSize := False;
+    LDescConfig14.Width := LDescConfig00.Width;
+    LDescConfig14.Height := LDescConfig00.Height;
+    LDescConfig14.Alignment := taCenter;
+    LDescConfig14.Font := LDescConfig00.Font;
+    LDescConfig14.Color := LDescConfig00.Color;
+    LDescConfig14.Transparent := False;
+
+    // Canal 15
+    LConfig15 := TLabel.Create(Self);
+    LConfig15.Parent := LConfig00.Parent;
+    LConfig15.Left := LConfig00.Left;
+    LConfig15.Top := TopBase + DeltaY * 7;
+    LConfig15.AutoSize := False;
+    LConfig15.Width := LConfig00.Width;
+    LConfig15.Height := LConfig00.Height;
+    LConfig15.Alignment := taCenter;
+    LConfig15.Font := LConfig00.Font;
+
+    LDescConfig15 := TLabel.Create(Self);
+    LDescConfig15.Parent := LDescConfig00.Parent;
+    LDescConfig15.Left := LDescConfig00.Left;
+    LDescConfig15.Top := TopBase + DeltaY * 7;
+    LDescConfig15.AutoSize := False;
+    LDescConfig15.Width := LDescConfig00.Width;
+    LDescConfig15.Height := LDescConfig00.Height;
+    LDescConfig15.Alignment := taCenter;
+    LDescConfig15.Font := LDescConfig00.Font;
+    LDescConfig15.Color := LDescConfig00.Color;
+    LDescConfig15.Transparent := False;
 
 
-     // --- VISUALIZACION (LValorXX, LUnidadXX, LDescripcionXX, sbGraficoXX, sbComentarioXX) ---
-     // Uso LValorCanDig00 como base si existe.
-     if LValorCanDig00 <> nil then TopBase := LValorCanDig00.Top else TopBase := 214;
+    // --- VISUALIZACION (LValorXX, LUnidadXX, LDescripcionXX, sbGraficoXX, sbComentarioXX) ---
+    // Uso LValorCanDig00 como base si existe.
+    if LValorCanDig00 <> nil then TopBase := LValorCanDig00.Top
+    else
+      TopBase := 214;
 
-     // Canal 09 (Visual) - COMENTADO: LValorCan08 ya existe en LFM con GroupBoxCan14 como Parent
-     // LValorCan08 := TLabel.Create(Self); LValorCan08.Parent := LValorCan00.Parent;
-     // LValorCan08.Left := LValorCan00.Left; LValorCan08.Top := TopBase + DeltaY;
-     // LValorCan08.AutoSize := False; LValorCan08.Width := LValorCan00.Width; LValorCan08.Height := LValorCan00.Height;
-     // LValorCan08.Alignment := taCenter; LValorCan08.Font := LValorCan00.Font; LValorCan08.Color := LValorCan00.Color; LValorCan08.Transparent := False;
-     
-     // COMENTADO: LUnidadCan08 ya existe en LFM con GroupBoxCan14 como Parent (Expansion 1)
-     // Este código lo ponía incorrectamente en el parent de Canal 0 (Monitoreo)
-     // LUnidadCan08 := TLabel.Create(Self); LUnidadCan08.Parent := LUnidadCan00.Parent;
-     // LUnidadCan08.Left := LUnidadCan00.Left; LUnidadCan08.Top := TopBase + DeltaY;
-     // LUnidadCan08.AutoSize := False; LUnidadCan08.Width := LUnidadCan00.Width; LUnidadCan08.Height := LUnidadCan00.Height;
-     // LUnidadCan08.Alignment := taCenter; LUnidadCan08.Font := LUnidadCan00.Font;
-     
-     LDescripcion09 := TLabel.Create(Self); LDescripcion09.Parent := LDescripcionCan00.Parent;
-     LDescripcion09.Left := LDescripcionCan00.Left; LDescripcion09.Top := TopBase + DeltaY;
-     LDescripcion09.AutoSize := False; LDescripcion09.Width := LDescripcionCan00.Width; LDescripcion09.Height := LDescripcionCan00.Height;
-     LDescripcion09.Alignment := taCenter; LDescripcion09.Font := LDescripcionCan00.Font;
+    // Canal 09 (Visual) - COMENTADO: LValorCan08 ya existe en LFM con GroupBoxCan14 como Parent
+    // LValorCan08 := TLabel.Create(Self); LValorCan08.Parent := LValorCan00.Parent;
+    // LValorCan08.Left := LValorCan00.Left; LValorCan08.Top := TopBase + DeltaY;
+    // LValorCan08.AutoSize := False; LValorCan08.Width := LValorCan00.Width; LValorCan08.Height := LValorCan00.Height;
+    // LValorCan08.Alignment := taCenter; LValorCan08.Font := LValorCan00.Font; LValorCan08.Color := LValorCan00.Color; LValorCan08.Transparent := False;
 
-     sbGrafico09 := TSpeedButton.Create(Self); sbGrafico09.Parent := sbGrafico00.Parent;
-     sbGrafico09.Left := sbGrafico00.Left; sbGrafico09.Top := TopBase + DeltaY;
-     sbGrafico09.Width := sbGrafico00.Width; sbGrafico09.Height := sbGrafico00.Height;
-     sbGrafico09.NumGlyphs := sbGrafico00.NumGlyphs; sbGrafico09.Flat := sbGrafico00.Flat;
-     
-     sbComentario09 := TSpeedButton.Create(Self); sbComentario09.Parent := sbComentario00.Parent;
-     sbComentario09.Left := sbComentario00.Left; sbComentario09.Top := TopBase + DeltaY;
-     sbComentario09.Width := sbComentario00.Width; sbComentario09.Height := sbComentario00.Height;
-     sbComentario09.NumGlyphs := sbComentario00.NumGlyphs; sbComentario09.Flat := sbComentario00.Flat;
+    // COMENTADO: LUnidadCan08 ya existe en LFM con GroupBoxCan14 como Parent (Expansion 1)
+    // Este código lo ponía incorrectamente en el parent de Canal 0 (Monitoreo)
+    // LUnidadCan08 := TLabel.Create(Self); LUnidadCan08.Parent := LUnidadCan00.Parent;
+    // LUnidadCan08.Left := LUnidadCan00.Left; LUnidadCan08.Top := TopBase + DeltaY;
+    // LUnidadCan08.AutoSize := False; LUnidadCan08.Width := LUnidadCan00.Width; LUnidadCan08.Height := LUnidadCan00.Height;
+    // LUnidadCan08.Alignment := taCenter; LUnidadCan08.Font := LUnidadCan00.Font;
 
-     sbComentario09.NumGlyphs := sbComentario00.NumGlyphs; sbComentario09.Flat := sbComentario00.Flat;
+    LDescripcion09 := TLabel.Create(Self);
+    LDescripcion09.Parent := LDescripcionCan00.Parent;
+    LDescripcion09.Left := LDescripcionCan00.Left;
+    LDescripcion09.Top := TopBase + DeltaY;
+    LDescripcion09.AutoSize := False;
+    LDescripcion09.Width := LDescripcionCan00.Width;
+    LDescripcion09.Height := LDescripcionCan00.Height;
+    LDescripcion09.Alignment := taCenter;
+    LDescripcion09.Font := LDescripcionCan00.Font;
 
-     // Canal 10 - COMENTADO: Esto creaba LValorCan15 con Parent incorrecto (bug copia-pega)
-     // LValorCan15 := TLabel.Create(Self); LValorCan15.Parent := LValorCan00.Parent;
-     // LValorCan15.Left := LValorCan00.Left; LValorCan15.Top := TopBase + DeltaY*2;
-     // LValorCan15.AutoSize := False; LValorCan15.Width := LValorCan00.Width; LValorCan15.Height := LValorCan00.Height;
-     // LValorCan15.Alignment := taCenter; LValorCan15.Font := LValorCan00.Font; LValorCan15.Color := LValorCan00.Color; LValorCan15.Transparent := False;
+    sbGrafico09 := TSpeedButton.Create(Self);
+    sbGrafico09.Parent := sbGrafico00.Parent;
+    sbGrafico09.Left := sbGrafico00.Left;
+    sbGrafico09.Top := TopBase + DeltaY;
+    sbGrafico09.Width := sbGrafico00.Width;
+    sbGrafico09.Height := sbGrafico00.Height;
+    sbGrafico09.NumGlyphs := sbGrafico00.NumGlyphs;
+    sbGrafico09.Flat := sbGrafico00.Flat;
 
-     // COMENTADO: LUnidadCan10 ya existe en LFM
-     // LUnidad10 := TLabel.Create(Self); LUnidad10.Parent := LUnidadCan00.Parent;
-     // LUnidad10.Left := LUnidadCan00.Left; LUnidad10.Top := TopBase + DeltaY*2;
-     // LUnidad10.AutoSize := False; LUnidad10.Width := LUnidadCan00.Width; LUnidad10.Height := LUnidadCan00.Height;
-     // LUnidad10.Alignment := taCenter; LUnidad10.Font := LUnidadCan00.Font;
+    sbComentario09 := TSpeedButton.Create(Self);
+    sbComentario09.Parent := sbComentario00.Parent;
+    sbComentario09.Left := sbComentario00.Left;
+    sbComentario09.Top := TopBase + DeltaY;
+    sbComentario09.Width := sbComentario00.Width;
+    sbComentario09.Height := sbComentario00.Height;
+    sbComentario09.NumGlyphs := sbComentario00.NumGlyphs;
+    sbComentario09.Flat := sbComentario00.Flat;
 
-     LDescripcion10 := TLabel.Create(Self); LDescripcion10.Parent := LDescripcionCan00.Parent;
-     LDescripcion10.Left := LDescripcionCan00.Left; LDescripcion10.Top := TopBase + DeltaY*2;
-     LDescripcion10.AutoSize := False; LDescripcion10.Width := LDescripcionCan00.Width; LDescripcion10.Height := LDescripcionCan00.Height;
-     LDescripcion10.Alignment := taCenter; LDescripcion10.Font := LDescripcionCan00.Font;
+    sbComentario09.NumGlyphs := sbComentario00.NumGlyphs;
+    sbComentario09.Flat := sbComentario00.Flat;
 
-     sbGrafico10 := TSpeedButton.Create(Self); sbGrafico10.Parent := sbGrafico00.Parent;
-     sbGrafico10.Left := sbGrafico00.Left; sbGrafico10.Top := TopBase + DeltaY*2;
-     sbGrafico10.Width := sbGrafico00.Width; sbGrafico10.Height := sbGrafico00.Height;
-     sbGrafico10.Flat := sbGrafico00.Flat; // Simplifico propiedades
+    // Canal 10 - COMENTADO: Esto creaba LValorCan15 con Parent incorrecto (bug copia-pega)
+    // LValorCan15 := TLabel.Create(Self); LValorCan15.Parent := LValorCan00.Parent;
+    // LValorCan15.Left := LValorCan00.Left; LValorCan15.Top := TopBase + DeltaY*2;
+    // LValorCan15.AutoSize := False; LValorCan15.Width := LValorCan00.Width; LValorCan15.Height := LValorCan00.Height;
+    // LValorCan15.Alignment := taCenter; LValorCan15.Font := LValorCan00.Font; LValorCan15.Color := LValorCan00.Color; LValorCan15.Transparent := False;
 
-     sbComentario10 := TSpeedButton.Create(Self); sbComentario10.Parent := sbComentario00.Parent;
-     sbComentario10.Left := sbComentario00.Left; sbComentario10.Top := TopBase + DeltaY*2;
-     sbComentario10.Width := sbComentario00.Width; sbComentario10.Height := sbComentario00.Height;
-     sbComentario10.Flat := sbComentario00.Flat;
+    // COMENTADO: LUnidadCan10 ya existe en LFM
+    // LUnidad10 := TLabel.Create(Self); LUnidad10.Parent := LUnidadCan00.Parent;
+    // LUnidad10.Left := LUnidadCan00.Left; LUnidad10.Top := TopBase + DeltaY*2;
+    // LUnidad10.AutoSize := False; LUnidad10.Width := LUnidadCan00.Width; LUnidad10.Height := LUnidadCan00.Height;
+    // LUnidad10.Alignment := taCenter; LUnidad10.Font := LUnidadCan00.Font;
 
-     sbComentario10.Width := sbComentario00.Width; sbComentario10.Height := sbComentario00.Height;
-     sbComentario10.Flat := sbComentario00.Flat;
+    LDescripcion10 := TLabel.Create(Self);
+    LDescripcion10.Parent := LDescripcionCan00.Parent;
+    LDescripcion10.Left := LDescripcionCan00.Left;
+    LDescripcion10.Top := TopBase + DeltaY * 2;
+    LDescripcion10.AutoSize := False;
+    LDescripcion10.Width := LDescripcionCan00.Width;
+    LDescripcion10.Height := LDescripcionCan00.Height;
+    LDescripcion10.Alignment := taCenter;
+    LDescripcion10.Font := LDescripcionCan00.Font;
 
-     // Canal 11 - COMENTADO: Esto creaba LValorCan14 con Parent incorrecto (bug copia-pega)
-     // LValorCan14 := TLabel.Create(Self); LValorCan14.Parent := LValorCan00.Parent;
-     // LValorCan14.Left := LValorCan00.Left; LValorCan14.Top := TopBase + DeltaY*3;
-     // LValorCan14.AutoSize := False; LValorCan14.Width := LValorCan00.Width; LValorCan14.Height := LValorCan00.Height;
-     // LValorCan14.Alignment := taCenter; LValorCan14.Font := LValorCan00.Font; LValorCan14.Color := LValorCan00.Color; LValorCan14.Transparent := False;
+    sbGrafico10 := TSpeedButton.Create(Self);
+    sbGrafico10.Parent := sbGrafico00.Parent;
+    sbGrafico10.Left := sbGrafico00.Left;
+    sbGrafico10.Top := TopBase + DeltaY * 2;
+    sbGrafico10.Width := sbGrafico00.Width;
+    sbGrafico10.Height := sbGrafico00.Height;
+    sbGrafico10.Flat := sbGrafico00.Flat; // Simplifico propiedades
 
-     // COMENTADO: LUnidadCan11 ya existe en LFM
-     // LUnidad11 := TLabel.Create(Self); LUnidad11.Parent := LUnidadCan00.Parent;
-     // LUnidad11.Left := LUnidadCan00.Left; LUnidad11.Top := TopBase + DeltaY*3;
-     // LUnidad11.AutoSize := False; LUnidad11.Width := LUnidadCan00.Width; LUnidad11.Height := LUnidadCan00.Height;
-     // LUnidad11.Alignment := taCenter; LUnidad11.Font := LUnidadCan00.Font;
+    sbComentario10 := TSpeedButton.Create(Self);
+    sbComentario10.Parent := sbComentario00.Parent;
+    sbComentario10.Left := sbComentario00.Left;
+    sbComentario10.Top := TopBase + DeltaY * 2;
+    sbComentario10.Width := sbComentario00.Width;
+    sbComentario10.Height := sbComentario00.Height;
+    sbComentario10.Flat := sbComentario00.Flat;
 
-     LDescripcion11 := TLabel.Create(Self); LDescripcion11.Parent := LDescripcionCan00.Parent;
-     LDescripcion11.Left := LDescripcionCan00.Left; LDescripcion11.Top := TopBase + DeltaY*3;
-     LDescripcion11.AutoSize := False; LDescripcion11.Width := LDescripcionCan00.Width; LDescripcion11.Height := LDescripcionCan00.Height;
-     LDescripcion11.Alignment := taCenter; LDescripcion11.Font := LDescripcionCan00.Font;
-     
-     sbGrafico11 := TSpeedButton.Create(Self); sbGrafico11.Parent := sbGrafico00.Parent; 
-     sbGrafico11.Left := sbGrafico00.Left; sbGrafico11.Top := TopBase + DeltaY*3;
-     sbGrafico11.Width := sbGrafico00.Width; sbGrafico11.Height := sbGrafico00.Height; sbGrafico11.Flat := sbGrafico00.Flat;
+    sbComentario10.Width := sbComentario00.Width;
+    sbComentario10.Height := sbComentario00.Height;
+    sbComentario10.Flat := sbComentario00.Flat;
 
-     sbComentario11 := TSpeedButton.Create(Self); sbComentario11.Parent := sbComentario00.Parent;
-     sbComentario11.Left := sbComentario00.Left; sbComentario11.Top := TopBase + DeltaY*3;
-     sbComentario11.Width := sbComentario00.Width; sbComentario11.Height := sbComentario00.Height; sbComentario11.Flat := sbComentario00.Flat;
+    // Canal 11 - COMENTADO: Esto creaba LValorCan14 con Parent incorrecto (bug copia-pega)
+    // LValorCan14 := TLabel.Create(Self); LValorCan14.Parent := LValorCan00.Parent;
+    // LValorCan14.Left := LValorCan00.Left; LValorCan14.Top := TopBase + DeltaY*3;
+    // LValorCan14.AutoSize := False; LValorCan14.Width := LValorCan00.Width; LValorCan14.Height := LValorCan00.Height;
+    // LValorCan14.Alignment := taCenter; LValorCan14.Font := LValorCan00.Font; LValorCan14.Color := LValorCan00.Color; LValorCan14.Transparent := False;
 
-     sbComentario11.Width := sbComentario00.Width; sbComentario11.Height := sbComentario00.Height; sbComentario11.Flat := sbComentario00.Flat;
+    // COMENTADO: LUnidadCan11 ya existe en LFM
+    // LUnidad11 := TLabel.Create(Self); LUnidad11.Parent := LUnidadCan00.Parent;
+    // LUnidad11.Left := LUnidadCan00.Left; LUnidad11.Top := TopBase + DeltaY*3;
+    // LUnidad11.AutoSize := False; LUnidad11.Width := LUnidadCan00.Width; LUnidad11.Height := LUnidadCan00.Height;
+    // LUnidad11.Alignment := taCenter; LUnidad11.Font := LUnidadCan00.Font;
 
-     // Canal 12 - COMENTADO: Esto creaba LValorCan13 con Parent incorrecto (bug copia-pega)
-     // LValorCan13 := TLabel.Create(Self); LValorCan13.Parent := LValorCan00.Parent;
-     // LValorCan13.Left := LValorCan00.Left; LValorCan13.Top := TopBase + DeltaY*4;
-     // LValorCan13.AutoSize := False; LValorCan13.Width := LValorCan00.Width; LValorCan13.Height := LValorCan00.Height;
-     // LValorCan13.Alignment := taCenter; LValorCan13.Font := LValorCan00.Font; LValorCan13.Color := LValorCan00.Color; LValorCan13.Transparent := False;
+    LDescripcion11 := TLabel.Create(Self);
+    LDescripcion11.Parent := LDescripcionCan00.Parent;
+    LDescripcion11.Left := LDescripcionCan00.Left;
+    LDescripcion11.Top := TopBase + DeltaY * 3;
+    LDescripcion11.AutoSize := False;
+    LDescripcion11.Width := LDescripcionCan00.Width;
+    LDescripcion11.Height := LDescripcionCan00.Height;
+    LDescripcion11.Alignment := taCenter;
+    LDescripcion11.Font := LDescripcionCan00.Font;
 
-     // COMENTADO: LUnidadCan12 ya existe en LFM
-     // LUnidad12 := TLabel.Create(Self); LUnidad12.Parent := LUnidadCan00.Parent;
-     // LUnidad12.Left := LUnidadCan00.Left; LUnidad12.Top := TopBase + DeltaY*4;
-     // LUnidad12.AutoSize := False; LUnidad12.Width := LUnidadCan00.Width; LUnidad12.Height := LUnidadCan00.Height;
-     // LUnidad12.Alignment := taCenter; LUnidad12.Font := LUnidadCan00.Font;
+    sbGrafico11 := TSpeedButton.Create(Self);
+    sbGrafico11.Parent := sbGrafico00.Parent;
+    sbGrafico11.Left := sbGrafico00.Left;
+    sbGrafico11.Top := TopBase + DeltaY * 3;
+    sbGrafico11.Width := sbGrafico00.Width;
+    sbGrafico11.Height := sbGrafico00.Height;
+    sbGrafico11.Flat := sbGrafico00.Flat;
 
-     LDescripcion12 := TLabel.Create(Self); LDescripcion12.Parent := LDescripcionCan00.Parent;
-     LDescripcion12.Left := LDescripcionCan00.Left; LDescripcion12.Top := TopBase + DeltaY*4;
-     LDescripcion12.AutoSize := False; LDescripcion12.Width := LDescripcionCan00.Width; LDescripcion12.Height := LDescripcionCan00.Height;
-     LDescripcion12.Alignment := taCenter; LDescripcion12.Font := LDescripcionCan00.Font;
+    sbComentario11 := TSpeedButton.Create(Self);
+    sbComentario11.Parent := sbComentario00.Parent;
+    sbComentario11.Left := sbComentario00.Left;
+    sbComentario11.Top := TopBase + DeltaY * 3;
+    sbComentario11.Width := sbComentario00.Width;
+    sbComentario11.Height := sbComentario00.Height;
+    sbComentario11.Flat := sbComentario00.Flat;
 
-     sbGrafico12 := TSpeedButton.Create(Self); sbGrafico12.Parent := sbGrafico00.Parent;
-     sbGrafico12.Left := sbGrafico00.Left; sbGrafico12.Top := TopBase + DeltaY*4;
-     sbGrafico12.Width := sbGrafico00.Width; sbGrafico12.Height := sbGrafico00.Height; sbGrafico12.Flat := sbGrafico00.Flat;
+    sbComentario11.Width := sbComentario00.Width;
+    sbComentario11.Height := sbComentario00.Height;
+    sbComentario11.Flat := sbComentario00.Flat;
 
-     sbComentario12 := TSpeedButton.Create(Self); sbComentario12.Parent := sbComentario00.Parent;
-     sbComentario12.Left := sbComentario00.Left; sbComentario12.Top := TopBase + DeltaY*4;
-     sbComentario12.Width := sbComentario00.Width; sbComentario12.Height := sbComentario00.Height; sbComentario12.Flat := sbComentario00.Flat;
+    // Canal 12 - COMENTADO: Esto creaba LValorCan13 con Parent incorrecto (bug copia-pega)
+    // LValorCan13 := TLabel.Create(Self); LValorCan13.Parent := LValorCan00.Parent;
+    // LValorCan13.Left := LValorCan00.Left; LValorCan13.Top := TopBase + DeltaY*4;
+    // LValorCan13.AutoSize := False; LValorCan13.Width := LValorCan00.Width; LValorCan13.Height := LValorCan00.Height;
+    // LValorCan13.Alignment := taCenter; LValorCan13.Font := LValorCan00.Font; LValorCan13.Color := LValorCan00.Color; LValorCan13.Transparent := False;
 
-     sbComentario12.Width := sbComentario00.Width; sbComentario12.Height := sbComentario00.Height; sbComentario12.Flat := sbComentario00.Flat;
+    // COMENTADO: LUnidadCan12 ya existe en LFM
+    // LUnidad12 := TLabel.Create(Self); LUnidad12.Parent := LUnidadCan00.Parent;
+    // LUnidad12.Left := LUnidadCan00.Left; LUnidad12.Top := TopBase + DeltaY*4;
+    // LUnidad12.AutoSize := False; LUnidad12.Width := LUnidadCan00.Width; LUnidad12.Height := LUnidadCan00.Height;
+    // LUnidad12.Alignment := taCenter; LUnidad12.Font := LUnidadCan00.Font;
 
-     // Canal 13 - COMENTADO: LValorCan08 ya existe en LFM (esto era un bug - asignaba a LValorCan08 en lugar de LValorCan13)
-     // LValorCan08 := TLabel.Create(Self); LValorCan08.Parent := LValorCan00.Parent;
-     // LValorCan08.Left := LValorCan00.Left; LValorCan08.Top := TopBase + DeltaY*5;
-     // LValorCan08.AutoSize := False; LValorCan08.Width := LValorCan00.Width; LValorCan08.Height := LValorCan00.Height;
-     // LValorCan08.Alignment := taCenter; LValorCan08.Font := LValorCan00.Font; LValorCan08.Color := LValorCan00.Color; LValorCan08.Transparent := False;
+    LDescripcion12 := TLabel.Create(Self);
+    LDescripcion12.Parent := LDescripcionCan00.Parent;
+    LDescripcion12.Left := LDescripcionCan00.Left;
+    LDescripcion12.Top := TopBase + DeltaY * 4;
+    LDescripcion12.AutoSize := False;
+    LDescripcion12.Width := LDescripcionCan00.Width;
+    LDescripcion12.Height := LDescripcionCan00.Height;
+    LDescripcion12.Alignment := taCenter;
+    LDescripcion12.Font := LDescripcionCan00.Font;
 
-     // COMENTADO: LUnidadCan13 ya existe en LFM
-     // LUnidad13 := TLabel.Create(Self); LUnidad13.Parent := LUnidadCan00.Parent;
-     // LUnidad13.Left := LUnidadCan00.Left; LUnidad13.Top := TopBase + DeltaY*5;
-     // LUnidad13.AutoSize := False; LUnidad13.Width := LUnidadCan00.Width; LUnidad13.Height := LUnidadCan00.Height;
-     // LUnidad13.Alignment := taCenter; LUnidad13.Font := LUnidadCan00.Font;
+    sbGrafico12 := TSpeedButton.Create(Self);
+    sbGrafico12.Parent := sbGrafico00.Parent;
+    sbGrafico12.Left := sbGrafico00.Left;
+    sbGrafico12.Top := TopBase + DeltaY * 4;
+    sbGrafico12.Width := sbGrafico00.Width;
+    sbGrafico12.Height := sbGrafico00.Height;
+    sbGrafico12.Flat := sbGrafico00.Flat;
 
-     LDescripcion13 := TLabel.Create(Self); LDescripcion13.Parent := LDescripcionCan00.Parent;
-     LDescripcion13.Left := LDescripcionCan00.Left; LDescripcion13.Top := TopBase + DeltaY*5;
-     LDescripcion13.AutoSize := False; LDescripcion13.Width := LDescripcionCan00.Width; LDescripcion13.Height := LDescripcionCan00.Height;
-     LDescripcion13.Alignment := taCenter; LDescripcion13.Font := LDescripcionCan00.Font;
+    sbComentario12 := TSpeedButton.Create(Self);
+    sbComentario12.Parent := sbComentario00.Parent;
+    sbComentario12.Left := sbComentario00.Left;
+    sbComentario12.Top := TopBase + DeltaY * 4;
+    sbComentario12.Width := sbComentario00.Width;
+    sbComentario12.Height := sbComentario00.Height;
+    sbComentario12.Flat := sbComentario00.Flat;
 
-     sbGrafico13 := TSpeedButton.Create(Self); sbGrafico13.Parent := sbGrafico00.Parent;
-     sbGrafico13.Left := sbGrafico00.Left; sbGrafico13.Top := TopBase + DeltaY*5;
-     sbGrafico13.Width := sbGrafico00.Width; sbGrafico13.Height := sbGrafico00.Height; sbGrafico13.Flat := sbGrafico00.Flat;
+    sbComentario12.Width := sbComentario00.Width;
+    sbComentario12.Height := sbComentario00.Height;
+    sbComentario12.Flat := sbComentario00.Flat;
 
-     sbComentario13 := TSpeedButton.Create(Self); sbComentario13.Parent := sbComentario00.Parent;
-     sbComentario13.Left := sbComentario00.Left; sbComentario13.Top := TopBase + DeltaY*5;
-     sbComentario13.Width := sbComentario00.Width; sbComentario13.Height := sbComentario00.Height; sbComentario13.Flat := sbComentario00.Flat;
+    // Canal 13 - COMENTADO: LValorCan08 ya existe en LFM (esto era un bug - asignaba a LValorCan08 en lugar de LValorCan13)
+    // LValorCan08 := TLabel.Create(Self); LValorCan08.Parent := LValorCan00.Parent;
+    // LValorCan08.Left := LValorCan00.Left; LValorCan08.Top := TopBase + DeltaY*5;
+    // LValorCan08.AutoSize := False; LValorCan08.Width := LValorCan00.Width; LValorCan08.Height := LValorCan00.Height;
+    // LValorCan08.Alignment := taCenter; LValorCan08.Font := LValorCan00.Font; LValorCan08.Color := LValorCan00.Color; LValorCan08.Transparent := False;
 
-     sbComentario13.Width := sbComentario00.Width; sbComentario13.Height := sbComentario00.Height; sbComentario13.Flat := sbComentario00.Flat;
+    // COMENTADO: LUnidadCan13 ya existe en LFM
+    // LUnidad13 := TLabel.Create(Self); LUnidad13.Parent := LUnidadCan00.Parent;
+    // LUnidad13.Left := LUnidadCan00.Left; LUnidad13.Top := TopBase + DeltaY*5;
+    // LUnidad13.AutoSize := False; LUnidad13.Width := LUnidadCan00.Width; LUnidad13.Height := LUnidadCan00.Height;
+    // LUnidad13.Alignment := taCenter; LUnidad13.Font := LUnidadCan00.Font;
 
-     // Canal 14 - COMENTADO: LValorCan09 ya existe en LFM (esto era un bug - asignaba a LValorCan09 en lugar de LValorCan14)
-     // LValorCan09 := TLabel.Create(Self); LValorCan09.Parent := LValorCan00.Parent;
-     // LValorCan09.Left := LValorCan00.Left; LValorCan09.Top := TopBase + DeltaY*6;
-     // LValorCan09.AutoSize := False; LValorCan09.Width := LValorCan00.Width; LValorCan09.Height := LValorCan00.Height;
-     // LValorCan09.Alignment := taCenter; LValorCan09.Font := LValorCan00.Font; LValorCan09.Color := LValorCan00.Color; LValorCan09.Transparent := False;
+    LDescripcion13 := TLabel.Create(Self);
+    LDescripcion13.Parent := LDescripcionCan00.Parent;
+    LDescripcion13.Left := LDescripcionCan00.Left;
+    LDescripcion13.Top := TopBase + DeltaY * 5;
+    LDescripcion13.AutoSize := False;
+    LDescripcion13.Width := LDescripcionCan00.Width;
+    LDescripcion13.Height := LDescripcionCan00.Height;
+    LDescripcion13.Alignment := taCenter;
+    LDescripcion13.Font := LDescripcionCan00.Font;
 
-     // COMENTADO: LUnidadCan14 ya existe en LFM
-     // LUnidad14 := TLabel.Create(Self); LUnidad14.Parent := LUnidadCan00.Parent;
-     // LUnidad14.Left := LUnidadCan00.Left; LUnidad14.Top := TopBase + DeltaY*6;
-     // LUnidad14.AutoSize := False; LUnidad14.Width := LUnidadCan00.Width; LUnidad14.Height := LUnidadCan00.Height;
-     // LUnidad14.Alignment := taCenter; LUnidad14.Font := LUnidadCan00.Font;
+    sbGrafico13 := TSpeedButton.Create(Self);
+    sbGrafico13.Parent := sbGrafico00.Parent;
+    sbGrafico13.Left := sbGrafico00.Left;
+    sbGrafico13.Top := TopBase + DeltaY * 5;
+    sbGrafico13.Width := sbGrafico00.Width;
+    sbGrafico13.Height := sbGrafico00.Height;
+    sbGrafico13.Flat := sbGrafico00.Flat;
 
-     LDescripcion14 := TLabel.Create(Self); LDescripcion14.Parent := LDescripcionCan00.Parent;
-     LDescripcion14.Left := LDescripcionCan00.Left; LDescripcion14.Top := TopBase + DeltaY*6;
-     LDescripcion14.AutoSize := False; LDescripcion14.Width := LDescripcionCan00.Width; LDescripcion14.Height := LDescripcionCan00.Height;
-     LDescripcion14.Alignment := taCenter; LDescripcion14.Font := LDescripcionCan00.Font;
+    sbComentario13 := TSpeedButton.Create(Self);
+    sbComentario13.Parent := sbComentario00.Parent;
+    sbComentario13.Left := sbComentario00.Left;
+    sbComentario13.Top := TopBase + DeltaY * 5;
+    sbComentario13.Width := sbComentario00.Width;
+    sbComentario13.Height := sbComentario00.Height;
+    sbComentario13.Flat := sbComentario00.Flat;
 
-     sbGrafico14 := TSpeedButton.Create(Self); sbGrafico14.Parent := sbGrafico00.Parent;
-     sbGrafico14.Left := sbGrafico00.Left; sbGrafico14.Top := TopBase + DeltaY*6;
-     sbGrafico14.Width := sbGrafico00.Width; sbGrafico14.Height := sbGrafico00.Height; sbGrafico14.Flat := sbGrafico00.Flat;
+    sbComentario13.Width := sbComentario00.Width;
+    sbComentario13.Height := sbComentario00.Height;
+    sbComentario13.Flat := sbComentario00.Flat;
 
-     sbComentario14 := TSpeedButton.Create(Self); sbComentario14.Parent := sbComentario00.Parent;
-     sbComentario14.Left := sbComentario00.Left; sbComentario14.Top := TopBase + DeltaY*6;
-     sbComentario14.Width := sbComentario00.Width; sbComentario14.Height := sbComentario00.Height; sbComentario14.Flat := sbComentario00.Flat;
+    // Canal 14 - COMENTADO: LValorCan09 ya existe en LFM (esto era un bug - asignaba a LValorCan09 en lugar de LValorCan14)
+    // LValorCan09 := TLabel.Create(Self); LValorCan09.Parent := LValorCan00.Parent;
+    // LValorCan09.Left := LValorCan00.Left; LValorCan09.Top := TopBase + DeltaY*6;
+    // LValorCan09.AutoSize := False; LValorCan09.Width := LValorCan00.Width; LValorCan09.Height := LValorCan00.Height;
+    // LValorCan09.Alignment := taCenter; LValorCan09.Font := LValorCan00.Font; LValorCan09.Color := LValorCan00.Color; LValorCan09.Transparent := False;
 
-     sbComentario14.Width := sbComentario00.Width; sbComentario14.Height := sbComentario00.Height; sbComentario14.Flat := sbComentario00.Flat;
+    // COMENTADO: LUnidadCan14 ya existe en LFM
+    // LUnidad14 := TLabel.Create(Self); LUnidad14.Parent := LUnidadCan00.Parent;
+    // LUnidad14.Left := LUnidadCan00.Left; LUnidad14.Top := TopBase + DeltaY*6;
+    // LUnidad14.AutoSize := False; LUnidad14.Width := LUnidadCan00.Width; LUnidad14.Height := LUnidadCan00.Height;
+    // LUnidad14.Alignment := taCenter; LUnidad14.Font := LUnidadCan00.Font;
 
-     // Canal 15 - COMENTADO: LValorCan10 ya existe en LFM con GroupBoxCan14 como Parent
-     // LValorCan10 := TLabel.Create(Self); LValorCan10.Parent := LValorCan00.Parent;
-     // LValorCan10.Left := LValorCan00.Left; LValorCan10.Top := TopBase + DeltaY*7;
-     // LValorCan10.AutoSize := False; LValorCan10.Width := LValorCan00.Width; LValorCan10.Height := LValorCan00.Height;
-     // LValorCan10.Alignment := taCenter; LValorCan10.Font := LValorCan00.Font; LValorCan10.Color := LValorCan00.Color; LValorCan10.Transparent := False;
+    LDescripcion14 := TLabel.Create(Self);
+    LDescripcion14.Parent := LDescripcionCan00.Parent;
+    LDescripcion14.Left := LDescripcionCan00.Left;
+    LDescripcion14.Top := TopBase + DeltaY * 6;
+    LDescripcion14.AutoSize := False;
+    LDescripcion14.Width := LDescripcionCan00.Width;
+    LDescripcion14.Height := LDescripcionCan00.Height;
+    LDescripcion14.Alignment := taCenter;
+    LDescripcion14.Font := LDescripcionCan00.Font;
 
-     // COMENTADO: LUnidadCan15 ya existe en LFM
-     // LUnidad15 := TLabel.Create(Self); LUnidad15.Parent := LUnidadCan00.Parent;
-     // LUnidad15.Left := LUnidadCan00.Left; LUnidad15.Top := TopBase + DeltaY*7;
-     // LUnidad15.AutoSize := False; LUnidad15.Width := LUnidadCan00.Width; LUnidad15.Height := LUnidadCan00.Height;
-     // LUnidad15.Alignment := taCenter; LUnidad15.Font := LUnidadCan00.Font;
+    sbGrafico14 := TSpeedButton.Create(Self);
+    sbGrafico14.Parent := sbGrafico00.Parent;
+    sbGrafico14.Left := sbGrafico00.Left;
+    sbGrafico14.Top := TopBase + DeltaY * 6;
+    sbGrafico14.Width := sbGrafico00.Width;
+    sbGrafico14.Height := sbGrafico00.Height;
+    sbGrafico14.Flat := sbGrafico00.Flat;
 
-     LDescripcion15 := TLabel.Create(Self); LDescripcion15.Parent := LDescripcionCan00.Parent;
-     LDescripcion15.Left := LDescripcionCan00.Left; LDescripcion15.Top := TopBase + DeltaY*7;
-     LDescripcion15.AutoSize := False; LDescripcion15.Width := LDescripcionCan00.Width; LDescripcion15.Height := LDescripcionCan00.Height;
-     LDescripcion15.Alignment := taCenter; LDescripcion15.Font := LDescripcionCan00.Font;
-     
-     sbGrafico15 := TSpeedButton.Create(Self); sbGrafico15.Parent := sbGrafico00.Parent;
-     sbGrafico15.Left := sbGrafico00.Left; sbGrafico15.Top := TopBase + DeltaY*7;
-     sbGrafico15.Width := sbGrafico00.Width; sbGrafico15.Height := sbGrafico00.Height; sbGrafico15.Flat := sbGrafico00.Flat;
-     
-     sbComentario15 := TSpeedButton.Create(Self); sbComentario15.Parent := sbComentario00.Parent;
-     sbComentario15.Left := sbComentario00.Left; sbComentario15.Top := TopBase + DeltaY*7;
-     sbComentario15.Width := sbComentario00.Width; sbComentario15.Height := sbComentario00.Height; sbComentario15.Flat := sbComentario00.Flat;
+    sbComentario14 := TSpeedButton.Create(Self);
+    sbComentario14.Parent := sbComentario00.Parent;
+    sbComentario14.Left := sbComentario00.Left;
+    sbComentario14.Top := TopBase + DeltaY * 6;
+    sbComentario14.Width := sbComentario00.Width;
+    sbComentario14.Height := sbComentario00.Height;
+    sbComentario14.Flat := sbComentario00.Flat;
 
-     sbComentario15.Width := sbComentario00.Width; sbComentario15.Height := sbComentario00.Height; sbComentario15.Flat := sbComentario00.Flat;
+    sbComentario14.Width := sbComentario00.Width;
+    sbComentario14.Height := sbComentario00.Height;
+    sbComentario14.Flat := sbComentario00.Flat;
 
-     // Force hide all new components by default
-     LConfig09.Visible := False; LDescConfig09.Visible := False;
-     LConfig10.Visible := False; LDescConfig10.Visible := False;
-     LConfig11.Visible := False; LDescConfig11.Visible := False;
-     LConfig12.Visible := False; LDescConfig12.Visible := False;
-     LConfig13.Visible := False; LDescConfig13.Visible := False;
-     LConfig14.Visible := False; LDescConfig14.Visible := False;
-     LConfig15.Visible := False; LDescConfig15.Visible := False;
-     
-     // COMENTADO: Ya no creamos LValorCan10 dinámicamente, no ocultarlo aquí
-     // LValorCan10.Visible := False; 
-     // COMENTADO: LUnidad15 ya no existe, usa LUnidadCan15 desde LFM
-     // LUnidad15.Visible := False; LDescripcion15.Visible := False; sbGrafico15.Visible := False; sbComentario15.Visible := False; LNombreCanal15.Visible := False;
-     // Hide new LFM labels by default
-     LNombreCanal09.Visible := False; LNombreCanal10.Visible := False; LNombreCanal11.Visible := False;
-     LNombreCanal12.Visible := False; LNombreCanal13.Visible := False; LNombreCanal14.Visible := False;
+    // Canal 15 - COMENTADO: LValorCan10 ya existe en LFM con GroupBoxCan14 como Parent
+    // LValorCan10 := TLabel.Create(Self); LValorCan10.Parent := LValorCan00.Parent;
+    // LValorCan10.Left := LValorCan00.Left; LValorCan10.Top := TopBase + DeltaY*7;
+    // LValorCan10.AutoSize := False; LValorCan10.Width := LValorCan00.Width; LValorCan10.Height := LValorCan00.Height;
+    // LValorCan10.Alignment := taCenter; LValorCan10.Font := LValorCan00.Font; LValorCan10.Color := LValorCan00.Color; LValorCan10.Transparent := False;
+
+    // COMENTADO: LUnidadCan15 ya existe en LFM
+    // LUnidad15 := TLabel.Create(Self); LUnidad15.Parent := LUnidadCan00.Parent;
+    // LUnidad15.Left := LUnidadCan00.Left; LUnidad15.Top := TopBase + DeltaY*7;
+    // LUnidad15.AutoSize := False; LUnidad15.Width := LUnidadCan00.Width; LUnidad15.Height := LUnidadCan00.Height;
+    // LUnidad15.Alignment := taCenter; LUnidad15.Font := LUnidadCan00.Font;
+
+    LDescripcion15 := TLabel.Create(Self);
+    LDescripcion15.Parent := LDescripcionCan00.Parent;
+    LDescripcion15.Left := LDescripcionCan00.Left;
+    LDescripcion15.Top := TopBase + DeltaY * 7;
+    LDescripcion15.AutoSize := False;
+    LDescripcion15.Width := LDescripcionCan00.Width;
+    LDescripcion15.Height := LDescripcionCan00.Height;
+    LDescripcion15.Alignment := taCenter;
+    LDescripcion15.Font := LDescripcionCan00.Font;
+
+    sbGrafico15 := TSpeedButton.Create(Self);
+    sbGrafico15.Parent := sbGrafico00.Parent;
+    sbGrafico15.Left := sbGrafico00.Left;
+    sbGrafico15.Top := TopBase + DeltaY * 7;
+    sbGrafico15.Width := sbGrafico00.Width;
+    sbGrafico15.Height := sbGrafico00.Height;
+    sbGrafico15.Flat := sbGrafico00.Flat;
+
+    sbComentario15 := TSpeedButton.Create(Self);
+    sbComentario15.Parent := sbComentario00.Parent;
+    sbComentario15.Left := sbComentario00.Left;
+    sbComentario15.Top := TopBase + DeltaY * 7;
+    sbComentario15.Width := sbComentario00.Width;
+    sbComentario15.Height := sbComentario00.Height;
+    sbComentario15.Flat := sbComentario00.Flat;
+
+    sbComentario15.Width := sbComentario00.Width;
+    sbComentario15.Height := sbComentario00.Height;
+    sbComentario15.Flat := sbComentario00.Flat;
+
+    // Force hide all new components by default
+    LConfig09.Visible := False;
+    LDescConfig09.Visible := False;
+    LConfig10.Visible := False;
+    LDescConfig10.Visible := False;
+    LConfig11.Visible := False;
+    LDescConfig11.Visible := False;
+    LConfig12.Visible := False;
+    LDescConfig12.Visible := False;
+    LConfig13.Visible := False;
+    LDescConfig13.Visible := False;
+    LConfig14.Visible := False;
+    LDescConfig14.Visible := False;
+    LConfig15.Visible := False;
+    LDescConfig15.Visible := False;
+
+    // COMENTADO: Ya no creamos LValorCan10 dinámicamente, no ocultarlo aquí
+    // LValorCan10.Visible := False;
+    // COMENTADO: LUnidad15 ya no existe, usa LUnidadCan15 desde LFM
+    // LUnidad15.Visible := False; LDescripcion15.Visible := False; sbGrafico15.Visible := False; sbComentario15.Visible := False; LNombreCanal15.Visible := False;
+    // Hide new LFM labels by default
+    LNombreCanal09.Visible := False;
+    LNombreCanal10.Visible := False;
+    LNombreCanal11.Visible := False;
+    LNombreCanal12.Visible := False;
+    LNombreCanal13.Visible := False;
+    LNombreCanal14.Visible := False;
   end;
 
   // GHOST BUSTERS: Eliminado porque ahora los labels son legítimos (LNombreCanalXX)
@@ -2022,18 +2511,18 @@ end;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-function TFprincipal.CentrarTexto(texto:string; Ancho:integer):string;
+function TFprincipal.CentrarTexto(texto: string; Ancho: integer): string;
 var
-  k,N     : integer;
-  auxText : string;
-
+  k, N: integer;
+  auxText: string;
 begin
   auxText := Texto;
-  N := ((Ancho div 8)-length(texto)) div 2;
-  for k:=1 to N do auxText := ' ' + auxText;
+  N := ((Ancho div 8) - length(texto)) div 2;
+  for k := 1 to N do auxText := ' ' + auxText;
 
-  if N>0 then result := auxText
-  else result := texto;
+  if N > 0 then Result := auxText
+  else
+    Result := texto;
 end;
 
 procedure TFprincipal.ToolButton4Click(Sender: TObject);
@@ -2044,64 +2533,75 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.tsConfiguracionShow(Sender: TObject);
 var
-  i : integer;
-
+  i: integer;
 begin
   // Oculto el ComboBox
-  cbSensores.Visible   := false;
+  cbSensores.Visible := False;
 
   // Cargo el Nombre del Equipo
-  eNombre.Text          := Equipo.Nombre;
+  eNombre.Text := Equipo.Nombre;
 
   // Averiguo el periodo de muestro para el ComboBox
   cbIntervalo.ItemIndex := 0;
-  for i:=0 to length(TablaT)-1 do
+  for i := 0 to length(TablaT) - 1 do
     if (Equipo.Tmuestreo = TablaT[i]) then cbIntervalo.ItemIndex := i;
 
   // Cargo la info de los canales
   // Canal 0
-  LConfig00.Caption              := ListaSensores[Equipo.Canales[0].PosLista].Nombre;
-  LDescConfig00.Caption          := ListaSensores[Equipo.Canales[0].PosLista].Descripcion;
+  LConfig00.Caption := ListaSensores[Equipo.Canales[0].PosLista].Nombre;
+  LDescConfig00.Caption :=
+    ListaSensores[Equipo.Canales[0].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[0] := Equipo.Canales[0].Config;
   // Canal 1
-  LConfig01.Caption              := ListaSensores[Equipo.Canales[1].PosLista].Nombre;
-  LDescConfig01.Caption          := ListaSensores[Equipo.Canales[1].PosLista].Descripcion;
+  LConfig01.Caption := ListaSensores[Equipo.Canales[1].PosLista].Nombre;
+  LDescConfig01.Caption :=
+    ListaSensores[Equipo.Canales[1].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[1] := Equipo.Canales[1].Config;
   // Canal 2
-  LConfig02.Caption              := ListaSensores[Equipo.Canales[2].PosLista].Nombre;
-  LDescConfig02.Caption          := ListaSensores[Equipo.Canales[2].PosLista].Descripcion;
+  LConfig02.Caption := ListaSensores[Equipo.Canales[2].PosLista].Nombre;
+  LDescConfig02.Caption :=
+    ListaSensores[Equipo.Canales[2].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[2] := Equipo.Canales[2].Config;
   // Canal 3
-  LConfig03.Caption              := ListaSensores[Equipo.Canales[3].PosLista].Nombre;
-  LDescConfig03.Caption          := ListaSensores[Equipo.Canales[3].PosLista].Descripcion;
+  LConfig03.Caption := ListaSensores[Equipo.Canales[3].PosLista].Nombre;
+  LDescConfig03.Caption :=
+    ListaSensores[Equipo.Canales[3].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[3] := Equipo.Canales[3].Config;
   // Canal 4
-  LConfig04.Caption              := ListaSensores[Equipo.Canales[4].PosLista].Nombre;
-  LDescConfig04.Caption          := ListaSensores[Equipo.Canales[4].PosLista].Descripcion;
+  LConfig04.Caption := ListaSensores[Equipo.Canales[4].PosLista].Nombre;
+  LDescConfig04.Caption :=
+    ListaSensores[Equipo.Canales[4].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[4] := Equipo.Canales[4].Config;
   // Canal 5
-  LConfig05.Caption              := ListaSensores[Equipo.Canales[5].PosLista].Nombre;
-  LDescConfig05.Caption          := ListaSensores[Equipo.Canales[5].PosLista].Descripcion;
+  LConfig05.Caption := ListaSensores[Equipo.Canales[5].PosLista].Nombre;
+  LDescConfig05.Caption :=
+    ListaSensores[Equipo.Canales[5].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[5] := Equipo.Canales[5].Config;
   // Canal 6
-  LConfig06.Caption              := ListaSensores[Equipo.Canales[6].PosLista].Nombre;
-  LDescConfig06.Caption          := ListaSensores[Equipo.Canales[6].PosLista].Descripcion;
+  LConfig06.Caption := ListaSensores[Equipo.Canales[6].PosLista].Nombre;
+  LDescConfig06.Caption :=
+    ListaSensores[Equipo.Canales[6].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[6] := Equipo.Canales[6].Config;
   // Canal 7
-  LConfig07.Caption              := ListaSensores[Equipo.Canales[7].PosLista].Nombre;
-  LDescConfig07.Caption          := ListaSensores[Equipo.Canales[7].PosLista].Descripcion;
+  LConfig07.Caption := ListaSensores[Equipo.Canales[7].PosLista].Nombre;
+  LDescConfig07.Caption :=
+    ListaSensores[Equipo.Canales[7].PosLista].Descripcion;
   Equipo.ThreadComm.ConfigCHs[7] := Equipo.Canales[7].Config;
 
   // Canales Digitales (Tengo 2 pero lo Uso como uno)
   // Canal 8
-  if not Equipo.UsarCH9 then begin
-    LConfig08.Caption              := ListaSensores[Equipo.Canales[8].PosLista].Nombre;
-    LDescConfig08.Caption          := ListaSensores[Equipo.Canales[8].PosLista].Descripcion;
+  if not Equipo.UsarCH9 then
+  begin
+    LConfig08.Caption := ListaSensores[Equipo.Canales[8].PosLista].Nombre;
+    LDescConfig08.Caption :=
+      ListaSensores[Equipo.Canales[8].PosLista].Descripcion;
     Equipo.ThreadComm.ConfigCHs[8] := Equipo.Canales[8].Config;
   end
-  else begin // Canal 9
-    LConfig08.Caption              := ListaSensores[Equipo.Canales[9].PosLista].Nombre;
-    LDescConfig08.Caption          := ListaSensores[Equipo.Canales[9].PosLista].Descripcion;
+  else
+  begin // Canal 9
+    LConfig08.Caption := ListaSensores[Equipo.Canales[9].PosLista].Nombre;
+    LDescConfig08.Caption :=
+      ListaSensores[Equipo.Canales[9].PosLista].Descripcion;
     Equipo.ThreadComm.ConfigCHs[9] := Equipo.Canales[9].Config;
   end;
 
@@ -2122,30 +2622,33 @@ begin
   LDescConfig15.Caption := 'Canal visual - sin funcionalidad';
 
   // Desabilito el boton para configurar si el equipo no est� conectado
-  if not Equipo.ThreadComm.ONLine then  sbConfigurar.Enabled := false
-  else sbConfigurar.Enabled := true;
+  if not Equipo.ThreadComm.ONLine then  sbConfigurar.Enabled := False
+  else
+    sbConfigurar.Enabled := True;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.LConfigsClick(Sender: TObject);
 begin
-  NCanal               := (Sender as TLabel).tag;
-  cbSensores.Left      := (Sender as TLabel).Left-6;
-  cbSensores.Top       := (Sender as TLabel).top-3;
+  NCanal := (Sender as TLabel).tag;
+  cbSensores.Left := (Sender as TLabel).Left - 6;
+  cbSensores.Top := (Sender as TLabel).top - 3;
   if not Equipo.UsarCH9 then cbSensores.ItemIndex := Equipo.Canales[NCanal].config
-  else cbSensores.ItemIndex := Equipo.Canales[NCanal+1].config;
-  cbSensores.Visible   := True;
+  else
+    cbSensores.ItemIndex := Equipo.Canales[NCanal + 1].config;
+  cbSensores.Visible := True;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.cbSensoresCloseUp(Sender: TObject);
 var
-  i           : byte;
-  descripcion : string;
-
+  i: byte;
+  descripcion: string;
 begin
-  for i:=0 to length(ListaSensores) do begin
-    if (ListaSensores[i].Config=cbSensores.ItemIndex) then begin
+  for i := 0 to length(ListaSensores) do
+  begin
+    if (ListaSensores[i].Config = cbSensores.ItemIndex) then
+    begin
       descripcion := ListaSensores[i].Descripcion;
       break;
     end;
@@ -2153,63 +2656,85 @@ begin
 
   // Chequeo de integridad - Si este canal soporta este sensor...
   // Para canales Anal�gicos.....
-  if (i>1) and (NCanal<8) and (ListaSensores[i].Entrada<>'TENSION')then begin
+  if (i > 1) and (NCanal < 8) and (ListaSensores[i].Entrada <> 'TENSION') then
+  begin
     // Cartel de Error
-    MessageBox(Handle,'El sensor seleccionado corresponde a un canal DIGITAL.',
-               PChar(Caption), MB_OK	or MB_ICONERROR );
+    MessageBox(Handle, 'El sensor seleccionado corresponde a un canal DIGITAL.',
+      PChar(Caption), MB_OK or MB_ICONERROR);
     cbSensores.Visible := False;
     exit;
   end;
   // Para canales Digitales.....
-  if (i>1) and (NCanal>7) and (ListaSensores[i].Entrada<>'PULSO')then begin
+  if (i > 1) and (NCanal > 7) and (ListaSensores[i].Entrada <> 'PULSO') then
+  begin
     // Cartel de Error
-    MessageBox(Handle,'El sensor seleccionado corresponde a un canal ANAL�GICO.',
-               PChar(Caption), MB_OK	or MB_ICONERROR );
+    MessageBox(Handle, 'El sensor seleccionado corresponde a un canal ANAL�GICO.',
+      PChar(Caption), MB_OK or MB_ICONERROR);
     cbSensores.Visible := False;
     exit;
   end;
 
   // Cargo el Nombre y la desc del sensor en la Ventana
   case NCanal of
-  0 : begin LConfig00.Caption     := cbSensores.Text;
-            LDescConfig00.Caption := descripcion; end;
-  1 : begin LConfig01.Caption     := cbSensores.Text;
-            LDescConfig01.Caption := descripcion; end;
-  2 : begin LConfig02.Caption     := cbSensores.Text;
-            LDescConfig02.Caption := descripcion; end;
-  3 : begin LConfig03.Caption     := cbSensores.Text;
-            LDescConfig03.Caption := descripcion; end;
-  4 : begin LConfig04.Caption     := cbSensores.Text;
-            LDescConfig04.Caption := descripcion; end;
-  5 : begin LConfig05.Caption     := cbSensores.Text;
-            LDescConfig05.Caption := descripcion; end;
-  6 : begin LConfig06.Caption     := cbSensores.Text;
-            LDescConfig06.Caption := descripcion; end;
-  7 : begin LConfig07.Caption     := cbSensores.Text;
-            LDescConfig07.Caption := descripcion; end;
-  // Canales Digitales
-  8 : begin LConfig08.Caption     := cbSensores.Text;
-            LDescConfig08.Caption := descripcion; end;
-  // Canales visuales adicionales (09-15) - No se pueden cambiar
-  9,10,11,12,13,14,15 : begin 
-    // No hacer nada - mantener el texto visual
-    MessageBox(Handle,'Este es un canal solo visual. No se puede configurar.',
-               PChar(Caption), MB_OK or MB_ICONINFORMATION);
-  end;
+    0: begin
+      LConfig00.Caption := cbSensores.Text;
+      LDescConfig00.Caption := descripcion;
+    end;
+    1: begin
+      LConfig01.Caption := cbSensores.Text;
+      LDescConfig01.Caption := descripcion;
+    end;
+    2: begin
+      LConfig02.Caption := cbSensores.Text;
+      LDescConfig02.Caption := descripcion;
+    end;
+    3: begin
+      LConfig03.Caption := cbSensores.Text;
+      LDescConfig03.Caption := descripcion;
+    end;
+    4: begin
+      LConfig04.Caption := cbSensores.Text;
+      LDescConfig04.Caption := descripcion;
+    end;
+    5: begin
+      LConfig05.Caption := cbSensores.Text;
+      LDescConfig05.Caption := descripcion;
+    end;
+    6: begin
+      LConfig06.Caption := cbSensores.Text;
+      LDescConfig06.Caption := descripcion;
+    end;
+    7: begin
+      LConfig07.Caption := cbSensores.Text;
+      LDescConfig07.Caption := descripcion;
+    end;
+    // Canales Digitales
+    8: begin
+      LConfig08.Caption := cbSensores.Text;
+      LDescConfig08.Caption := descripcion;
+    end;
+    // Canales visuales adicionales (09-15) - No se pueden cambiar
+    9, 10, 11, 12, 13, 14, 15: begin
+      // No hacer nada - mantener el texto visual
+      MessageBox(Handle, 'Este es un canal solo visual. No se puede configurar.',
+        PChar(Caption), MB_OK or MB_ICONINFORMATION);
+    end;
   end;
 
   Equipo.ThreadComm.ConfigCHs[NCanal] := cbSensores.ItemIndex;
-  cbSensores.Visible                  := False;
-  
+  cbSensores.Visible := False;
+
   // Chequeo que canal digital debo usar.... CH8 o el CH9
-  if (NCanal=8) and (ListaSensores[i].Modo='ACUMULAR') then begin
-    Equipo.ThreadComm.ConfigCHs[NCanal]   := 0;
-    Equipo.ThreadComm.ConfigCHs[NCanal+1] := cbSensores.ItemIndex;
+  if (NCanal = 8) and (ListaSensores[i].Modo = 'ACUMULAR') then
+  begin
+    Equipo.ThreadComm.ConfigCHs[NCanal] := 0;
+    Equipo.ThreadComm.ConfigCHs[NCanal + 1] := cbSensores.ItemIndex;
   end;
-  if (NCanal=8) and (ListaSensores[i].Modo<>'ACUMULAR') then begin
-    Equipo.ThreadComm.ConfigCHs[NCanal+1]   := 0;
+  if (NCanal = 8) and (ListaSensores[i].Modo <> 'ACUMULAR') then
+  begin
+    Equipo.ThreadComm.ConfigCHs[NCanal + 1] := 0;
   end;
-  //
+
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2221,30 +2746,35 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.sbConfigurarClick(Sender: TObject);
 var
-  i         : byte;
-  auxNombre : string;
-  Qst       : byte;
-
+  i: byte;
+  auxNombre: string;
+  Qst: byte;
 begin
   // Cartel de advertencia
-  if (Sender <> nil) then begin
-    Qst := MessageBox(Handle,'�Advertencia, los datos en la memoria se borraran!. '+
-                      #13+'�Desea continuar?' , PChar(Caption), MB_YESNO or MB_ICONQUESTION );
-    if (Qst=7) then exit; // Presion� "NO"
+  if (Sender <> nil) then
+  begin
+    Qst := MessageBox(Handle, '�Advertencia, los datos en la memoria se borraran!. ' +
+      #13 + '�Desea continuar?', PChar(Caption),
+      MB_YESNO or MB_ICONQUESTION);
+    if (Qst = 7) then exit; // Presion� "NO"
   end;
 
   // Cargo el nuevo nombre
   auxNombre := '____';
-  for i:=1 to length(eNombre.Text) do if (eNombre.Text[i]<>' ') then auxNombre[i] := eNombre.Text[i];
+  for i := 1 to length(eNombre.Text) do if (eNombre.Text[i] <> ' ') then
+      auxNombre[i] := eNombre.Text[i];
   Equipo.ThreadComm.NombreEquipo := auxNombre;
 
   // Cargo el nuevo periodo de muestreo
-  Equipo.ThreadComm.T            := TablaT[cbIntervalo.ItemIndex];
+  Equipo.ThreadComm.T := TablaT[cbIntervalo.ItemIndex];
 
   // Cartel de informaci�n para que cambie periodo de conexi�n por internet
-  if Equipo.ThreadComm.pTmuestreo^ <> Equipo.ThreadComm.T then begin
-    MessageBox(Handle,'Al cambiar el periodo de muestreo se debe re-configurar los par�metros '+
-              #13+'de conexi�n por internet, en caso de usarse.' , PChar(Caption), MB_OK	or MB_ICONINFORMATION );
+  if Equipo.ThreadComm.pTmuestreo^ <> Equipo.ThreadComm.T then
+  begin
+    MessageBox(Handle,
+      'Al cambiar el periodo de muestreo se debe re-configurar los par�metros ' +
+      #13 + 'de conexi�n por internet, en caso de usarse.', PChar(Caption),
+      MB_OK or MB_ICONINFORMATION);
   end;
 
 {  // La configuraci�n de cada canal ya fue cargada cuando se seleccionan el combobox
@@ -2255,54 +2785,59 @@ begin
   Equipo.BorrarEquipo(Mercury.NombreINIEquipos);
 
   // Indico al Thread que transfiera los cambios al equipo
-  ActualizarCHs                  := true;
-  Equipo.ThreadComm.ConfigEquipo := true;
-  PageControl.ActivePageIndex    := 0;
+  ActualizarCHs := True;
+  Equipo.ThreadComm.ConfigEquipo := True;
+  PageControl.ActivePageIndex := 0;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.CrearListaSensores;
 var
-  AFiles : AFilesOfDir;
-  i,j    : integer;
-
+  AFiles: AFilesOfDir;
+  i, j: integer;
 begin
-  ExtractFilesOfDir(Mercury.DirSensores + '*.sen',AFiles);
-  SetLength(ListaSensores,length(AFiles)+2);
+  ExtractFilesOfDir(Mercury.DirSensores + '*.sen', AFiles);
+  SetLength(ListaSensores, length(AFiles) + 2);
 
   // Creo los sensores B�sicos
-  ListaSensores[0]             := TSensor.Crear;
-  ListaSensores[1]             := TSensor.Crear;
-  ListaSensores[1].Nombre      := 'Dato Original';
-  ListaSensores[1].Config      := 1;
+  ListaSensores[0] := TSensor.Crear;
+  ListaSensores[1] := TSensor.Crear;
+  ListaSensores[1].Nombre := 'Dato Original';
+  ListaSensores[1].Config := 1;
   ListaSensores[1].Descripcion := 'Dato Original';
-  ListaSensores[1].Unidad      := '-';
-  ListaSensores[1].Entrada     := 'PULSO';
-  ListaSensores[1].Modo        := 'CICLO';
-  ListaSensores[1].Salida      := 'NUMERO';
-  ListaSensores[1].Curva[0].x  := 0;      ListaSensores[1].Curva[0].y  := 0;
-  ListaSensores[1].Curva[1].x  := 65536;  ListaSensores[1].Curva[1].y  := 65536;
-  ListaSensores[1].Minimo      := 0;
-  ListaSensores[1].Maximo      := 65536;
+  ListaSensores[1].Unidad := '-';
+  ListaSensores[1].Entrada := 'PULSO';
+  ListaSensores[1].Modo := 'CICLO';
+  ListaSensores[1].Salida := 'NUMERO';
+  ListaSensores[1].Curva[0].x := 0;
+  ListaSensores[1].Curva[0].y := 0;
+  ListaSensores[1].Curva[1].x := 65536;
+  ListaSensores[1].Curva[1].y := 65536;
+  ListaSensores[1].Minimo := 0;
+  ListaSensores[1].Maximo := 65536;
 
   //Cargo cada sensor
-  for i:=0 to length(AFiles)-1 do begin
-    ListaSensores[i+2] := TSensor.Crear;
-    ListaSensores[i+2].CargarDeArchivo(Mercury.DirSensores + AFiles[i].Name);
+  for i := 0 to length(AFiles) - 1 do
+  begin
+    ListaSensores[i + 2] := TSensor.Crear;
+    ListaSensores[i + 2].CargarDeArchivo(Mercury.DirSensores + AFiles[i].Name);
   end;
 
   // Cargo los nombres de los sensores al ComboBox
   cbSensores.Items.Clear;
-  for i:=0 to length(ListaSensores)-1 do begin
-    for j:=0 to length(ListaSensores)-1 do begin
-      if (ListaSensores[j].Config = i) then begin
+  for i := 0 to length(ListaSensores) - 1 do
+  begin
+    for j := 0 to length(ListaSensores) - 1 do
+    begin
+      if (ListaSensores[j].Config = i) then
+      begin
         ListaSensores[j].PosLista := j;
         cbSensores.Items.Add(ListaSensores[j].Nombre);
       end;
     end;
   end;
 
-  SetLength(AFiles,0);
+  SetLength(AFiles, 0);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2311,7 +2846,7 @@ begin
   // Creo la presentaci�n
   FPresentacion := TFPresentacion.Create(Self);
   FPresentacion.Timer1.Interval := 4000;
-  FPresentacion.Timer1.Enabled  := true;
+  FPresentacion.Timer1.Enabled := True;
   FPresentacion.Showmodal;
 end;
 
@@ -2320,35 +2855,38 @@ procedure TFprincipal.mDescargarDatosClick(Sender: TObject);
 begin
   // Adapto el sistema para el formato elejido (espa�ol - ingles)
 
-  StatusBar.Panels[0].Text          := 'Descargando ' + IntToStr(Equipo.Memoria) + ' Bytes...';
+  StatusBar.Panels[0].Text :=
+    'Descargando ' + IntToStr(Equipo.Memoria) + ' Bytes...';
   Equipo.ThreadComm.FormatoDescarga := Mercury.FormatoDescarga;
-  Equipo.ThreadComm.IndiceFormatoFe := Mercury.IndiceFormatoFe;  
-  Equipo.ThreadComm.Archivo         := Mercury.DirDatos+Equipo.Nombre+'_'+FormatDateTime('dd.mm.yyyy hh.nn',now);
-  Equipo.ThreadComm.DescargarDatos  := true;
+  Equipo.ThreadComm.IndiceFormatoFe := Mercury.IndiceFormatoFe;
+  Equipo.ThreadComm.Archivo :=
+    Mercury.DirDatos + Equipo.Nombre + '_' + FormatDateTime('dd.mm.yyyy hh.nn', now);
+  Equipo.ThreadComm.DescargarDatos := True;
 
   // Una vez descargados los datos se AutoConfigura al Equipo
-  if upCase(Mercury.AutoConfigurar) ='S' then Mercury.Configurar := true;
-  if upCase(Mercury.SalirDescarga)  ='S' then Mercury.Salir      := true;
+  if upCase(Mercury.AutoConfigurar) = 'S' then Mercury.Configurar := True;
+  if upCase(Mercury.SalirDescarga) = 'S' then Mercury.Salir := True;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.StatusBarDrawPanel(StatusBar: TStatusBar;
   Panel: TStatusPanel; const Rect: TRect);
 var
-  area : trect;
-
- begin
+  area: trect;
+begin
   if (statusbar.Tag <= 0) then exit;
 
   area := rect;
-  with statusbar do begin
+  with statusbar do
+  begin
     Canvas.Brush.Style := bsSolid;
     Canvas.Brush.color := $00DF860D;//clblack;
-    area.Right         := rect.Left + ((Panel.Width*Tag) div 100);
+    area.Right := rect.Left + ((Panel.Width * Tag) div 100);
     Canvas.Fillrect(area);
-    canvas.Font.Color  := clwhite;
+    canvas.Font.Color := clwhite;
     canvas.Brush.Style := bsclear;
-    Canvas.TextOut((rect.Right+rect.Left-canvas.TextExtent(inttostr(Tag)+'%').cx)div 2,area.top,inttostr(Tag)+'%');
+    Canvas.TextOut((rect.Right + rect.Left - canvas.TextExtent(IntToStr(Tag) + '%').cx) div
+      2, area.top, IntToStr(Tag) + '%');
   end;
   TagOLD := statusbar.Tag;
 end;
@@ -2362,70 +2900,80 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mAutoDescargarDatosClick(Sender: TObject);
 begin
-  if (sender as TMenuItem).Checked then begin
-    (sender as TMenuItem).Checked := false;
-    Mercury.AutoDescargarDatos    := 'N';
+  if (Sender as TMenuItem).Checked then
+  begin
+    (Sender as TMenuItem).Checked := False;
+    Mercury.AutoDescargarDatos := 'N';
   end
-  else begin
-    (sender as TMenuItem).Checked := true;
-    Mercury.AutoDescargarDatos    := 'S';
+  else
+  begin
+    (Sender as TMenuItem).Checked := True;
+    Mercury.AutoDescargarDatos := 'S';
   end;
 
   // Cartel de Informac�on
-  MessageBox(Handle,'Debe reiniciar el programa para que '+
-            #13+'los cambios tengan efecto.' , PChar(Caption), MB_OK	or MB_ICONINFORMATION );
+  MessageBox(Handle, 'Debe reiniciar el programa para que ' +
+    #13 + 'los cambios tengan efecto.', PChar(Caption), MB_OK or
+    MB_ICONINFORMATION);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mAutoConfigurarClick(Sender: TObject);
 begin
-  if (sender as TMenuItem).Checked then begin
-    (sender as TMenuItem).Checked := false;
-    Mercury.AutoConfigurar        := 'N';
+  if (Sender as TMenuItem).Checked then
+  begin
+    (Sender as TMenuItem).Checked := False;
+    Mercury.AutoConfigurar := 'N';
   end
-  else begin
-    (sender as TMenuItem).Checked := true;
-    Mercury.AutoConfigurar        := 'S';
+  else
+  begin
+    (Sender as TMenuItem).Checked := True;
+    Mercury.AutoConfigurar := 'S';
   end;
 
   // Cartel de Informac�on
-  MessageBox(Handle,'Debe reiniciar el programa para que '+
-            #13+'los cambios tengan efecto.' , PChar(Caption), MB_OK	or MB_ICONINFORMATION );
+  MessageBox(Handle, 'Debe reiniciar el programa para que ' +
+    #13 + 'los cambios tengan efecto.', PChar(Caption), MB_OK or
+    MB_ICONINFORMATION);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mSalirDescargaClick(Sender: TObject);
 begin
-  if (sender as TMenuItem).Checked then begin
-    (sender as TMenuItem).Checked := false;
-    Mercury.SalirDescarga         := 'N';
+  if (Sender as TMenuItem).Checked then
+  begin
+    (Sender as TMenuItem).Checked := False;
+    Mercury.SalirDescarga := 'N';
   end
-  else begin
-    (sender as TMenuItem).Checked := true;
-    Mercury.SalirDescarga         := 'S';
+  else
+  begin
+    (Sender as TMenuItem).Checked := True;
+    Mercury.SalirDescarga := 'S';
   end;
 
   // Cartel de Informac�on
-  MessageBox(Handle,'Debe reiniciar el programa para que '+
-            #13+'los cambios tengan efecto.' , PChar(Caption), MB_OK	or MB_ICONINFORMATION );
+  MessageBox(Handle, 'Debe reiniciar el programa para que ' +
+    #13 + 'los cambios tengan efecto.', PChar(Caption), MB_OK or
+    MB_ICONINFORMATION);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.PuertoSerieClick(Sender: TObject);
 var
-  i : byte;
-
+  i: byte;
 begin
   // Quito el tilde de todos los items
-  for i:=0 to mPuertoSerie.Count-1 do mPuertoSerie.Items[i].Checked := false;
+  for i := 0 to mPuertoSerie.Count - 1 do mPuertoSerie.Items[i].Checked := False;
 
   // Pongo el tilde
-  (sender as TMenuItem).Checked := true;
-  Mercury.PuertoSerie           := PSerie.ListaPorts.Strings[(sender as TMenuItem).MenuIndex];
+  (Sender as TMenuItem).Checked := True;
+  Mercury.PuertoSerie :=
+    PSerie.ListaPorts.Strings[(Sender as TMenuItem).MenuIndex];
 
   // Cartel de Informac�on
-  MessageBox(Handle,'Debe reiniciar el programa para que '+
-            #13+'los cambios tengan efecto.' , PChar(Caption), MB_OK	or MB_ICONINFORMATION );
+  MessageBox(Handle, 'Debe reiniciar el programa para que ' +
+    #13 + 'los cambios tengan efecto.', PChar(Caption), MB_OK or
+    MB_ICONINFORMATION);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2439,81 +2987,84 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.TimerCierreTimer(Sender: TObject);
 begin
-  close;
+  Close;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.sbGrabarClick(Sender: TObject);
 var
-  ImgAux : TBitmap;
-
+  ImgAux: TBitmap;
 begin
   ImgAux := TBitmap.Create;
 
-  if not Mercury.Grabando then begin
-    Mercury.Grabando := true;
-    caption          := ' EMAC MERCURY - Monitoreo en Linea';
+  if not Mercury.Grabando then
+  begin
+    Mercury.Grabando := True;
+    Caption := ' EMAC MERCURY - Monitoreo en Linea';
     sbGrabar.Caption := 'Detener';
 
     // Asigno la imagen de Stop
-    DataModule1.ImageList32x32.GetBitmap(13,ImgAux);
+    DataModule1.ImageList32x32.GetBitmap(13, ImgAux);
     sbGrabar.Glyph.Assign(ImgAux);
 
     // Desabilito los objetos para que no se puedan modificar las opciones
-    tbGrabar.Enabled           := false;
-    cbReporte.Enabled          := false;
-    cbReporteWeb.Enabled       := false;
-    sbDirDatos.Enabled         := false;
-    sbSaveWeb.Enabled          := false;
-    cbFormatoReporte.Enabled   := false;
-    cbIntervaloCaptura.Enabled := false;
-    cbTipoArchivo.Enabled      := false;
-    tbParar.Enabled            := true;
+    tbGrabar.Enabled := False;
+    cbReporte.Enabled := False;
+    cbReporteWeb.Enabled := False;
+    sbDirDatos.Enabled := False;
+    sbSaveWeb.Enabled := False;
+    cbFormatoReporte.Enabled := False;
+    cbIntervaloCaptura.Enabled := False;
+    cbTipoArchivo.Enabled := False;
+    tbParar.Enabled := True;
 
     // Codigo de la Captura
     // Guardo los par�metreos de Monitoreo
     if cbReporte.Checked then Mercury.ReporteSel := 'S'
-    else Mercury.ReporteSel := 'N';
+    else
+      Mercury.ReporteSel := 'N';
 
     if cbReporteWeb.Checked then Mercury.ReporteWebSel := 'S'
-    else Mercury.ReporteWebSel := 'N';
+    else
+      Mercury.ReporteWebSel := 'N';
 
-    Mercury.DirReporte         := EDirReporte.Text;
-    Mercury.NombreNuevaWeb     := EdirNuevaWeb.Text;
-    Mercury.FormatoReporte     := cbFormatoReporte.ItemIndex;
-    Mercury.IntervaloCaptura   := cbIntervaloCaptura.ItemIndex;
+    Mercury.DirReporte := EDirReporte.Text;
+    Mercury.NombreNuevaWeb := EdirNuevaWeb.Text;
+    Mercury.FormatoReporte := cbFormatoReporte.ItemIndex;
+    Mercury.IntervaloCaptura := cbIntervaloCaptura.ItemIndex;
     Mercury.TipoArchivoReporte := cbTipoArchivo.ItemIndex;
 
     // Hora del Muestreo
     // Redondeo los segundos
-    Mercury.HoraMuestreoLinea  := trunc(now*86400+1)/86400; 
+    Mercury.HoraMuestreoLinea := trunc(now * 86400 + 1) / 86400;
   end
-  else begin
-    Mercury.Grabando := false;
-    caption          := ' EMAC MERCURY';
+  else
+  begin
+    Mercury.Grabando := False;
+    Caption := ' EMAC MERCURY';
     sbGrabar.Caption := 'Capturar';
 
     // Asigno la imagen de Grabar
-    DataModule1.ImageList32x32.GetBitmap(11,ImgAux);
+    DataModule1.ImageList32x32.GetBitmap(11, ImgAux);
     sbGrabar.Glyph.Assign(ImgAux);
 
     // Modifico los Botones de la Toolbar
-    tbParar.Enabled            := false;    
-    tbGrabar.Enabled           := true;
-    cbReporte.Enabled          := true;
-    cbReporteWeb.Enabled       := true;
-    sbDirDatos.Enabled         := true;
-    sbSaveWeb.Enabled          := true;
-    cbFormatoReporte.Enabled   := true;
-    cbIntervaloCaptura.Enabled := true;
-    cbTipoArchivo.Enabled      := true;
+    tbParar.Enabled := False;
+    tbGrabar.Enabled := True;
+    cbReporte.Enabled := True;
+    cbReporteWeb.Enabled := True;
+    sbDirDatos.Enabled := True;
+    sbSaveWeb.Enabled := True;
+    cbFormatoReporte.Enabled := True;
+    cbIntervaloCaptura.Enabled := True;
+    cbTipoArchivo.Enabled := True;
   end;
 
   ImgAux.Free;
 end;
 
 procedure TFprincipal.tsMonitoreoContextPopup(Sender: TObject;
-  MousePos: TPoint; var Handled: Boolean);
+  MousePos: TPoint; var Handled: boolean);
 begin
 
 end;
@@ -2521,30 +3072,33 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.tsMonitorOnLineShow(Sender: TObject);
 begin
-  if (UpCase(Mercury.ReporteSel)   ='S') then cbReporte.Checked    := true
-  else cbReporte.Checked := false;
+  if (UpCase(Mercury.ReporteSel) = 'S') then cbReporte.Checked := True
+  else
+    cbReporte.Checked := False;
 
-  if (UpCase(Mercury.ReporteWebSel)='S') then cbReporteWeb.Checked := true
-  else cbReporteWeb.Checked := false;
+  if (UpCase(Mercury.ReporteWebSel) = 'S') then cbReporteWeb.Checked := True
+  else
+    cbReporteWeb.Checked := False;
 
-  EDirReporte.Text             := Mercury.DirReporte;
-  EdirNuevaWeb.Text            := Mercury.NombreNuevaWeb;
-  cbFormatoReporte.ItemIndex   := Mercury.FormatoReporte;
+  EDirReporte.Text := Mercury.DirReporte;
+  EdirNuevaWeb.Text := Mercury.NombreNuevaWeb;
+  cbFormatoReporte.ItemIndex := Mercury.FormatoReporte;
   cbIntervaloCaptura.ItemIndex := Mercury.IntervaloCaptura;
-  cbTipoArchivo.ItemIndex      := Mercury.TipoArchivoReporte;
+  cbTipoArchivo.ItemIndex := Mercury.TipoArchivoReporte;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.sbDirDatosClick(Sender: TObject);
 var
-  aux : string;
-
+  aux: string;
 begin
-  if not SelectDirectory('Directorio de Datos','',aux) then SetFocus
-  else begin
+  if not SelectDirectory('Directorio de Datos', '', aux) then SetFocus
+  else
+  begin
     SetFocus;
-    if (length(aux)>3) then EDirReporte.Text := aux + '\'
-    else EDirReporte.Text := aux;
+    if (length(aux) > 3) then EDirReporte.Text := aux + '\'
+    else
+      EDirReporte.Text := aux;
   end;
 end;
 
@@ -2555,8 +3109,9 @@ begin
   DataModule1.SaveDialog.InitialDir := ExtractFilePath(EdirNuevaWeb.Text);
   DataModule1.SaveDialog.Filter := 'Paginas Web (*.htm, *.html)|*.htm;*.html';
 
-  if DataModule1.SaveDialog.Execute then begin
-    if length(ExtractFileExt(DataModule1.SaveDialog.FileName))>0 then
+  if DataModule1.SaveDialog.Execute then
+  begin
+    if length(ExtractFileExt(DataModule1.SaveDialog.FileName)) > 0 then
       EdirNuevaWeb.Text := DataModule1.SaveDialog.FileName
     else
       EdirNuevaWeb.Text := DataModule1.SaveDialog.FileName + '.htm';
@@ -2566,16 +3121,15 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.MonitoreoEnLinea;
 var
-  Archivo      : string;
-  sep          : string;
-  ext          : string;
-  Linea        : string;
-  lineaAux1    : string;
-  lineaAux2    : string;
-  F            : TextFile;
-  i            : byte;
-  FormatoFecha : string;
-
+  Archivo: string;
+  sep: string;
+  ext: string;
+  Linea: string;
+  lineaAux1: string;
+  lineaAux2: string;
+  F: TextFile;
+  i: byte;
+  FormatoFecha: string;
 begin
   // me fijo que es el momento de generar lo(s) reporte(s)
   if (now < Mercury.HoraMuestreoLinea) then exit;
@@ -2589,21 +3143,22 @@ begin
   // Configuro los par�metros seg�n el formato elegido
   case Mercury.FormatoReporte of
     // Texto (delimitado por tabulaciones)
-    0 : begin
-          sep := #9;
-          ext := '.txt';
-        end;
+    0: begin
+      sep := #9;
+      ext := '.txt';
+    end;
     // CSV - Planilla de c�lculo (formato en espa�ol)
-    1 : begin
-          sep := ';';
-          ext := '.txt';
-        end;
+    1: begin
+      sep := ';';
+      ext := '.txt';
+    end;
     // CSV - Planilla de c�lculo (formato en ingles)
-    2 : begin
-          sep := ',';
-          ext := '.txt';
-        end;
-    else begin
+    2: begin
+      sep := ',';
+      ext := '.txt';
+    end;
+    else
+    begin
       // Texto (delimitado por tabulaciones)
       sep := #9;
       ext := '.txt';
@@ -2613,100 +3168,115 @@ begin
   // Genero el nombre del archivo seg�n el tipo de archivo elejido
   case Mercury.TipoArchivoReporte of
     // Generar un archivo por Hora
-    0 : Archivo  := Mercury.DirReporte+'Monitoreo_'+Equipo.Nombre+'_'+FormatDateTime('dd.mm.yyyy hh',now) + ext;
+    0: Archivo := Mercury.DirReporte + 'Monitoreo_' + Equipo.Nombre +
+        '_' + FormatDateTime('dd.mm.yyyy hh', now) + ext;
     // Generar un archivo por D�a
-    1 : Archivo  := Mercury.DirReporte+'Monitoreo_'+Equipo.Nombre+'_'+FormatDateTime('dd.mm.yyyy',now) + ext;
+    1: Archivo := Mercury.DirReporte + 'Monitoreo_' + Equipo.Nombre +
+        '_' + FormatDateTime('dd.mm.yyyy', now) + ext;
     // Generar un archivo por Mes
-    2 : Archivo  := Mercury.DirReporte+'Monitoreo_'+Equipo.Nombre+'_'+FormatDateTime('mm.yyyy',now) + ext;
+    2: Archivo := Mercury.DirReporte + 'Monitoreo_' + Equipo.Nombre +
+        '_' + FormatDateTime('mm.yyyy', now) + ext;
     // Generar un archivo por A�o
-    3 : Archivo  := Mercury.DirReporte+'Monitoreo_'+Equipo.Nombre+'_'+FormatDateTime('yyyy',now) + ext;
+    3: Archivo := Mercury.DirReporte + 'Monitoreo_' + Equipo.Nombre +
+        '_' + FormatDateTime('yyyy', now) + ext;
     else
       // Generar un archivo por D�a
-      Archivo  := Mercury.DirReporte+'Monitoreo_'+Equipo.Nombre+'_'+FormatDateTime('dd.mm.yyyy',now) + ext;
+      Archivo := Mercury.DirReporte + 'Monitoreo_' + Equipo.Nombre + '_' +
+        FormatDateTime('dd.mm.yyyy', now) + ext;
   end;
 
   // Configuro las varable para adaptar la fecha con el formato elegido
   FormatoFecha := Mercury.ObtenerFormatoFecha(Mercury.IndiceFormatoFe);
 
   // Genero el reporte en el archivo de texto
-  if (upcase(Mercury.ReporteSel)='S') then begin
+  if (upcase(Mercury.ReporteSel) = 'S') then
+  begin
     try // Guardo la info en el archivo
       AssignFile(F, Archivo);
 
       if FileExists(Archivo) then Append(F)
-      else begin
+      else
+      begin
         // Incorporo la info en el archivo de texto y los titulos
         Rewrite(F);
 
         // Para reporte en archivo de texto
-        Writeln(F,'Datos Generales');
-        Writeln(F,'--------------------------');
-        Writeln(F,'Nombre del Equipo '+sep+'= '+ Equipo.Nombre);
-        Writeln(F,'Intervalo de Captura'+sep+'= '+ cbIntervaloCaptura.text);
-        Writeln(F,'Hora del Equipo   '+sep+'= '+ FormatDateTime(FormatoFecha, Equipo.Hora));
-        Writeln(F,'Hora de la PC     '+sep+'= '+ FormatDateTime(FormatoFecha, Equipo.HoraPC));
-        Writeln(F,'');
-        Writeln(F,'');
+        Writeln(F, 'Datos Generales');
+        Writeln(F, '--------------------------');
+        Writeln(F, 'Nombre del Equipo ' + sep + '= ' + Equipo.Nombre);
+        Writeln(F, 'Intervalo de Captura' + sep + '= ' + cbIntervaloCaptura.Text);
+        Writeln(F, 'Hora del Equipo   ' + sep + '= ' +
+          FormatDateTime(FormatoFecha, Equipo.Hora));
+        Writeln(F, 'Hora de la PC     ' + sep + '= ' +
+          FormatDateTime(FormatoFecha, Equipo.HoraPC));
+        Writeln(F, '');
+        Writeln(F, '');
 
         // Descripci�n de los canales
-        Writeln(F,'Descripci�n de los Canales');
-        Writeln(F,'--------------------------');
+        Writeln(F, 'Descripci�n de los Canales');
+        Writeln(F, '--------------------------');
 
-        for i:=0 to Equipo.NumCanales-1 do begin
+        for i := 0 to Equipo.NumCanales - 1 do
+        begin
           if (Equipo.Canales[i].Config > 0) then
             if (sep = #9) then
-              Writeln(F,'CH '+IntToStr(i)+#9#9+sep+'= '+Equipo.Canales[i].Descripcion +
-                      ' ' + '[' + Equipo.Canales[i].Unidad + ']')
+              Writeln(F, 'CH ' + IntToStr(i) + #9#9 + sep + '= ' + Equipo.Canales[i].Descripcion +
+                ' ' + '[' + Equipo.Canales[i].Unidad + ']')
             else
-              Writeln(F,'CH '+IntToStr(i)+sep+'= '+Equipo.Canales[i].Descripcion +
-                      ' ' + '[' + Equipo.Canales[i].Unidad + ']');
+              Writeln(F, 'CH ' + IntToStr(i) + sep + '= ' + Equipo.Canales[i].Descripcion +
+                ' ' + '[' + Equipo.Canales[i].Unidad + ']');
         end;
-        Writeln(F,'');
-        Writeln(F,'');
+        Writeln(F, '');
+        Writeln(F, '');
 
         // Descripci�n de los valores calculados
-        Writeln(F,'Valores Calculados');
-        Writeln(F,'--------------------------');
+        Writeln(F, 'Valores Calculados');
+        Writeln(F, '--------------------------');
 
-        for i:=0 to Equipo.CalcParam.CantParm-1 do begin
+        for i := 0 to Equipo.CalcParam.CantParm - 1 do
+        begin
           if (Equipo.CalcParam.Parametros[i].Calcular = 1) then
             if (sep = #9) then
-              Writeln(F,'VC '+IntToStr(i)+#9#9+sep+'= '+Equipo.CalcParam.Parametros[i].Descripcion +
-                      ' ' + '[' + Equipo.CalcParam.Parametros[i].Unidad + ']')
+              Writeln(F, 'VC ' + IntToStr(i) + #9#9 + sep + '= ' +
+                Equipo.CalcParam.Parametros[i].Descripcion + ' ' +
+                '[' + Equipo.CalcParam.Parametros[i].Unidad + ']')
             else
-              Writeln(F,'VC '+IntToStr(i)+sep+'= '+Equipo.CalcParam.Parametros[i].Descripcion +
-                      ' ' + '[' + Equipo.CalcParam.Parametros[i].Unidad + ']');
+              Writeln(F, 'VC ' + IntToStr(i) + sep + '= ' +
+                Equipo.CalcParam.Parametros[i].Descripcion + ' ' +
+                '[' + Equipo.CalcParam.Parametros[i].Unidad + ']');
         end;
-        Writeln(F,'');
-        Writeln(F,'');
+        Writeln(F, '');
+        Writeln(F, '');
 
 
         // Titulos de la tabla de los valores de los canales y valores
-        for i:=0 to Equipo.CalcParam.CantParm-1 do begin
-          if (Equipo.CalcParam.Parametros[i].Calcular = 1) then begin
+        for i := 0 to Equipo.CalcParam.CantParm - 1 do
+        begin
+          if (Equipo.CalcParam.Parametros[i].Calcular = 1) then
+          begin
             lineaAux1 := lineaAux1 + 'VC ' + IntToStr(i) + sep;
             lineaAux2 := lineaAux2 + '----' + sep;
           end;
         end;
 
-        Writeln(F,lineaAux1);
-        Writeln(F,lineaAux2);
+        Writeln(F, lineaAux1);
+        Writeln(F, lineaAux2);
       end;
 
       // Incorporo la info del monitoreo en linea al archivo
-      Linea := FormatDateTime('dd/mm/yyyy hh:nn:ss.zzz',now);
+      Linea := FormatDateTime('dd/mm/yyyy hh:nn:ss.zzz', now);
 
       // Info de los valores de los Canales
-      for i:=0 to Equipo.NumCanales-1 do
-        if (Equipo.Canales[i].Config<>0) then
+      for i := 0 to Equipo.NumCanales - 1 do
+        if (Equipo.Canales[i].Config <> 0) then
           Linea := Linea + sep + Equipo.Canales[i].ValorReal;
 
       // Info de los valores Calculdaos
-      for i:=0 to Equipo.CalcParam.CantParm-1 do
+      for i := 0 to Equipo.CalcParam.CantParm - 1 do
         if (Equipo.CalcParam.Parametros[i].Calcular = 1) then
           Linea := Linea + sep + Equipo.CalcParam.Parametros[i].ResultCalcStr;
 
-      Writeln(F,Linea);
+      Writeln(F, Linea);
       CloseFile(F);
     except
       // Cartel de ERROR
@@ -2715,19 +3285,18 @@ begin
   end;
 
   // Genero el Reporte Web si es necessario
-  if (upcase(Mercury.ReporteWebSel)='S') then GenerarReporteWeb;
+  if (upcase(Mercury.ReporteWebSel) = 'S') then GenerarReporteWeb;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.GenerarReporteWeb;
 var
-  PaginaWeb    : Tstrings;
-  i            : integer;
-  FormatoFecha : string;
-
+  PaginaWeb: TStrings;
+  i: integer;
+  FormatoFecha: string;
 begin
   if not FileExists(Mercury.NombrePaginaWeb) then exit;
-  PaginaWeb := TStringlist.Create;
+  PaginaWeb := TStringList.Create;
   PaginaWeb.Clear;
 
   // Levanto la plantilla web para cargar los datos
@@ -2737,38 +3306,60 @@ begin
   FormatoFecha := Mercury.ObtenerFormatoFecha(Mercury.IndiceFormatoFe);
 
   // Inserto la info en la pagina
-  for i:=0 to PaginaWeb.Count-1 do begin
+  for i := 0 to PaginaWeb.Count - 1 do
+  begin
     // Informarc�on del Equipo
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#FECHA#',FormatDateTime(FormatoFecha, now));
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#NOMBRE#',Equipo.Nombre);
-    if (round(TablaTMonitor[Mercury.IntervaloCaptura]*86400)>30) then
-      PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#T#',IntToStr(round(TablaTMonitor[Mercury.IntervaloCaptura]*86400)))
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#FECHA#', FormatDateTime(FormatoFecha, now));
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#NOMBRE#', Equipo.Nombre);
+    if (round(TablaTMonitor[Mercury.IntervaloCaptura] * 86400) > 30) then
+      PaginaWeb.Strings[i] :=
+        ReemplazarString(PaginaWeb.Strings[i], '#T#', IntToStr(
+        round(TablaTMonitor[Mercury.IntervaloCaptura] * 86400)))
     else
-      PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#T#',IntToStr(30));
+      PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i], '#T#', IntToStr(30));
 
     // Informarc�on de los valores de los canales
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL0#',Equipo.Canales[0].ValorReal + ' ['+Equipo.Canales[0].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL1#',Equipo.Canales[1].ValorReal + ' ['+Equipo.Canales[1].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL2#',Equipo.Canales[2].ValorReal + ' ['+Equipo.Canales[2].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL3#',Equipo.Canales[3].ValorReal + ' ['+Equipo.Canales[3].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL4#',Equipo.Canales[4].ValorReal + ' ['+Equipo.Canales[4].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL5#',Equipo.Canales[5].ValorReal + ' ['+Equipo.Canales[5].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL6#',Equipo.Canales[6].ValorReal + ' ['+Equipo.Canales[6].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL7#',Equipo.Canales[7].ValorReal + ' ['+Equipo.Canales[7].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANALD#',Equipo.Canales[8].ValorReal + ' ['+Equipo.Canales[8].Unidad+']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL0#', Equipo.Canales[0].ValorReal + ' [' + Equipo.Canales[0].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL1#', Equipo.Canales[1].ValorReal + ' [' + Equipo.Canales[1].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL2#', Equipo.Canales[2].ValorReal + ' [' + Equipo.Canales[2].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL3#', Equipo.Canales[3].ValorReal + ' [' + Equipo.Canales[3].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL4#', Equipo.Canales[4].ValorReal + ' [' + Equipo.Canales[4].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL5#', Equipo.Canales[5].ValorReal + ' [' + Equipo.Canales[5].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL6#', Equipo.Canales[6].ValorReal + ' [' + Equipo.Canales[6].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANAL7#', Equipo.Canales[7].ValorReal + ' [' + Equipo.Canales[7].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#CANALD#', Equipo.Canales[8].ValorReal + ' [' + Equipo.Canales[8].Unidad + ']');
 
     // Informarc�on de los valores calculados
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC0#',Equipo.CalcParam.Parametros[0].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[0].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC1#',Equipo.CalcParam.Parametros[1].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[1].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC2#',Equipo.CalcParam.Parametros[2].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[2].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC3#',Equipo.CalcParam.Parametros[3].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[3].Unidad+']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#VC0#', Equipo.CalcParam.Parametros[0].ResultCalcStr +
+      ' [' + Equipo.CalcParam.Parametros[0].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#VC1#', Equipo.CalcParam.Parametros[1].ResultCalcStr +
+      ' [' + Equipo.CalcParam.Parametros[1].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#VC2#', Equipo.CalcParam.Parametros[2].ResultCalcStr +
+      ' [' + Equipo.CalcParam.Parametros[2].Unidad + ']');
+    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+      '#VC3#', Equipo.CalcParam.Parametros[3].ResultCalcStr +
+      ' [' + Equipo.CalcParam.Parametros[3].Unidad + ']');
   end;
 
   try
     // Guardo la pagina web con los nuevos valores
     PaginaWeb.SaveToFile(Mercury.NombreNuevaWeb);
   except
-    //
+
   end;
 
   PaginaWeb.Free;
@@ -2777,8 +3368,7 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.BotonGraficoCanalClick(Sender: TObject);
 var
-  Canal : byte;
-
+  Canal: byte;
 begin
   // Charting functionality temporarily disabled for Lazarus compatibility
   {FGraficoSensor := TFGraficoSensor.Create(self);
@@ -2801,17 +3391,16 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.sbComentarioClick(Sender: TObject);
 var
-  NuevaDesc : string;
-  Canal     : byte;
-
+  NuevaDesc: string;
+  Canal: byte;
 begin
-  Canal:= (sender as TSpeedButton).Tag;
+  Canal := (Sender as TSpeedButton).Tag;
   // Solo cuando uso el canal 9
-  if (Canal=8) and Equipo.UsarCH9 then Canal:=9;
+  if (Canal = 8) and Equipo.UsarCH9 then Canal := 9;
 
   NuevaDesc := Equipo.Canales[Canal].Descripcion;
-  if not InputQuery('Cambiar Descripci�n del Canal '+intToStr(Canal),
-                    'Ingrese una nueva Descripci�n',NuevaDesc) then exit;
+  if not InputQuery('Cambiar Descripci�n del Canal ' + IntToStr(Canal),
+    'Ingrese una nueva Descripci�n', NuevaDesc) then exit;
 
   Equipo.Canales[Canal].Descripcion := NuevaDesc;
   Equipo.GuardarEquipo(Mercury.DirEquipos);
@@ -2821,27 +3410,28 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mCalculosParam(Sender: TObject);
 begin
-  FCalculoParam            := TFCalculoParam.Create(self);
-//  FCalculoParam.Caption    := 'C�lculo de par�metros - ' + (sender as TMenuItem).Caption;
-  FCalculoParam.pEquipo    := @Equipo;
-  FCalculoParam.Nparametro := (sender as TMenuItem).Tag;
+  FCalculoParam := TFCalculoParam.Create(self);
+  //  FCalculoParam.Caption    := 'C�lculo de par�metros - ' + (sender as TMenuItem).Caption;
+  FCalculoParam.pEquipo := @Equipo;
+  FCalculoParam.Nparametro := (Sender as TMenuItem).Tag;
   FCalculoParam.ShowModal;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.TipoDeComunicacionClick(Sender: TObject);
 begin
-  mDirectaCableSERIE.Checked := false;
-  mTelefoniaCelular.Checked  := false;
-  mInternet.Checked          := false;
+  mDirectaCableSERIE.Checked := False;
+  mTelefoniaCelular.Checked := False;
+  mInternet.Checked := False;
 
   // Aplico la nueva configuraci�n                                                  
-  (sender as TMenuItem).Checked := true;
-  Mercury.TipoDeComm            := (sender as TMenuItem).Tag;
+  (Sender as TMenuItem).Checked := True;
+  Mercury.TipoDeComm := (Sender as TMenuItem).Tag;
 
   // Cartel de Informac�on
-  MessageBox(Handle,'Debe reiniciar el programa para que '+
-            #13+'los cambios tengan efecto.' , PChar(Caption), MB_OK	or MB_ICONINFORMATION );
+  MessageBox(Handle, 'Debe reiniciar el programa para que ' +
+    #13 + 'los cambios tengan efecto.', PChar(Caption), MB_OK or
+    MB_ICONINFORMATION);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2849,40 +3439,42 @@ procedure TFprincipal.mConexionesTelefonicasClick(Sender: TObject);
 begin
   FConexionesRemotas := TFConexionesRemotas.Create(self);
   FConexionesRemotas.pConexTelefon := @Mercury.ConexTelefon;
-  
+
   FConexionesRemotas.ShowModal;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mConexionAutoClick(Sender: TObject);
 begin
-  FConexionAuto          := TFConexionAuto.Create(self);
+  FConexionAuto := TFConexionAuto.Create(self);
   FConexionAuto.pMercury := @Mercury;
   FConexionAuto.ShowModal;
 
   // habilito el bot�n para indicar que est� habilitada la conexi�n auto
-  if (Mercury.ConexAuto.intervalo > 0) then begin
-    tbConexAutoEN.Enabled := true;
-    tbConexAutoEN.Hint    := 'Conexiones automaticas habilitadas';
+  if (Mercury.ConexAuto.intervalo > 0) then
+  begin
+    tbConexAutoEN.Enabled := True;
+    tbConexAutoEN.Hint := 'Conexiones automaticas habilitadas';
   end
-  else begin
-    tbConexAutoEN.Enabled := false;
-    tbConexAutoEN.Hint    := 'Conexiones automaticas deshabilitadas';
+  else
+  begin
+    tbConexAutoEN.Enabled := False;
+    tbConexAutoEN.Hint := 'Conexiones automaticas deshabilitadas';
   end;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.ConexionManualClick(Sender: TObject);
 var
-  Nitem, msg : integer;
-
+  Nitem, msg: integer;
 begin
-  Nitem := (sender as TMenuItem).Tag;
-  msg   := MessageBox(Handle,pchar('�Seguro que desea conectarce con '+Mercury.ConexTelefon.AConexiones[Nitem].Nombre+'?'),
-                      PChar(Caption), MB_YESNO or MB_ICONQUESTION );
+  Nitem := (Sender as TMenuItem).Tag;
+  msg := MessageBox(Handle, PChar('�Seguro que desea conectarce con ' +
+    Mercury.ConexTelefon.AConexiones[Nitem].Nombre + '?'),
+    PChar(Caption), MB_YESNO or MB_ICONQUESTION);
   if (msg = 7) then exit;     // Presiono el Boton "NO", No hago nada
 
-  ConcectarConRemoto(Nitem, false, false);
+  ConcectarConRemoto(Nitem, False, False);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2892,14 +3484,15 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
-procedure TFprincipal.ConcectarConRemoto(index : integer;  AutoDesconecDesc, AutoDesconecConf : boolean);
+procedure TFprincipal.ConcectarConRemoto(index: integer;
+  AutoDesconecDesc, AutoDesconecConf: boolean);
 begin
   // Asigno el Numero de telefono al que hay que llamar
   Equipo.ThreadComm.NombreConex := Mercury.ConexTelefon.AConexiones[index].Nombre;
-  Equipo.ThreadComm.Ntelefono   := Mercury.ConexTelefon.AConexiones[index].Ntelefono;
+  Equipo.ThreadComm.Ntelefono := Mercury.ConexTelefon.AConexiones[index].Ntelefono;
 
   // Inicio la conexi�n
-  Equipo.ThreadComm.ConecTelef := true;
+  Equipo.ThreadComm.ConecTelef := True;
 
   // Indico si se debe desconectar solo una vez bajados los datos
   Equipo.ThreadComm.AutoDesconecDesc := AutoDesconecDesc;
@@ -2911,48 +3504,48 @@ end;
 procedure TFprincipal.DesconcectarConRemoto;
 begin
   // Termino la conexi�n
-  Equipo.ThreadComm.DesConecTelef := true;
+  Equipo.ThreadComm.DesConecTelef := True;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.ConexionAutomatica(Sender: TObject);
 var
-  aux : TStrings;
-
+  aux: TStrings;
 begin
   // Me aseguro que no excista una conexi�n activa
   if Equipo.ThreadComm.ConexOK then exit;
 
   // Si est� en la lista me conecto
-  if Mercury.ConexTelefon.AConexiones[Mercury.ConexAuto.indexConex].Select = 'S' then begin
+  if Mercury.ConexTelefon.AConexiones[Mercury.ConexAuto.indexConex].Select = 'S' then
+  begin
     // Selecciono los distintos tipos de conexi�n
     case Mercury.ConexAuto.CritDesconec of
-      0 :  ConcectarConRemoto(Mercury.ConexAuto.indexConex, true , false);
-      1 :  ConcectarConRemoto(Mercury.ConexAuto.indexConex, false, true);
-    else
-      ConcectarConRemoto(Mercury.ConexAuto.indexConex, false, true);
+      0: ConcectarConRemoto(Mercury.ConexAuto.indexConex, True, False);
+      1: ConcectarConRemoto(Mercury.ConexAuto.indexConex, False, True);
+      else
+        ConcectarConRemoto(Mercury.ConexAuto.indexConex, False, True);
     end;
 
     // Prueba de conexi�n - Generaci�n del archivo de logeo
-    aux := TStringlist.Create;
+    aux := TStringList.Create;
     aux.Clear;
     try
       if FileExists('horaConexion.txt') then aux.LoadFromFile('horaConexion.txt');
       aux.Add(Mercury.ConexTelefon.AConexiones[Mercury.ConexAuto.indexConex].Nombre
-              + ' ' + FormatDateTime('dd/mm/yy hh:nn:ss',now));
+        + ' ' + FormatDateTime('dd/mm/yy hh:nn:ss', now));
       aux.SaveToFile('horaConexion.txt');
     except
-      //
+
     end;
     aux.Destroy;
   end;
 
   // Incremento el indice
-  inc(Mercury.ConexAuto.indexConex,1);
+  Inc(Mercury.ConexAuto.indexConex, 1);
 
   // Me fijo si termine de conectarme con todos los equipos - reseteo el indice
-  if (Mercury.ConexAuto.indexConex > Mercury.ConexTelefon.NumConex-1) then
-    Mercury.ConexAuto.indexConex :=0;
+  if (Mercury.ConexAuto.indexConex > Mercury.ConexTelefon.NumConex - 1) then
+    Mercury.ConexAuto.indexConex := 0;
 
   // Guardo la config ya que tiene la nueva fecha y hora de muestreo
   Mercury.GuardarConfig;
@@ -2962,19 +3555,19 @@ end;
 procedure TFprincipal.ONConexionRemota(Sender: TObject);
 begin
   // Escribo el cartel para indicar que me estoy conectando
-  StatusBar.Panels[0].Text := 'Conectando con "'+ Equipo.ThreadComm.NombreConex +'"...';
+  StatusBar.Panels[0].Text := 'Conectando con "' + Equipo.ThreadComm.NombreConex + '"...';
 
   // Habilito el bot�n y el men� para desconectar
-  tbDesconectar.Enabled := true;
-  mDesconectar.Enabled  := true;
+  tbDesconectar.Enabled := True;
+  mDesconectar.Enabled := True;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.ONDesconexionRemota(Sender: TObject);
 begin
   // Deshabilito el bot�n y el men� para desconectar
-  tbDesconectar.Enabled := false;
-  mDesconectar.Enabled  := false;
+  tbDesconectar.Enabled := False;
+  mDesconectar.Enabled := False;
 
   // Escribo el cartel para indicar que me estoy Desconectando
   StatusBar.Panels[0].Text := 'Desconectando...';
@@ -2983,16 +3576,15 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mConfiguracionDeInternetClick(Sender: TObject);
 begin
-  FConfiguracionInternet          := TFConfiguracionInternet.Create(self);
-  FConfiguracionInternet.pEquipo  := @Equipo;
+  FConfiguracionInternet := TFConfiguracionInternet.Create(self);
+  FConfiguracionInternet.pEquipo := @Equipo;
   FConfiguracionInternet.ShowModal;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
-procedure TFprincipal.PageControlChanging(Sender: TObject;
-  var AllowChange: Boolean);
+procedure TFprincipal.PageControlChanging(Sender: TObject; var AllowChange: boolean);
 begin
-  if (Mercury.TipoDeComm = 2) then AllowChange := false;
+  if (Mercury.TipoDeComm = 2) then AllowChange := False;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3005,19 +3597,19 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TFprincipal.mHistorialInternetChange(Sender: TObject);
 var
-  NombreM  : string;
+  NombreM: string;
   //dirM     : string;
-  auxLines : Tstrings; 
-
+  auxLines: TStrings;
 begin
   if not (Mercury.GuardarRegistro = 'S') then exit;
   if not (mHistorialInternet.Lines.Count > 0) or OnCambio then exit;
   if (mHistorialInternet.Lines.Count = IniLine) then exit;
-  OnCambio := true;
+  OnCambio := True;
 
   // Guardo el registro de conexiones de internet
   try
-    NombreM := Mercury.DirMercury+'\logs\LogInternet '+FormatDateTime('dd-mm-yyyy',now)+'.txt';
+    NombreM := Mercury.DirMercury + '\logs\LogInternet ' + FormatDateTime(
+      'dd-mm-yyyy', now) + '.txt';
     {dirM    := ExtractFilePath(NombreM);
 
 
@@ -3037,14 +3629,16 @@ begin
 
     // Guardo la nueva linea en el archivo de logs
     auxLines := TStringList.Create;
-    auxLines.Add(mHistorialInternet.Lines.Strings[mHistorialInternet.Lines.Count-1]);
-    SaveTstringsToTxtFile(NombreM, @auxLines, 0, 0 );
+    auxLines.Add(mHistorialInternet.Lines.Strings[mHistorialInternet.Lines.Count - 1]);
+    SaveTstringsToTxtFile(NombreM, @auxLines, 0, 0);
     IniLine := mHistorialInternet.Lines.Count;
     auxLines.Destroy;
 
     // Quito la primera linea del historial si tiene mas de 50 lineas
-    with mHistorialInternet.Lines do begin
-      if Count>500 then begin
+    with mHistorialInternet.Lines do
+    begin
+      if Count > 500 then
+      begin
         {// Quito la primera linea
         Delete(0);
         // Modifico la �ltima linea para que el curso quede sobre la �ltima linea
@@ -3056,9 +3650,9 @@ begin
       end;
     end;
   except
-    //
+
   end;
-  OnCambio := false;
+  OnCambio := False;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3073,86 +3667,86 @@ end;
 
 procedure TFprincipal.sbGrafico09Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 09 es solo visual. No tiene gráfico disponible.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 09 es solo visual. No tiene gráfico disponible.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbGrafico10Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 10 es solo visual. No tiene gráfico disponible.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 10 es solo visual. No tiene gráfico disponible.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbGrafico11Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 11 es solo visual. No tiene gráfico disponible.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 11 es solo visual. No tiene gráfico disponible.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbGrafico12Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 12 es solo visual. No tiene gráfico disponible.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 12 es solo visual. No tiene gráfico disponible.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbGrafico13Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 13 es solo visual. No tiene gráfico disponible.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 13 es solo visual. No tiene gráfico disponible.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbGrafico14Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 14 es solo visual. No tiene gráfico disponible.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 14 es solo visual. No tiene gráfico disponible.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbGrafico15Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 15 es solo visual. No tiene gráfico disponible.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 15 es solo visual. No tiene gráfico disponible.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbComentario09Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 09 es solo visual. No tiene comentarios disponibles.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 09 es solo visual. No tiene comentarios disponibles.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbComentario10Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 10 es solo visual. No tiene comentarios disponibles.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 10 es solo visual. No tiene comentarios disponibles.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbComentario11Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 11 es solo visual. No tiene comentarios disponibles.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 11 es solo visual. No tiene comentarios disponibles.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbComentario12Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 12 es solo visual. No tiene comentarios disponibles.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 12 es solo visual. No tiene comentarios disponibles.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbComentario13Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 13 es solo visual. No tiene comentarios disponibles.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 13 es solo visual. No tiene comentarios disponibles.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbComentario14Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 14 es solo visual. No tiene comentarios disponibles.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 14 es solo visual. No tiene comentarios disponibles.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 procedure TFprincipal.sbComentario15Click(Sender: TObject);
 begin
-  MessageBox(Handle,'Canal 15 es solo visual. No tiene comentarios disponibles.',
-             PChar(Caption), MB_OK or MB_ICONINFORMATION);
+  MessageBox(Handle, 'Canal 15 es solo visual. No tiene comentarios disponibles.',
+    PChar(Caption), MB_OK or MB_ICONINFORMATION);
 end;
 
 // Implementación del menú de expansión
@@ -3160,60 +3754,67 @@ procedure TFprincipal.tbExpansionClick(Sender: TObject);
 begin
   // Usamos la instancia global FExpansion (definida en UExpansion.pas y creada en el .lpr)
   if not Assigned(UExpansion.FExpansion) then
-     Exit; 
-     
+    Exit;
+
   try
     // Configurar el estado inicial del form de expansión basado en la visibilidad actual
     if Assigned(tsExp2) and tsExp2.TabVisible then
-       UExpansion.FExpansion.rbCanales32.Checked := true // 32 Canales
+      UExpansion.FExpansion.rbCanales32.Checked := True // 32 Canales
     else if Assigned(tsExp1) and tsExp1.TabVisible then
-       UExpansion.FExpansion.rbCanales24.Checked := true // 24 Canales
+      UExpansion.FExpansion.rbCanales24.Checked := True // 24 Canales
     else if Assigned(tsExp0) and tsExp0.TabVisible then
-       UExpansion.FExpansion.RadioButton2.Checked := true // 16 Canales
+      UExpansion.FExpansion.RadioButton2.Checked := True // 16 Canales
     else
-       UExpansion.FExpansion.RadioButton1.Checked := true; // 8 Canales
+      UExpansion.FExpansion.RadioButton1.Checked := True; // 8 Canales
 
     // Mostrar modal y procesar resultado
-    if UExpansion.FExpansion.ShowModal = mrOK then
+    if UExpansion.FExpansion.ShowModal = mrOk then
     begin
-       if UExpansion.FExpansion.rbCanales32.Checked then
-          ActualizarVisibilidadCanales(32)
-       else if UExpansion.FExpansion.rbCanales24.Checked then
-          ActualizarVisibilidadCanales(24)
-       else if UExpansion.FExpansion.RadioButton2.Checked then
-          ActualizarVisibilidadCanales(16)
-       else
-          ActualizarVisibilidadCanales(8);
+      if UExpansion.FExpansion.rbCanales32.Checked then
+        ActualizarVisibilidadCanales(32)
+      else if UExpansion.FExpansion.rbCanales24.Checked then
+        ActualizarVisibilidadCanales(24)
+      else if UExpansion.FExpansion.RadioButton2.Checked then
+        ActualizarVisibilidadCanales(16)
+      else
+        ActualizarVisibilidadCanales(8);
     end;
   except
     // Evitar cierres inesperados por errores en la UI
   end;
 end;
 
-procedure TFprincipal.ActualizarVisibilidadCanales(CantidadCanales: Integer);
+procedure TFprincipal.ActualizarVisibilidadCanales(CantidadCanales: integer);
 var
-  Es16Canales: Boolean;
+  Es16Canales: boolean;
 begin
   // Reset active page first to avoid hiding active tab which can cause freezes
   if Assigned(tsMon) and Assigned(tsMon.PageControl) then
-     tsMon.PageControl.ActivePage := tsMon;
+    tsMon.PageControl.ActivePage := tsMon;
 
   // Actualizar la lógica del Backend (Equipo y Comunicación)
   if Assigned(Equipo) then
-     Equipo.ActualizarCantidadCanales(CantidadCanales);
+    Equipo.ActualizarCantidadCanales(CantidadCanales);
 
   // Determinar si debemos mostrar los canales extendidos del primer bloque (compatibilidad con lógica anterior)
   Es16Canales := (CantidadCanales >= 16);
 
   // --- Lógica Legacy de Componentes (Labels, etc.) ---
   // Configuracion (LConfig, LDescConfig)
-  if Assigned(LConfig09) then LConfig09.Visible := Es16Canales; if Assigned(LDescConfig09) then LDescConfig09.Visible := Es16Canales;
-  if Assigned(LConfig10) then LConfig10.Visible := Es16Canales; if Assigned(LDescConfig10) then LDescConfig10.Visible := Es16Canales;
-  if Assigned(LConfig11) then LConfig11.Visible := Es16Canales; if Assigned(LDescConfig11) then LDescConfig11.Visible := Es16Canales;
-  if Assigned(LConfig12) then LConfig12.Visible := Es16Canales; if Assigned(LDescConfig12) then LDescConfig12.Visible := Es16Canales;
-  if Assigned(LConfig13) then LConfig13.Visible := Es16Canales; if Assigned(LDescConfig13) then LDescConfig13.Visible := Es16Canales;
-  if Assigned(LConfig14) then LConfig14.Visible := Es16Canales; if Assigned(LDescConfig14) then LDescConfig14.Visible := Es16Canales;
-  if Assigned(LConfig15) then LConfig15.Visible := Es16Canales; if Assigned(LDescConfig15) then LDescConfig15.Visible := Es16Canales;
+  if Assigned(LConfig09) then LConfig09.Visible := Es16Canales;
+  if Assigned(LDescConfig09) then LDescConfig09.Visible := Es16Canales;
+  if Assigned(LConfig10) then LConfig10.Visible := Es16Canales;
+  if Assigned(LDescConfig10) then LDescConfig10.Visible := Es16Canales;
+  if Assigned(LConfig11) then LConfig11.Visible := Es16Canales;
+  if Assigned(LDescConfig11) then LDescConfig11.Visible := Es16Canales;
+  if Assigned(LConfig12) then LConfig12.Visible := Es16Canales;
+  if Assigned(LDescConfig12) then LDescConfig12.Visible := Es16Canales;
+  if Assigned(LConfig13) then LConfig13.Visible := Es16Canales;
+  if Assigned(LDescConfig13) then LDescConfig13.Visible := Es16Canales;
+  if Assigned(LConfig14) then LConfig14.Visible := Es16Canales;
+  if Assigned(LDescConfig14) then LDescConfig14.Visible := Es16Canales;
+  if Assigned(LConfig15) then LConfig15.Visible := Es16Canales;
+  if Assigned(LDescConfig15) then LDescConfig15.Visible := Es16Canales;
 
   // Visualizacion (Valores, Unidades, Descripciones) para Canales 8-15 (Expansion 1)
   // NOTA: En Expansion 1, LDescripcionX y LUnidadX (1-8) corresponden a canales 8-15
@@ -3222,61 +3823,65 @@ begin
   if Assigned(LUnidadCan08) then LUnidadCan08.Visible := Es16Canales;
   if Assigned(LDescripcionCan08) then LDescripcionCan08.Visible := Es16Canales;
   if Assigned(LNombreCanal09) then LNombreCanal09.Visible := Es16Canales;
-  
+
   // Canal 9
   if Assigned(LValorCan09) then LValorCan09.Visible := Es16Canales;
   if Assigned(LUnidadCan09) then LUnidadCan09.Visible := Es16Canales;
   if Assigned(LDescripcionCan09) then LDescripcionCan09.Visible := Es16Canales;
   if Assigned(LNombreCanal10) then LNombreCanal10.Visible := Es16Canales;
-  
+
   // Canal 10
   if Assigned(LValorCan10) then LValorCan10.Visible := Es16Canales;
   if Assigned(LUnidadCan10) then LUnidadCan10.Visible := Es16Canales;
   if Assigned(LDescripcionCan10) then LDescripcionCan10.Visible := Es16Canales;
   if Assigned(LNombreCanal11) then LNombreCanal11.Visible := Es16Canales;
-  
+
   // Canal 11
   if Assigned(LValorCan11) then LValorCan11.Visible := Es16Canales;
   if Assigned(LUnidadCan11) then LUnidadCan11.Visible := Es16Canales;
   if Assigned(LDescripcionCan11) then LDescripcionCan11.Visible := Es16Canales;
   if Assigned(LNombreCanal12) then LNombreCanal12.Visible := Es16Canales;
-  
+
   // Canal 12
   if Assigned(LValorCan12) then LValorCan12.Visible := Es16Canales;
   if Assigned(LUnidadCan12) then LUnidadCan12.Visible := Es16Canales;
   if Assigned(LDescripcionCan12) then LDescripcionCan12.Visible := Es16Canales;
   if Assigned(LNombreCanal13) then LNombreCanal13.Visible := Es16Canales;
-  
+
   // Canal 13
   if Assigned(LValorCan13) then LValorCan13.Visible := Es16Canales;
   if Assigned(LUnidadCan13) then LUnidadCan13.Visible := Es16Canales;
   if Assigned(LDescripcionCan13) then LDescripcionCan13.Visible := Es16Canales;
   if Assigned(LNombreCanal14) then LNombreCanal14.Visible := Es16Canales;
-  
+
   // Canal 14
   if Assigned(LValorCan14) then LValorCan14.Visible := Es16Canales;
   if Assigned(LUnidadCan14) then LUnidadCan14.Visible := Es16Canales;
   if Assigned(LDescripcionCan14) then LDescripcionCan14.Visible := Es16Canales;
   if Assigned(LNombreCanal15) then LNombreCanal15.Visible := Es16Canales;
-  
+
   // Canal 15
   if Assigned(LValorCan15) then LValorCan15.Visible := Es16Canales;
   if Assigned(LUnidadCan15) then LUnidadCan15.Visible := Es16Canales;
   if Assigned(LDescripcionCan15) then LDescripcionCan15.Visible := Es16Canales;
-  
+
   // Controlar la visibilidad del contenedor de los canales adicionales (GroupBoxCan14)
   if GroupBoxCan14 <> nil then
-     GroupBoxCan14.Visible := Es16Canales;
+    GroupBoxCan14.Visible := Es16Canales;
 
   // Ajustar la posición de GroupBox8
-  if GroupBox8 <> nil then begin
-     if Es16Canales then begin
-        if GroupBoxCan14 <> nil then
-           GroupBox8.Top := GroupBoxCan14.Top + GroupBoxCan14.Height + 50;
-     end else begin
-        if GroupBox6 <> nil then
-           GroupBox8.Top := GroupBox6.Top + GroupBox6.Height + 50;
-     end;
+  if GroupBox8 <> nil then
+  begin
+    if Es16Canales then
+    begin
+      if GroupBoxCan14 <> nil then
+        GroupBox8.Top := GroupBoxCan14.Top + GroupBoxCan14.Height + 50;
+    end
+    else
+    begin
+      if GroupBox6 <> nil then
+        GroupBox8.Top := GroupBox6.Top + GroupBox6.Height + 50;
+    end;
   end;
 
   // --- Lógica de Pestañas (TabSheets) ---
@@ -3293,22 +3898,21 @@ begin
   tsExp2.TabVisible := (CantidadCanales >= 32);
 
   // Asegurar que la pestaña activa sea válida y visible (Evita freeze y visualización incorrecta al inicio)
-  if tsMon.PageControl <> nil then begin
-     // Si la pestaña activa actual va a ser ocultada, cambiar a tsMon
-     if (not tsExp0.TabVisible and (tsMon.PageControl.ActivePage = tsExp0)) or
-        (not tsExp1.TabVisible and (tsMon.PageControl.ActivePage = tsExp1)) or
-        (not tsExp2.TabVisible and (tsMon.PageControl.ActivePage = tsExp2)) then
-     begin
-       tsMon.PageControl.ActivePage := tsMon;
-     end;
-     
-     // Forzar tsMon al inicio si estamos en modo 8 canales
-     if (CantidadCanales = 8) then
-        tsMon.PageControl.ActivePage := tsMon;
+  if tsMon.PageControl <> nil then
+  begin
+    // Si la pestaña activa actual va a ser ocultada, cambiar a tsMon
+    if (not tsExp0.TabVisible and (tsMon.PageControl.ActivePage = tsExp0)) or
+      (not tsExp1.TabVisible and (tsMon.PageControl.ActivePage = tsExp1)) or
+      (not tsExp2.TabVisible and (tsMon.PageControl.ActivePage = tsExp2)) then
+    begin
+      tsMon.PageControl.ActivePage := tsMon;
+    end;
+
+    // Forzar tsMon al inicio si estamos en modo 8 canales
+    if (CantidadCanales = 8) then
+      tsMon.PageControl.ActivePage := tsMon;
   end;
 end;
-
-
 
 
 

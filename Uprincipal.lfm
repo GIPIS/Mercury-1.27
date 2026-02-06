@@ -1,7 +1,7 @@
 object Fprincipal: TFprincipal
-  Left = 650
+  Left = 692
   Height = 672
-  Top = 96
+  Top = 154
   Width = 630
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -12,7 +12,7 @@ object Fprincipal: TFprincipal
   DesignTimePPI = 120
   Font.CharSet = ANSI_CHARSET
   Font.Color = clWindowText
-  Font.Height = -6161
+  Font.Height = -7701
   Font.Name = 'Tahoma'
   Menu = MenuPrincipal
   Position = poScreenCenter
