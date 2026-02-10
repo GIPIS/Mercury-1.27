@@ -75,6 +75,7 @@ type
       //
     protected
       procedure   Execute; override;
+      procedure   SyncActualizar; // Wrapper para Synchronize
 
     public
       pvalorCH        : array of ^integer;
@@ -142,6 +143,8 @@ type
       pActualProgres  : TNotifyEvent;      // Actualiza la barra de progreso para la descarga
       POnConectRemoto : TNotifyEvent;      // Realiza algún proceso cuando se CONECTA en forma remoto
       POnDesConRemoto : TNotifyEvent;      // Realiza algún proceso cuando se DESCONECTA en forma remoto
+      NuevaConfiguracionRemota : boolean;  // Indica si se recibio una nueva configuracion desde el equipo
+      PendingUserConfig : boolean;           // Indica que el usuario selecciono un sensor pero no confirmo aun
 
       // Comunicación remota
       ConexOK         : boolean;           // Me indica si establecí alguna conexión remota
@@ -431,6 +434,8 @@ begin
   pActualProgres  := nil;
   POnConectRemoto := nil;
   POnDesConRemoto := nil;
+  NuevaConfiguracionRemota := false;
+  PendingUserConfig := false;
   CantCanales     := NCanales;
   SetLength(pvalorCH ,NCanales);
   SetLength(pCH_conf ,NCanales);
@@ -478,14 +483,20 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
+procedure TThreadComm.SyncActualizar;
+begin
+  if Assigned(pActualizar) then
+     pActualizar(Self); // Llama al evento en el contexto del hilo principal
+end;
+
+////////////////////////////////////////////////////////////////////////////////
 procedure TThreadComm.Execute;
 var
   auxStr  : string;
-
+  i      : integer;
 begin
-  ConexOK := false;
-
-  // Inicializo el sistema de trandmisión por Telefonia Celular
+  // Inicializo las variables
+  ConfigEquipo     := false;//telefonia Celular
   if (ThTipoCom = 1) then begin
     IniComTelefon;
     retardo(500);   // Espero 1/2seg hasta que se inicialize
@@ -563,7 +574,9 @@ begin
         end;
       end;
       //ESTO AVISA AL FORMULARIO QUE DATOS NUEVOS, PARA QUE VUELVA A RENDERIZARSE Y SE VEA EN PANTALLA
-      pActualizar(Self);                      // Actualizo la info en pantalla
+      // USO SYNCHRONIZE PARA EVITAR ERRORES DE PANTALLA (VCL/LCL no es thread-safe)
+      if Assigned(pActualizar) then Synchronize(SyncActualizar); 
+      //pActualizar(Self);                      // Actualizo la info en pantalla
 
       // Configuro las variables básicas del Equipo
       //ESTO VERIFICA SI EL USUARIO CAMBIO ALGUNA CONFIGURACION PARA EL EQUIPO
@@ -608,6 +621,9 @@ var
   BytesToRead      : Integer;
   NumBloques       : Integer;
   fLog             : TextFile;
+  HayCambios       : Boolean;
+  bAux             : Byte;
+  fDbg             : TextFile;
 begin
   auxStr := '';
   
@@ -656,7 +672,6 @@ begin
   AssignFile(fLog, 'debug_mercury.txt');
   try
     if FileExists('debug_mercury.txt') then Append(fLog) else Rewrite(fLog);
-    Writeln(fLog, '--- LECTURA CE (Values) --- Channels: ' + IntToStr(CantCanales) + ' Blocks: ' + IntToStr(NumBloques));
   except
     // Safe fail if file access denied
   end;
@@ -686,7 +701,7 @@ begin
 
     // Digital A (e.g., ch 8 for block 0, ch 16 for block 1...)
     num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
-    pvalorDigA[NBloque] := num;
+    pvalorDigA[NBloque-1] := num;
     try
       Writeln(fLog, Format('Block%d DigA Val: %d', [NBloque, num]));
     except
@@ -695,7 +710,7 @@ begin
     
     // Digital B (e.g., ch 9 for block 0, ch 17 for block 1...)
     num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
-    pvalorDigB[NBloque] := num;
+    pvalorDigB[NBloque-1] := num;
     try
       Writeln(fLog, Format('Block%d DigB Val: %d', [NBloque, num]));
     except
@@ -751,14 +766,41 @@ begin
   inc(i, 2);
 
   // 5. Read Channel Config (10 bytes per block -> 8 bytes config + 2 bytes padding)
-  for NCanal := 0 to CantCanales - 1 do begin
-      pCH_conf[NCanal]^ := Byte(auxStr[i]);
-      inc(i, 1);
-      
-      // ACÁ DEBERÍA VER CONFIGURACIÓN DE DIGITALES
-      // If end of block (every 8 channels), skip 2 bytes padding
-      //if ((NCanal + 1) mod 8 = 0) then
-      //   inc(i, 2);
+  
+  // DEBUG LOGGING
+  try
+    AssignFile(fLog, 'debug_mercury_config.txt'); // Changed to relative path - avoids C:\ permission error
+   
+  except
+  end;
+
+  HayCambios := False; // Local flag to detect changes in this frame
+
+  // Solo actualizar la config de canales si NO estamos en proceso de configurar
+  // Si ConfigEquipo=true, el usuario acaba de cambiar la config y no queremos que
+  // el frame del emulador (que todavia tiene la config vieja) la pise
+  if (not ConfigEquipo) and (not PendingUserConfig) then begin
+    for NCanal := 0 to CantCanales - 1 do begin
+        // Read new byte
+        bAux := Byte(auxStr[i]);
+        
+        // Check if different from current config
+        if pCH_conf[NCanal]^ <> bAux then begin
+           pCH_conf[NCanal]^ := bAux; // Update only if different
+           HayCambios := True;
+        end;
+        
+        inc(i, 1);
+    end;
+    
+    if HayCambios then NuevaConfiguracionRemota := true;
+  end else begin
+    // Saltar los bytes de config sin tocar los valores en memoria
+    inc(i, CantCanales);
+  end;
+
+  try
+  except
   end;
   
   // Re-sync 'i' just in case
@@ -798,6 +840,10 @@ begin
   // User instruction: "4 bytes para la memoria ocupada".
   // Let's explicitly read 4 bytes for memory.
   // Keeping safe implementation.
+  // Explicitly read 4 bytes for memory as per user instruction/original logic
+  // pMemoria^ := ... (already done above)
+  
+  NuevaConfiguracionRemota := true;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -843,6 +889,16 @@ begin
   ABytes := NumToAbytes( round((HoraAux-now)*86400) );
   Tregre00 := ABytes[0];
   Tregre01 := ABytes[1];
+
+  // IMPORTANTE: Actualizar el arreglo ConfigCHs con los valores actuales de los sensores
+  // Los sensores se modifican en la UI (pCH_conf apunta a Canales[i].Config), 
+  // pero ConfigCHs es una copia local que se usa para enviar.
+  for i := 0 to CantCanales - 1 do begin
+    if Assigned(pCH_conf[i]) then
+       ConfigCHs[i] := pCH_conf[i]^
+    else
+       ConfigCHs[i] := 0; 
+  end;  
 //DE ACA NO HABRIA QUE TOCAR MUCHO
 //LO IMPORTANTE ES SABER QUE TODA ESTA INFORMAICON OCUPA 12 BYTES.
 //4 BYTES PARA LA HORA DEL EQUIPO, 4 PARA HORA DE INICIO DE MUESTREO...

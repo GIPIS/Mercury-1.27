@@ -11,7 +11,7 @@ type
 
   TEquipo = class(Tobject)
     private
-      //
+      FGuardando : boolean;
     public
       Nombre      : string;                  // Nombre del Equipo
       Memoria     : longint;                 // Cantidad de bytes ocupados de la Memoria
@@ -55,6 +55,7 @@ var
 begin
   // Inicializo las variables mas importantes
   //SE ESTABLECEN VALORES POR DEFECTO PARA EVITAR VALORES BASURA
+  FGuardando  := False;
   Nombre      := 'TEST';
   Memoria     := 0;
   Hora        := now;
@@ -264,41 +265,77 @@ var
   ArchivoINI   : TIniFile;
   i            : integer;
   PathDir      : string;
+  RetryCount   : integer;
+  fDbg         : TextFile;
 
 begin
-  ArchivoINI   := TIniFile.Create(DirINI+'\'+Nombre+'\'+Nombre+'.ini');
   PathDir      := DirINI + '\'+Nombre + '\';
 
-  // Cargo los datos desde el Archivo INI
-  try
-    // Me aseguro que exista el dir sino lo creo
-    if not DirectoryExists(PathDir) then MkDir(PathDir);
+  // DEBUG LOG REMOVED
 
-    for i:=0 to NumCanales-1 do begin
-      ArchivoINI.WriteString(Nombre, 'CH'+intToStr(i)+'_desc', Canales[i].Descripcion);
-      ArchivoINI.WriteString(Nombre, 'CH'+intToStr(i)+'_conf', IntToStr(Canales[i].Config));
-    end;
+  // Intento guardar hasta 5 veces si hay error de archivo bloqueado
+  for RetryCount := 0 to 5 do begin
+      try
+          ArchivoINI   := TIniFile.Create(DirINI+'\'+Nombre+'\'+Nombre+'.ini');
 
-    // Guardo la config del los calculos de los parámetros
-    CalcParam.GuardarParametros(DirINI+'\'+Nombre+'\'+Nombre+'.ini', Nombre);
+          // Cargo los datos desde el Archivo INI
+          try
+            // Me aseguro que exista el dir sino lo creo
+            if not DirectoryExists(PathDir) then MkDir(PathDir);
+            
+            for i:=0 to NumCanales-1 do begin
+              ArchivoINI.WriteString(Nombre, 'CH'+intToStr(i)+'_desc', Canales[i].Descripcion);
+              ArchivoINI.WriteString(Nombre, 'CH'+intToStr(i)+'_conf', IntToStr(Canales[i].Config));
+            end;
+            
+            // Cierro el archivo antes de llamar a GuardarParametros para evitar bloqueo
+            ArchivoINI.Free;
 
-    // Pongo el separador de las distintas secciones
-    ArchivoINI.WriteString(Nombre, '------', '------');
+            // Guardo la config del los calculos de los parámetros
+            CalcParam.GuardarParametros(DirINI+'\'+Nombre+'\'+Nombre+'.ini', Nombre);
+            // Re-abro el archivo para continuar escribiendo
+            ArchivoINI := TIniFile.Create(DirINI+'\'+Nombre+'\'+Nombre+'.ini');
 
-    // Guardo los sensores en el dir del Equipo
-    for i:=0 to NumCanales-1 do begin
-      if (not FileExists(PathDir + Canales[i].Nombre + '.sen')) and (Canales[i].Config >1) then
-        Canales[i].GuardarEnArchivo(PathDir + Canales[i].Nombre + '.sen');
-    end;
-  except
-    ArchivoINI.Free;
-    result := false;
-    exit;
-  end;
+            // Pongo el separador de las distintas secciones
+            ArchivoINI.WriteString(Nombre, '------', '------');
 
+            // Guardo los sensores en el dir del Equipo
+            for i:=0 to NumCanales-1 do begin
+              if (not FileExists(PathDir + Canales[i].Nombre + '.sen')) and (Canales[i].Config >1) then
+                Canales[i].GuardarEnArchivo(PathDir + Canales[i].Nombre + '.sen');
+            end;
+            
+            // Si llego aca, todo salio bien
+            ArchivoINI.Free;
+            result := true;
+            FGuardando := False; 
+            Exit; // Salir de la funcion exitosamente
 
-  ArchivoINI.Free;
-  result := true;
+          except
+            on E: EFCreateError do begin
+               ArchivoINI.Free;
+               // Si es error de creacion (lock), espero y reintento
+               Sleep(200);
+               Continue;
+            end;
+            else begin
+               // Otro error, fallo
+               ArchivoINI.Free;
+               result := false;
+               FGuardando := False; 
+               Exit;
+            end;
+          end;
+          
+      except
+          on E: Exception do begin
+             Sleep(200);
+          end;
+      end;
+  end; // Fin retry loop
+  
+  FGuardando := False;
+  result := False; // Fallo despues de reintentos
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -309,8 +346,11 @@ var
   i            : integer;
   AFiles       : AFilesOfDir;
   PathDir      : string;
+  fDbg         : TextFile;
 
 begin
+  // DEBUG LOG REMOVED
+
   SeccionesINI := TStringList.Create;
   ArchivoINI   := TIniFile.Create(DirINI+'\'+Nombre+'\'+Nombre+'.ini');
   PathDir      := DirINI+'\'+Nombre+'\';
@@ -338,7 +378,25 @@ begin
     for i:=0 to NumCanales-1 do begin
       Canales[i].DescrINI  := ArchivoINI.ReadString(Nombre, 'CH'+intToStr(i)+'_desc'         , '');
       Canales[i].ConfigINI := StrToInt(ArchivoINI.ReadString(Nombre, 'CH'+intToStr(i)+'_conf', '0'));
+      // IMPORTANT: Restore active Config from the loaded INI value to ensure persistence
+      Canales[i].Config    := Canales[i].ConfigINI; 
     end;
+
+    // DEBUG LOG - lo que se cargo del INI
+    try
+      AssignFile(fDbg, 'debug_config.log');
+      if FileExists('debug_config.log') then Append(fDbg) else Rewrite(fDbg);
+      WriteLn(fDbg, FormatDateTime('hh:nn:ss.zzz', Now) + ' [CargarEquipo] LOADED from INI:');
+          // Dump memory for CH8
+          if NumCanales > 8 then begin
+              WriteLn(fDbg, 'CH8 (Dig0) Config: ' + IntToStr(Canales[8].Config));
+              WriteLn(fDbg, 'CH8 (Dig0) Desc: ' + Canales[8].Descripcion);
+              WriteLn(fDbg, 'CH8 (Dig0) Unit: ' + Canales[8].Unidad);
+          end else begin
+              WriteLn(fDbg, 'CH8 (Dig0) NOT AVAILABLE (NumCanales=' + IntToStr(NumCanales) + ')');
+          end;
+      CloseFile(fDbg);
+    except end;
 
     // Cargo  la config del los calculos de los parámetros
     CalcParam.CargarParametros(DirINI+'\'+Nombre+'\'+Nombre+'.ini', Nombre);

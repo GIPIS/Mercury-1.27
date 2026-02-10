@@ -1648,6 +1648,7 @@ end;
 procedure TFprincipal.LConfigsClick(Sender: TObject);
 begin
   NCanal               := (Sender as TLabel).tag;
+  cbSensores.Parent    := (Sender as TLabel).Parent; // Fix: Reparent to current container
   cbSensores.Left      := (Sender as TLabel).Left-6;
   cbSensores.Top       := (Sender as TLabel).top-3;
   if not Equipo.UsarCH9 then cbSensores.ItemIndex := Equipo.Canales[NCanal].config

@@ -8,7 +8,7 @@ BAUD = 9600
 NOMBRE_EQUIPO = b'TEST'
 
 CANTIDAD_BLOQUES = 1
-CANALES_CONFIG = [58,1,2,3,4,5,6,7,8,9] * CANTIDAD_BLOQUES  # 8 analógicos y 2 digitales por bloque
+CANALES_CONFIG = [12,1,2,3,4,5,6,7,8,9] * CANTIDAD_BLOQUES  # 8 analógicos y 2 digitales por bloque
 
 INTERVALO_MUESTREO = 60
 
@@ -88,75 +88,79 @@ def generar_datos_muestras():
     return bytes(datos)
 
 # --- FLUJO PRINCIPAL ---
-# --- FLUJO PRINCIPAL ---
-import socket
-
-def iniciar_servidor_tcp(puerto=1234):
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('0.0.0.0', puerto))
-    server.listen(1)
-    print(f"Modo TCP: Escuchando en el puerto {puerto}...")
-    conn, addr = server.accept()
-    print(f"Conexión establecida desde {addr}")
-    return conn
-
 try:
-    try:
-        ser = serial.Serial(PORT, BAUD, timeout=0.1)
-        print(f"Simulador Serial iniciado en {PORT}. Esperando comandos...")
-        modo = 'SERIAL'
-        com_channel = ser
-    except Exception as e:
-        print(f"No se pudo abrir puerto Serial ({e}).")
-        print("Intentando iniciar modo Servidor TCP en puerto 1234...")
-        com_channel = iniciar_servidor_tcp(1234)
-        modo = 'TCP'
+    ser = serial.Serial(PORT, BAUD, timeout=0.1) # Timeout bajo para no bloquear el script
+    print(f"Simulador iniciado en {PORT}. Esperando comandos...")
 
     while True:
-        if modo == 'SERIAL':
-            data = ser.read(1)
-        else:
-            try:
-                data = com_channel.recv(1)
-                if not data: break # Conexión cerrada
-            except:
-                break
-
+        data = ser.read(1)
+        
         if data == b'X':
             print("Recibido: X (heartbeat)")
-            respuesta = b'CE' + generar_respuesta_CE()
-            if modo == 'SERIAL':
-                ser.write(respuesta[0:2]) # Manda CE
-                ser.write(respuesta[2:])
-                ser.flush()
-            else:
-                com_channel.sendall(respuesta)
-                
-            print(f"Enviado: CE + {len(respuesta)-2} bytes")
-            
+            ser.write(b'CE')
+            ser.write(generar_respuesta_CE())
+            ser.flush() # Asegura el envío
+            print("Enviado: CE + "+str(len(generar_respuesta_CE()))+" bytes")
         elif data == b'L':
-            if modo == 'SERIAL':
-                next_byte = ser.read(1)
-            else:
-                next_byte = com_channel.recv(1)
-
+            next_byte = ser.read(1)
             if next_byte == b'D':
                 print("Recibido: LD (solicitud de datos)")
-                bloque = b'DG' + generar_datos_muestras()
-                
-                if modo == 'SERIAL':
-                    ser.write(bloque)
-                    ser.flush()
-                else:
-                    com_channel.sendall(bloque)
+                ser.write(b'DG')
+                ser.write(generar_datos_muestras())
+                ser.flush()
                 print("Datos de muestras enviados.")
+        
+        elif data == b'C':
+            next_byte = ser.read(1)
+            if next_byte == b'E':
+                print("Recibido: CE (Inicio Configuración)")
+                ser.write(b'OK')
+                ser.flush()
+                
+                # Leer bytes de configuración (aprox 50 bytes)
+                # 4(Hora)+4(Ini)+2(T)+2(Regre) + (10*Bloques)
+                time.sleep(0.5) # Esperar a que lleguen
+                
+                num_config_bytes = ser.in_waiting
+                if num_config_bytes > 0:
+                    raw_data = ser.read(num_config_bytes)
+                    print(f"Recibidos {len(raw_data)} bytes de configuración.")
+                    
+                    # 1. Skip Header (12 bytes)
+                    # Hora(4) + Ini(4) + T(2) + Regre(2)
+                    header_size = 12
+                    
+                    # 2. Parse Channel Config
+                    current_idx = header_size
+                    
+                    try:
+                        # Assuming PC sends config for OUR number of channels
+                        for i in range(len(CANALES_CONFIG)):
+                            if current_idx < len(raw_data):
+                                CANALES_CONFIG[i] = raw_data[current_idx]
+                                current_idx += 1
+                                
+                                # Skip padding if block boundary (every 8 channels)
+                                if (i + 1) % 8 == 0:
+                                    current_idx += 2
+                        
+                        print(f"Configuración APLICADA: {CANALES_CONFIG}")
+                    except Exception as e:
+                        print(f"Error parseando config: {e}")
+                else:
+                    print("No llegaron datos de conf.")
+                
+                # Opcional: Actualizar INTERVALO_MUESTREO si se decodifica
+                print("Configuración aplicada en simulador.")
+                
+        # --- PAUSA DEL BUCLE PRINCIPAL ---
+        # Reduce CPU usage and slows down the loop as requested
+        time.sleep(0.1) 
 
 except serial.SerialException as e:
-    print(f"Error Serial: {e}")
+    print(f"Error al abrir el puerto: {e}")
 except KeyboardInterrupt:
     print("\nSimulador detenido.")
 finally:
-    if 'ser' in locals() and hasattr(ser, 'is_open') and ser.is_open:
+    if 'ser' in locals() and ser.is_open:
         ser.close()
-    if 'com_channel' in locals() and modo == 'TCP':
-        com_channel.close()

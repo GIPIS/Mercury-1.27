@@ -115,7 +115,7 @@ var
   FilesCont : integer;
 begin
   FilesCont := 0;
-  if FindFirst(dir, faArchive, sr) = 0 then begin
+  if FindFirst(dir, faAnyFile, sr) = 0 then begin
     repeat
       FilesCont := FilesCont + 1;
       SetLength(ListaOfFiles,FilesCont);
