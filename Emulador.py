@@ -88,32 +88,75 @@ def generar_datos_muestras():
     return bytes(datos)
 
 # --- FLUJO PRINCIPAL ---
+# --- FLUJO PRINCIPAL ---
+import socket
+
+def iniciar_servidor_tcp(puerto=1234):
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(('0.0.0.0', puerto))
+    server.listen(1)
+    print(f"Modo TCP: Escuchando en el puerto {puerto}...")
+    conn, addr = server.accept()
+    print(f"Conexión establecida desde {addr}")
+    return conn
+
 try:
-    ser = serial.Serial(PORT, BAUD, timeout=0.1) # Timeout bajo para no bloquear el script
-    print(f"Simulador iniciado en {PORT}. Esperando comandos...")
+    try:
+        ser = serial.Serial(PORT, BAUD, timeout=0.1)
+        print(f"Simulador Serial iniciado en {PORT}. Esperando comandos...")
+        modo = 'SERIAL'
+        com_channel = ser
+    except Exception as e:
+        print(f"No se pudo abrir puerto Serial ({e}).")
+        print("Intentando iniciar modo Servidor TCP en puerto 1234...")
+        com_channel = iniciar_servidor_tcp(1234)
+        modo = 'TCP'
 
     while True:
-        data = ser.read(1)
-        
+        if modo == 'SERIAL':
+            data = ser.read(1)
+        else:
+            try:
+                data = com_channel.recv(1)
+                if not data: break # Conexión cerrada
+            except:
+                break
+
         if data == b'X':
             print("Recibido: X (heartbeat)")
-            ser.write(b'CE')
-            ser.write(generar_respuesta_CE())
-            ser.flush() # Asegura el envío
-            print("Enviado: CE + "+str(len(generar_respuesta_CE()))+" bytes")
+            respuesta = b'CE' + generar_respuesta_CE()
+            if modo == 'SERIAL':
+                ser.write(respuesta[0:2]) # Manda CE
+                ser.write(respuesta[2:])
+                ser.flush()
+            else:
+                com_channel.sendall(respuesta)
+                
+            print(f"Enviado: CE + {len(respuesta)-2} bytes")
+            
         elif data == b'L':
-            next_byte = ser.read(1)
+            if modo == 'SERIAL':
+                next_byte = ser.read(1)
+            else:
+                next_byte = com_channel.recv(1)
+
             if next_byte == b'D':
                 print("Recibido: LD (solicitud de datos)")
-                ser.write(b'DG')
-                ser.write(generar_datos_muestras())
-                ser.flush()
+                bloque = b'DG' + generar_datos_muestras()
+                
+                if modo == 'SERIAL':
+                    ser.write(bloque)
+                    ser.flush()
+                else:
+                    com_channel.sendall(bloque)
                 print("Datos de muestras enviados.")
 
 except serial.SerialException as e:
-    print(f"Error al abrir el puerto: {e}")
+    print(f"Error Serial: {e}")
 except KeyboardInterrupt:
     print("\nSimulador detenido.")
 finally:
-    if 'ser' in locals() and ser.is_open:
+    if 'ser' in locals() and hasattr(ser, 'is_open') and ser.is_open:
         ser.close()
+    if 'com_channel' in locals() and modo == 'TCP':
+        com_channel.close()
