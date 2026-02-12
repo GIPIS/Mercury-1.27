@@ -228,6 +228,7 @@ var
 
 begin
   // Formato de salida en función de la cantidad de decimales requeridos   
+  
   auxDecimales :='0';
   if Decimales>0 then begin
     auxDecimales :='0.';

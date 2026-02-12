@@ -157,7 +157,8 @@ type
       AutoDesconecDesc : boolean;          // Una vez terminadas la descarga se desconecta automaticamente
       AutoDesconecConf : boolean;          // Una vez terminadas la config se desconecta automaticamente
       Ntelefono        : string;           // Número de telefono al cual llama para conectarse
-      NombreConex      : string;           // Nombre de la conexión remota      
+      NombreConex      : string;           // Nombre de la conexión remota
+      DebugMsg         : string;           // Variable para debug seguro      
 
       constructor crear(CreateSuspended: Boolean; NCanales:byte);
       destructor  Destruir;
@@ -489,6 +490,8 @@ begin
      pActualizar(Self); // Llama al evento en el contexto del hilo principal
 end;
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 procedure TThreadComm.Execute;
 var
@@ -609,239 +612,114 @@ end;
 procedure TThreadComm.LeerConfig;
 var
   NCanal   : byte;
-  NBloque  : integer;
-  IndiceCanalReal : integer;
   numDate  : double;
   num      : integer;
   FechaINI : double;
   auxStr   : string;
   i        : integer;
-  BytesOcupadosData: Integer;
-  BytesOcupadosConf: Integer;
-  BytesToRead      : Integer;
-  NumBloques       : Integer;
-  fLog             : TextFile;
-  HayCambios       : Boolean;
-  bAux             : Byte;
-  fDbg             : TextFile;
+  BytesToRead : Integer;
+  HayCambios  : Boolean;
+  bAux        : Byte;
+  StrLog      : string;
+  debug_f     : TextFile;
+  debug_name  : string;
 begin
   auxStr := '';
   
-  // Calculate Frame Size logic:
-  // For each 8-channel block: 8 analog + 2 digital alternates = 10 channels × 2 bytes = 20 bytes
-  // So the total is ((CantCanales / 8) * 10) * 2 bytes for data
-  //   8ch  = 10 channels = 20 bytes
-  //   16ch = 20 channels = 40 bytes
-  //   24ch = 30 channels = 60 bytes
-  //   32ch = 40 channels = 80 bytes
-  // Config: CantCanales * 1 byte (no change for config, no digital config)
+  // Estructura del frame LINEAL (igual al protocolo original, escalado):
+  // Datos:     CantCanales × 2 bytes (todos los canales secuenciales)
+  // Hora:      4 bytes
+  // FechaIni:  4 bytes
+  // Intervalo: 2 bytes
+  // Gap:       2 bytes (firmware)
+  // Config:    CantCanales × 1 byte
+  // Nombre:    4 bytes
+  // Memoria:   3 bytes
+  // MemTotal:  1 byte
+  // Total = CantCanales × 3 + 20
   
-  // Determine number of 8-channel blocks (1, 2, 3, or 4)
-  if CantCanales <= 8 then NumBloques := 1
-  else if CantCanales <= 16 then NumBloques := 2
-  else if CantCanales <= 24 then NumBloques := 3
-  else NumBloques := 4; // 32 channels
-  
-  // Data bytes: analog + digital channels
-  // Each block has 8 analog (16 bytes) + 2 digital (4 bytes) = 20 bytes per block
-  BytesOcupadosData := NumBloques * 20;
-  BytesOcupadosConf := CantCanales * 1 + 2 * NumBloques; // 2 digitales por bloque
-  
-  // Total Frame calculation:
-  // Data (BytesOcupadosData) + 
-  // Time (4) + StartTime (4) + Interval (2) + Bytes Skipped (2) +
-  // Config (BytesOcupadosConf) + 
-  // Name (4) + Memory (4)
-  BytesToRead := BytesOcupadosData + 4 + 4 + 2 + 2 + BytesOcupadosConf + 4 + 4;
+  BytesToRead := CantCanales * 3 + 20;
 
   if not PSerie.LeerDelPuertoSerie(auxStr, BytesToRead) then exit;
   
-  // 1. Read Channel Values
+  // 1. Obtengo todos los valores de los canales
+  StrLog := '';
   i := 1;
-  // We iterate through whatever channels we have configured (CantCanales)
-  // The 'auxStr' contains padding bytes that we need to skip if we cross block boundaries,
-  // but the simple logic is: read block by block.
-  // However, simpler approach: Just consume bytes linearly and skip padding at end of blocks?
-  // Let's stick to the user's definition: "20 bytes for 8 channels".
-  // So bytes 1..16 are data for ch 0..7. Bytes 17..20 are padding.
-  // Bytes 21..36 are data for ch 8..15. Bytes 37..40 are padding.
-  
-  // Implementation note: Read data in blocks of 10 channels (8 analog + 2 digital)
-  // Each block is 20 bytes (10 channels × 2 bytes)
-  // DEBUG LOGGING START
-  AssignFile(fLog, 'debug_mercury.txt');
-  try
-    if FileExists('debug_mercury.txt') then Append(fLog) else Rewrite(fLog);
-  except
-    // Safe fail if file access denied
-  end;
-
-  // Process each 8-channel block (analog + digital)
-  for NBloque := 1 to NumBloques do begin
-    // Read 8 analog channels for this block
-    for NCanal := 0 to 7 do begin
-      IndiceCanalReal := ((NBloque - 1) * 8) + NCanal;
-      
-      // Only read if this channel exists in our configuration
-      if IndiceCanalReal < CantCanales then begin
-        // Read 2 bytes for channel data
-        num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
-        
-        // LOG VALUE
-        try
-          Writeln(fLog, Format('Block%d CH%d(real:%d) Val: %d', [NBloque, NCanal, IndiceCanalReal, num]));
-        except
-        end;
-        
-        pvalorCH[IndiceCanalReal]^ := num;
-      end;
-      inc(i, 2);
-    end;
-    // Read 2 digital channels for this block (alternatives A and B)
-
-    // Digital A (e.g., ch 8 for block 0, ch 16 for block 1...)
-    num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
-    pvalorDigA[NBloque-1] := num;
-    try
-      Writeln(fLog, Format('Block%d DigA Val: %d', [NBloque, num]));
-    except
-    end;
+  for NCanal := 0 to CantCanales - 1 do begin
+    // Se reconstruye el valor de 16 bits (Word/SmallInt)
+    // El protocolo original usaba: LowByte + HighByte * 256.
+    num := Byte(auxStr[i]) + (Byte(auxStr[i+1]) shl 8); 
+    pvalorCH[NCanal]^ := num;
     inc(i, 2);
     
-    // Digital B (e.g., ch 9 for block 0, ch 17 for block 1...)
-    num := Byte(auxStr[i]) + Byte(auxStr[i+1])*256;
-    pvalorDigB[NBloque-1] := num;
-    try
-      Writeln(fLog, Format('Block%d DigB Val: %d', [NBloque, num]));
-    except
-    end;
-    inc(i, 2);
+    // Acumulo info para debug
+    StrLog := StrLog + 'CH' + IntToStr(NCanal) + ': ' + IntToStr(num) + #13#10;
+    
 
   end;
-  
+
   try
-    CloseFile(fLog);
+    debug_name := ExtractFilePath(ParamStr(0)) + 'debug_leerconfig.txt';
+    AssignFile(debug_f, debug_name);
+    if FileExists(debug_name) then Append(debug_f) else Rewrite(debug_f);
+    WriteLn(debug_f, DateTimeToStr(Now) + ' LeerConfig Frame: ' + StrLog);
+    CloseFile(debug_f);
   except
   end;
-  
-  // Safety sync: Data section ends at Start + BytesOcupadosData
-  // i started at 1. It should now be 1 + BytesOcupadosData.
-  //i := 1 + BytesOcupadosData; 
 
-  // 2. Read Time (4 bytes)
-  // ... rest of the function ... (Keeping original structure for now)
-  // We will need to offset 'i' for subsequent reads.
-  
-  // Since original code hardcoded indices (21, 25...), we must update them to be relative to 'i'.
-  
-  // Leo la Hora del Equipo (4 bytes)
-  numDate := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
-             Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215; // Original weird formula
-             
-  // Better parsing:
-  // numDate := ... (keeping strict original logic to avoid breaking legacy math quirks if any)
-  numDate := Byte(auxStr[i]) + Byte(auxStr[i+1])*256 + Byte(auxStr[i+2])*65536 + Byte(auxStr[i+3])*16777216;
-  // Actually, let's stick to the original formula structure to be safe, just adjusting 'i'.
-  
+
+  // 2. Leo la Hora del Equipo (4 bytes)
   numDate := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
              Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
-
   numDate := numDate/86400 + StrToDateTime(Hora_Base);
   pHoraEquipo^ := numDate;
   pHoraActual^ := now;
-  inc(i, 4); 
-
-  // 3. Read Start Measurement Time (4 bytes)
+  inc(i, 4);
+  
+  
+  // 3. Leo la fecha inicial del muestreo (4 bytes)
   numDate  := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
               Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
   FechaINI      := numDate/86400 + StrToDateTime(Hora_Base);
   pIniMuestreo^ := FechaINI;
   inc(i, 4);
 
-  // 4. Read Sampling Interval (2 bytes)
+  // 4. Leo el intervalo de muestreo (2 bytes)
   pTmuestreo^ := (Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255);
   inc(i, 2);
 
-  // Bytes skipped for firmware (2 bytes)
+  // 5. Gap de firmware (2 bytes)
   inc(i, 2);
 
-  // 5. Read Channel Config (10 bytes per block -> 8 bytes config + 2 bytes padding)
-  
-  // DEBUG LOGGING
-  try
-    AssignFile(fLog, 'debug_mercury_config.txt'); // Changed to relative path - avoids C:\ permission error
-   
-  except
-  end;
-
-  HayCambios := False; // Local flag to detect changes in this frame
-
-  // Solo actualizar la config de canales si NO estamos en proceso de configurar
-  // Si ConfigEquipo=true, el usuario acaba de cambiar la config y no queremos que
-  // el frame del emulador (que todavia tiene la config vieja) la pise
+  // 6. Leo la configuración de los Canales
+  HayCambios := False;
   if (not ConfigEquipo) and (not PendingUserConfig) then begin
     for NCanal := 0 to CantCanales - 1 do begin
-        // Read new byte
-        bAux := Byte(auxStr[i]);
-        
-        // Check if different from current config
-        if pCH_conf[NCanal]^ <> bAux then begin
-           pCH_conf[NCanal]^ := bAux; // Update only if different
-           HayCambios := True;
-        end;
-        
-        inc(i, 1);
+      bAux := Byte(auxStr[i + NCanal]);
+      if pCH_conf[NCanal]^ <> bAux then begin
+        pCH_conf[NCanal]^ := bAux;
+        HayCambios := True;
+      end;
     end;
-    
     if HayCambios then NuevaConfiguracionRemota := true;
-  end else begin
-    // Saltar los bytes de config sin tocar los valores en memoria
-    inc(i, CantCanales);
   end;
+  inc(i, CantCanales);
 
-  try
-  except
-  end;
-  
-  // Re-sync 'i' just in case
-  // Start of Config was at: 1 + BytesOcupadosData + 4 + 4 + 2
-  // End of Config is at: Start + BytesOcupadosConf
-  // Current i should match that.
-  i := 1 + BytesOcupadosData + 4 + 4 + 2 + 2 + BytesOcupadosConf;
-
-  // 6. Read Equipment Name (4 bytes)
+  // 7. Leo el nombre del Equipo (4 bytes)
   pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
-  
-  // SANITIZE NAME: remove invalid chars for filenames
-  // Strict whitelist to avoid any filesystem errors
+  // Sanitizar caracteres inválidos para nombres de archivo
   if not (pNombre^[1] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[1] := '_';
   if not (pNombre^[2] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[2] := '_';
   if not (pNombre^[3] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[3] := '_';
   if not (pNombre^[4] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[4] := '_';
   inc(i, 4);
 
-  // 7. Read Memory Used (4 bytes)
-  pMemoria^ := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])+Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535; // Keeping original weird formula
-  // Note: Original read 3 bytes? "Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])..."
-  // User said "4 bytes para la memoria ocupada".
-  // Original code: i:=47. Frame length 50. 50-47+1 = 4 bytes (47,48,49,50). 
-  // Wait, original was reading 50 bytes total.
-  // Original map:
-  // 1..20 (Data 10ch?? No, loop was length(pvalorCH)-1. Defaut 10 chans. 20 bytes.)
-  // 21..24 (Hora)
-  // 25..28 (IniMuestreo)
-  // 29..30 (TMuestreo)
-  // 31..32 (Gap?) Original i=33 for config. 31,32 skipped?
-  // 33..42 (Config 10ch)
-  // 43..46 (Nombre)
-  // 47..49 (Memoria Ocupada)
-  // 50 (Memoria Total)
+  // 8. Leo la cantidad de memoria ocupada (3 bytes)
+  pMemoria^ := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])+Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535;
+  inc(i, 3);
 
-  // User instruction: "4 bytes para la memoria ocupada".
-  // Let's explicitly read 4 bytes for memory.
-  // Keeping safe implementation.
-  // Explicitly read 4 bytes for memory as per user instruction/original logic
-  // pMemoria^ := ... (already done above)
+  // 9. Leo la capacidad de memoria del equipo (1 byte, potencia de 2)
+  pCantMemory^ := trunc(power(2, Byte(auxStr[i])));
   
   NuevaConfiguracionRemota := true;
 end;

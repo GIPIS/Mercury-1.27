@@ -20,7 +20,7 @@ type
       iniMuestr   : Tdatetime;               // Hora en la que se inicio el muestreo
       Tmuestreo   : integer;                 // Periodo de muestreo en SEGUNDOS
       Progreso    : real;                    // Variable que representa el progreso en el proceso sea cual sea
-      UsarCH9     : boolean;                 // Me indica que tengo que usar el CH9 en ves del CH8  
+      UsarCH9     : array[0..3] of boolean;  // Por cada bloque, indica si usar el canal x9 en vez del x8
       Canales     : TASensor;                // Arreglo que tiene Config y Seteos de cada canal
       ListaSenDir : TASensor;                // Arreglo que tiene la info de los sensores en el dir de equipo
       CalcParam   : TCalculoParam;           // Objeto que permite calcular los param de Salinidad, Densidad .....
@@ -69,7 +69,7 @@ begin
   BitsAD      := 1024;
   CantMemory  := 32768;  
   Escala      := Vref/BitsAD;
-  UsarCH9     := false;
+  for i:=0 to 3 do UsarCH9[i] := false;
   // Creo los canales
   //SE CREA UN ARREGLO DINAMICO DE OBJETOS TSENSOR 
   //T SENSOR ES EL OBJETO QUE CONVIERTE VALORES CRUDOS A MEDICIONES REALES
@@ -187,7 +187,7 @@ var
 begin
   Nombre    := '';
   Tmuestreo := 60;
-  UsarCH9   := false;
+  for i:=0 to 3 do UsarCH9[i] := false;
   for i:=0 to NumCanales-1 do Canales[i].Limpiar;
   for i:=0 to length(ListaSenDir)-1 do ListaSenDir[i].Destruir;
   setLength(ListaSenDir,0);

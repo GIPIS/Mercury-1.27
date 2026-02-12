@@ -59,10 +59,10 @@ end;
 
 procedure TFExpansion.Button1Click(Sender: TObject);
 begin
-  if RadioButton1.Checked then Mercury.NumCanales := 8;
-  if RadioButton2.Checked then Mercury.NumCanales := 16;
-  if rbCanales24.Checked then Mercury.NumCanales := 24;
-  if rbCanales32.Checked then Mercury.NumCanales := 32;
+  if RadioButton1.Checked then Mercury.NumCanales := 10;
+  if RadioButton2.Checked then Mercury.NumCanales := 20;
+  if rbCanales24.Checked then Mercury.NumCanales := 30;
+  if rbCanales32.Checked then Mercury.NumCanales := 40;
 
   ModalResult := mrOK;
 end;

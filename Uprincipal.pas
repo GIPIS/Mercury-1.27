@@ -458,7 +458,7 @@ type
     LDescripcionCan05: TLabel;
     LDescripcionCan06: TLabel;
     LDescripcionCan07: TLabel;
-    LDescripcionCanDig08: TLabel;
+    LDescripcionCanDig00: TLabel;
     LDescripcionCan08: TLabel;
     LDescripcion16: TLabel;
     LDescripcion17: TLabel;
@@ -588,7 +588,6 @@ type
     LValorCan29: TLabel;
     LValorCan30: TLabel;
     LValorCan31: TLabel;
-    LValorCanDig00: TLabel;
     LValorCan08: TLabel;
     LValorCan15: TLabel;
     LValorCan14: TLabel;
@@ -616,6 +615,7 @@ type
     LValor7: TLabel;
     LValorCan19: TLabel;
     LValorCan20: TLabel;
+    LValorCanDig00: TLabel;
     LValorCanDig01: TLabel;
     LValorCanDig02: TLabel;
     LValorCanDig03: TLabel;
@@ -905,6 +905,8 @@ type
     procedure Bevel28ChangeBounds(Sender: TObject);
     procedure Bevel29ChangeBounds(Sender: TObject);
     procedure Bevel39ChangeBounds(Sender: TObject);
+    procedure Bevel20ChangeBounds(Sender: TObject);
+    procedure Bevel40ChangeBounds(Sender: TObject);
     procedure Bevel76ChangeBounds(Sender: TObject);
     procedure Bevel77ChangeBounds(Sender: TObject);
     procedure Bevel95ChangeBounds(Sender: TObject);
@@ -1320,6 +1322,16 @@ begin
 
 end;
 
+procedure TFprincipal.Bevel20ChangeBounds(Sender: TObject);
+begin
+
+end;
+
+procedure TFprincipal.Bevel40ChangeBounds(Sender: TObject);
+begin
+
+end;
+
 procedure TFprincipal.Bevel76ChangeBounds(Sender: TObject);
 begin
 
@@ -1549,13 +1561,17 @@ procedure TFprincipal.ActualizarInfo(Sender: TObject);
 var
   i, j, k      : integer;
   ExisteSensor : boolean;
-  CompName, strDesc, strVal, strUnit, strGraph, strComm: string;
+  CompName, strDesc, strVal, strUnit, strGraph, strComm, LogFileName: string;
   Comp: TComponent;
-  fLog: TextFile;
-  fDbg: TextFile;
+  
+  //variable que utilizo para poder asignar los valores a los labels de manera correcta
+  numAsign: integer;
+  ArchivoDebug: TextFile;
+  NombreArchivoDebuf: string;
 
 begin
   if (Cerrando or Creando) then exit;
+  numAsign := 0;
 
   // Procedimiento que actualiza la info del equipo en la pantalla
   if not Equipo.ThreadComm.ONLine then begin
@@ -1584,8 +1600,6 @@ begin
     // DEBUG LOG REMOVED
 
     Equipo.CargarEquipo(Mercury.DirEquipos);
-
-    // DEBUG LOG REMOVED
     for i:=0 to Equipo.NumCanales-1 do begin
       ExisteSensor := false; //Flag para determinar si no existe el archivo del sensor
       for j:=0 to length(ListaSensores)-1 do begin
@@ -1604,8 +1618,7 @@ begin
 
           // Me aseguro de no perder la posici�n en la lista
           Equipo.Canales[i].PosLista := ListaSensores[j].PosLista;
-
-          // Levanto la descripci�n de cada canal del archivo
+          if (i = 8) or (i = 9) then
           if (Equipo.Canales[i].Config = Equipo.Canales[i].ConfigINI) and
              (length(Equipo.Canales[i].DescrINI)>0) then
             Equipo.Canales[i].Descripcion := Equipo.Canales[i].DescrINI;
@@ -1614,7 +1627,8 @@ begin
           ExisteSensor := true;
         end;
       end;
-
+ 
+    ////DEBUG
       //Si no encuentro el archivo del sensor... asigno uno generico ("DATO ORIGINAL")
       if not ExisteSensor then begin
         // Asigno el sensor al canal
@@ -1624,12 +1638,13 @@ begin
         Equipo.Canales[i].PosLista := ListaSensores[1].PosLista;
       end;
     end;
-    // Me fijo que canal digital Uso...  
-    // Me fijo que canal digital Uso...  
-    if (Equipo.Canales[Equipo.NumCanales - 1].Config <> 0) then
-      Equipo.UsarCH9 := True
-    else
-      Equipo.UsarCH9 := False;
+    // Me fijo que canal digital Uso para CADA bloque
+    for j := 0 to (Equipo.NumCanales div 10) - 1 do begin
+      if (j * 10 + 9 < Equipo.NumCanales) and (Equipo.Canales[j * 10 + 9].Config <> 0) then
+        Equipo.UsarCH9[j] := True
+      else
+        Equipo.UsarCH9[j] := False;
+    end;
 
     Equipo.GuardarEquipo(Mercury.DirEquipos);
     Equipo.CargarEquipo(Mercury.DirEquipos);
@@ -1667,193 +1682,168 @@ begin
   // Cargo la info de los canales en pantalla
   // --- INICIO DE LA SECCIÓN DE CARGA DE CANALES ---
   
+  // Cargo la info de los canales en pantalla
+  // --- INICIO DE LA SECCIÓN DE CARGA DE CANALES ---
+  
+ 
+  
   for i := 0 to Equipo.NumCanales - 1 do begin
+  
+       // DEBUG: Loguear valores calculados
+       NombreArchivoDebuf := ExtractFilePath(ParamStr(0)) + 'debug_actualizarinfo.txt';
+       AssignFile(ArchivoDebug, NombreArchivoDebuf); 
+       try
+        if FileExists(NombreArchivoDebuf) then Append(ArchivoDebug) else Rewrite(ArchivoDebug);
+        WriteLn(ArchivoDebug, 'CH' + IntToStr(i) + ': ' + FloatToStr(Equipo.Canales[i].ValorSensor));
+        CloseFile(ArchivoDebug); 
+       except
+       end;
+    
     // 1. Calcular el valor real del canal
     if Equipo.Canales[i].Config <> 0 then begin
       Equipo.Canales[i].Escala := Equipo.Escala;
       Equipo.Canales[i].ComputarValor(Equipo.Canales[i].ValorSensor);
       
-      // 2. ASIGNACIÓN DIRECTA DE VALORES (Caption y BringToFront)
-      case i of
-        // Pestaña Monitoreo (canales 0-7)
-        0:  if Assigned(LValorCan00) then begin LValorCan00.Caption := Equipo.Canales[i].ValorReal; LValorCan00.BringToFront; end;
-        1:  if Assigned(LValorCan01) then begin LValorCan01.Caption := Equipo.Canales[i].ValorReal; LValorCan01.BringToFront; end;
-        2:  if Assigned(LValorCan02) then begin LValorCan02.Caption := Equipo.Canales[i].ValorReal; LValorCan02.BringToFront; end;
-        3:  if Assigned(LValorCan03) then begin LValorCan03.Caption := Equipo.Canales[i].ValorReal; LValorCan03.BringToFront; end;
-        4:  if Assigned(LValorCan04) then begin LValorCan04.Caption := Equipo.Canales[i].ValorReal; LValorCan04.BringToFront; end;
-        5:  if Assigned(LValorCan05) then begin LValorCan05.Caption := Equipo.Canales[i].ValorReal; LValorCan05.BringToFront; end;
-        6:  if Assigned(LValorCan06) then begin LValorCan06.Caption := Equipo.Canales[i].ValorReal; LValorCan06.BringToFront; end;
-        7:  if Assigned(LValorCan07) then begin LValorCan07.Caption := Equipo.Canales[i].ValorReal; LValorCan07.BringToFront; end;
-        // Pestaña Expansion 1 (canales 8-15)
-        8:  if Assigned(LValorCan08) then begin LValorCan08.Caption := Equipo.Canales[i].ValorReal; LValorCan08.BringToFront; end;
-        9:  if Assigned(LValorCan09) then begin LValorCan09.Caption := Equipo.Canales[i].ValorReal; LValorCan09.BringToFront; end;
-        10: if Assigned(LValorCan10) then begin LValorCan10.Caption := Equipo.Canales[i].ValorReal; LValorCan10.BringToFront; end;
-        11: if Assigned(LValorCan11) then begin LValorCan11.Caption := Equipo.Canales[i].ValorReal; LValorCan11.BringToFront; end;
-        12: if Assigned(LValorCan12) then begin LValorCan12.Caption := Equipo.Canales[i].ValorReal; LValorCan12.BringToFront; end;
-        13: if Assigned(LValorCan13) then begin LValorCan13.Caption := Equipo.Canales[i].ValorReal; LValorCan13.BringToFront; end;
-        14: if Assigned(LValorCan14) then begin LValorCan14.Caption := Equipo.Canales[i].ValorReal; LValorCan14.BringToFront; end;
-        15: if Assigned(LValorCan15) then begin LValorCan15.Caption := Equipo.Canales[i].ValorReal; LValorCan15.BringToFront; end;
-        // Pestaña Expansion 2 (canales 16-23)
-        16: if Assigned(LValorCan16) then begin LValorCan16.Caption := Equipo.Canales[i].ValorReal; LValorCan16.BringToFront; end;
-        17: if Assigned(LValorCan17) then begin LValorCan17.Caption := Equipo.Canales[i].ValorReal; LValorCan17.BringToFront; end;
-        18: if Assigned(LValorCan18) then begin LValorCan18.Caption := Equipo.Canales[i].ValorReal; LValorCan18.BringToFront; end;
-        19: if Assigned(LValorCan19) then begin LValorCan19.Caption := Equipo.Canales[i].ValorReal; LValorCan19.BringToFront; end;
-        20: if Assigned(LValorCan20) then begin LValorCan20.Caption := Equipo.Canales[i].ValorReal; LValorCan20.BringToFront; end;
-        21: if Assigned(LValorCan21) then begin LValorCan21.Caption := Equipo.Canales[i].ValorReal; LValorCan21.BringToFront; end;
-        22: if Assigned(LValorCan22) then begin LValorCan22.Caption := Equipo.Canales[i].ValorReal; LValorCan22.BringToFront; end;
-        23: if Assigned(LValorCan23) then begin LValorCan23.Caption := Equipo.Canales[i].ValorReal; LValorCan23.BringToFront; end;
-        // Pestaña Expansion 3 (canales 24-31)
-        24: if Assigned(LValorCan24) then begin LValorCan24.Caption := Equipo.Canales[i].ValorReal; LValorCan24.BringToFront; end;
-        25: if Assigned(LValorCan25) then begin LValorCan25.Caption := Equipo.Canales[i].ValorReal; LValorCan25.BringToFront; end;
-        26: if Assigned(LValorCan26) then begin LValorCan26.Caption := Equipo.Canales[i].ValorReal; LValorCan26.BringToFront; end;
-        27: if Assigned(LValorCan27) then begin LValorCan27.Caption := Equipo.Canales[i].ValorReal; LValorCan27.BringToFront; end;
-        28: if Assigned(LValorCan28) then begin LValorCan28.Caption := Equipo.Canales[i].ValorReal; LValorCan28.BringToFront; end;
-        29: if Assigned(LValorCan29) then begin LValorCan29.Caption := Equipo.Canales[i].ValorReal; LValorCan29.BringToFront; end;
-        30: if Assigned(LValorCan30) then begin LValorCan30.Caption := Equipo.Canales[i].ValorReal; LValorCan30.BringToFront; end;
-        31: if Assigned(LValorCan31) then begin LValorCan31.Caption := Equipo.Canales[i].ValorReal; LValorCan31.BringToFront; end;
-      end;
-
-
-      // 3. ASIGNACIÓN DE DESCRIPCIONES (usando nombres coherentes LDescripcionCanXX)
-      Comp := FindComponent(Format('LDescripcionCan%.2d', [i]));
-      if (Comp is TLabel) then begin
-        TLabel(Comp).Caption := Equipo.Canales[i].Descripcion;
-        TLabel(Comp).BringToFront;
-      end;
-
-      // 4. UNIDADES Y BOTONES (Búsqueda dinámica segura)
-      // 4. UNIDADES Y BOTONES
-      if (i = 0) and ActualizarCHs then begin
-         // Un solo dump al principio para ver el layout
-        try
-          // AssignFile(fDbg, 'debug_layout.log');
-          // // if FileExists('debug_layout.log') then Append(fDbg) else Rewrite(fDbg);
-          // // // Dump memory for CH8
-          // // WriteLn(fDbg, 'CH8 (Dig0) Config: ' + IntToStr(Equipo.Canales[8].Config));
-          // // WriteLn(fDbg, 'CH8 (Dig0) Desc: ' + Equipo.Canales[8].Descripcion);
-          // // WriteLn(fDbg, 'CH8 (Dig0) Unit: ' + Equipo.Canales[8].Unidad);
-          
-          // // // Dump components
-          // // if Assigned(LUnidadCan08) then WriteLn(fDbg, 'LUnidadCan08 Top: ' + IntToStr(LUnidadCan08.Top));
-          // // if Assigned(LUnidadCan08) then WriteLn(fDbg, 'LUnidadCan08 Parent: ' + LUnidadCan08.Parent.Name);
-          
-          // // if Assigned(LUnidadDigCan00) then WriteLn(fDbg, 'LUnidadDigCan00 Top: ' + IntToStr(LUnidadDigCan00.Top));
-          // // if Assigned(LUnidadDigCan00) then WriteLn(fDbg, 'LUnidadDigCan00 Parent: ' + LUnidadDigCan00.Parent.Name);
-          
-          // // if Assigned(LDescripcionCan08) then WriteLn(fDbg, 'LDescCan08 Top: ' + IntToStr(LDescripcionCan08.Top));
-          
-          // // CloseFile(fDbg);
-        except end;
-      end;
-
-      if i <= 7 then begin
-          case i of
-             0: if Assigned(LUnidadCan00) then begin LUnidadCan00.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan00.BringToFront; end;
-             // ... resto del case ...
-             1: if Assigned(LUnidadCan01) then begin LUnidadCan01.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan01.BringToFront; end;
-             2: if Assigned(LUnidadCan02) then begin LUnidadCan02.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan02.BringToFront; end;
-             3: if Assigned(LUnidadCan03) then begin LUnidadCan03.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan03.BringToFront; end;
-             4: if Assigned(LUnidadCan04) then begin LUnidadCan04.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan04.BringToFront; end;
-             5: if Assigned(LUnidadCan05) then begin LUnidadCan05.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan05.BringToFront; end;
-             6: if Assigned(LUnidadCan06) then begin LUnidadCan06.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan06.BringToFront; end;
-             7: if Assigned(LUnidadCan07) then begin LUnidadCan07.Caption := '[' + Equipo.Canales[i].Unidad + ']'; LUnidadCan07.BringToFront; end;
-          end;
-      end else begin
-          // Búsqueda dinámica para el resto
-          CompName := Format('LUnidadCan%.2d', [i]);
-          Comp := FindComponent(CompName);
-          if Comp = nil then Comp := FindComponent(Format('LUnidad%.2d', [i])); 
-          if (Comp is TLabel) then begin
-            TLabel(Comp).Caption := '[' + Equipo.Canales[i].Unidad + ']';
-            TLabel(Comp).BringToFront;
-          end;
-      end;
-      // Asignación directa para canal 8 como fallback (FindComponent parece no encontrarlo)
-      if (i = 8) and Assigned(LUnidadCan08) then begin
-        LUnidadCan08.Caption := '[' + Equipo.Canales[i].Unidad + ']';
-        LUnidadCan08.BringToFront;
-      end;
-
-    end else begin
-      // Si el canal está desactivado (Config = 0)
-      case i of
-        // Pestaña Monitoreo (canales 0-7)
-        0:  if Assigned(LValorCan00) then LValorCan00.Caption := 'OFF';
-        1:  if Assigned(LValorCan01) then LValorCan01.Caption := 'OFF';
-        2:  if Assigned(LValorCan02) then LValorCan02.Caption := 'OFF';
-        3:  if Assigned(LValorCan03) then LValorCan03.Caption := 'OFF';
-        4:  if Assigned(LValorCan04) then LValorCan04.Caption := 'OFF';
-        5:  if Assigned(LValorCan05) then LValorCan05.Caption := 'OFF';
-        6:  if Assigned(LValorCan06) then LValorCan06.Caption := 'OFF';
-        7:  if Assigned(LValorCan07) then LValorCan07.Caption := 'OFF';
-        // Pestaña Expansion 1 (canales 8-15)
-        8:  if Assigned(LValorCan08) then LValorCan08.Caption := 'OFF';
-        9:  if Assigned(LValorCan09) then LValorCan09.Caption := 'OFF';
-        10: if Assigned(LValorCan10) then LValorCan10.Caption := 'OFF';
-        11: if Assigned(LValorCan11) then LValorCan11.Caption := 'OFF';
-        12: if Assigned(LValorCan12) then LValorCan12.Caption := 'OFF';
-        13: if Assigned(LValorCan13) then LValorCan13.Caption := 'OFF';
-        14: if Assigned(LValorCan14) then LValorCan14.Caption := 'OFF';
-        15: if Assigned(LValorCan15) then LValorCan15.Caption := 'OFF';
-        // Pestaña Expansion 2 (canales 16-23)
-        16: if Assigned(LValorCan16) then LValorCan16.Caption := 'OFF';
-        17: if Assigned(LValorCan17) then LValorCan17.Caption := 'OFF';
-        18: if Assigned(LValorCan18) then LValorCan18.Caption := 'OFF';
-        19: if Assigned(LValorCan19) then LValorCan19.Caption := 'OFF';
-        20: if Assigned(LValorCan20) then LValorCan20.Caption := 'OFF';
-        21: if Assigned(LValorCan21) then LValorCan21.Caption := 'OFF';
-        22: if Assigned(LValorCan22) then LValorCan22.Caption := 'OFF';
-        23: if Assigned(LValorCan23) then LValorCan23.Caption := 'OFF';
-        // Pestaña Expansion 3 (canales 24-31)
-        24: if Assigned(LValorCan24) then LValorCan24.Caption := 'OFF';
-        25: if Assigned(LValorCan25) then LValorCan25.Caption := 'OFF';
-        26: if Assigned(LValorCan26) then LValorCan26.Caption := 'OFF';
-        27: if Assigned(LValorCan27) then LValorCan27.Caption := 'OFF';
-        28: if Assigned(LValorCan28) then LValorCan28.Caption := 'OFF';
-        29: if Assigned(LValorCan29) then LValorCan29.Caption := 'OFF';
-        30: if Assigned(LValorCan30) then LValorCan30.Caption := 'OFF';
-        31: if Assigned(LValorCan31) then LValorCan31.Caption := 'OFF';
-      end;
+      strVal  := Equipo.Canales[i].ValorReal;
+      // Las unidades las busco dinámicamente también, pero el Caption lleva corchetes
+      strUnit := '[' + Equipo.Canales[i].Unidad + ']';
+      strDesc := Equipo.Canales[i].Descripcion;
+      
+      // DEBUG: Loguear valores calculados
+     
+      
+      // DEBUG: Mostrar valores calculados
+      // if (i=8) or (i=9) then ShowMessage('CH'+IntToStr(i)+' Val:'+strVal+' Unit:'+strUnit+' Desc:'+strDesc);
+ 
+      // DEBUG: Mostrar valores calculados
+      // if (i=8) or (i=9) then ShowMessage('CH'+IntToStr(i)+' Val:'+strVal+' Unit:'+strUnit+' Desc:'+strDesc);
+ 
+  end else begin
+      strVal  := 'OFF';
+      strUnit := '';
+      strDesc := ''; // O mantener la anterior? Generalmente OFF implica vacio
     end;
-  end;
 
-  // --- CANALES DIGITALES (DEBUG + DISPLAY) ---
-  // DEBUG: Log digital values
-  try
-    AssignFile(fLog, 'debug_digital.txt');
-    if FileExists('debug_digital.txt') then Append(fLog) else Rewrite(fLog);
-    CloseFile(fLog);
-  except
-  end;
+    // LÓGICA DE MAPEO DE COMPONENTES
+    // Determinamos si es un canal digital "Especial" (8/9, 18/19...) o Analogico normal
+    
+    // Indices base 0:
+    // Bloque 0: 0-7 Analog, 8-9 Digital (Mapean a Dig00)
+    // Bloque 1: 10-17 Analog, 18-19 Digital (Mapean a Dig01)
+    
+    // Es digital si termina en 8 o 9?
+    if ((i mod 10) = 8) or ((i mod 10) = 9) then begin
+       // ES CANAL DIGITAL (COMPARTIDO O EXCLUSIVO)
+       
+       // 1. PRIMERO: OCULTAR SIEMPRE LOS COMPONENTES "ANALOGICOS" CORRESPONDIENTES (08, 09, 18...)
+       //    Para evitar que queden valores fantasmas (ej: 5000) si el usuario ve el label equivocado.
+       CompName := Format('LValorCan%.2d', [i]);
+       Comp := FindComponent(CompName);
+       if (Comp is TLabel) then TLabel(Comp).Visible := False; // OCULTAR ANALOGICO
+
+       CompName := Format('LUnidadCan%.2d', [i]);
+       Comp := FindComponent(CompName);
+       if (Comp is TLabel) then TLabel(Comp).Visible := False; // OCULTAR ANALOGICO
+
+       CompName := Format('LDescripcionCan%.2d', [i]);
+       Comp := FindComponent(CompName);
+       if (Comp is TLabel) then TLabel(Comp).Visible := False; // OCULTAR ANALOGICO
+       
+       
+       // 2. SEGUNDO: MOSTRAR Y ACTUALIZAR SOLO EL DIGITAL ACTIVO
+       //    Si UsarCH9=True -> mostramos terminados en 9.
+       //    Si UsarCH9=False -> mostramos terminados en 8.
+       if (((i mod 10) =8) or ((i mod 10)=9)) then begin
+                 numAsign := numAsign -1;
+       end;
+       if (((i mod 10) = 9) and Equipo.UsarCH9[i div 10]) or (((i mod 10) = 8) and (not Equipo.UsarCH9[i div 10])) then begin
+          // Calculamos el Indice Digital (00, 01, 02...)
+          CompName := Format('LValorCanDig%.2d', [i div 10]);
+          // --- DEBUG VERBOSO ---
+         
+          Comp := FindComponent(CompName);
+          if (Comp is TLabel) then begin
+             TLabel(Comp).Caption := strVal;
+             TLabel(Comp).Visible := True; // FORZAR VISIBLE
+             TLabel(Comp).BringToFront;
+          end else ShowMessage('NO SE ENCONTRO LABEL VALOR: ' + CompName);
+          CompName := Format('LUnidadDigCan%.2d', [i div 10]);
+          Comp := FindComponent(CompName);
+          if (Comp is TLabel) then begin
+             TLabel(Comp).Caption := strUnit;
+             TLabel(Comp).Visible := True; // FORZAR VISIBLE
+             TLabel(Comp).BringToFront;
+          end else ShowMessage('NO SE ENCONTRO LABEL UNIDAD: ' + CompName);
+          
+          CompName := Format('LDescripcionCanDig%.2d', [i div 10]);
+          Comp := FindComponent(CompName);
+          if (Comp is TLabel) then begin
+             TLabel(Comp).Caption := strDesc;
+             TLabel(Comp).Visible := True; // FORZAR VISIBLE
+             TLabel(Comp).BringToFront;
+          end else ShowMessage('NO SE ENCONTRO LABEL DESCRIPCION: ' + CompName);
+       end;
+       
+    end else begin
+       // ES CANAL ANALOGICO NORMAL (0-7, 10-17, etc)
+       // Aseguar que sean visibles por si acaso
+
+       //COMIENZO DE DEBUG
+       NombreArchivoDebuf := ExtractFilePath(ParamStr(0)) + 'mi_debug.txt';
+       AssignFile(ArchivoDebug, NombreArchivoDebuf); 
+       try
+        // Si existe, lo ABRO para añadir info al final (Append)
+        // Si NO existe, lo CREO de cero (Rewrite)
+        if FileExists(NombreArchivoDebuf) then 
+          Append(ArchivoDebug) 
+        else 
+          Rewrite(ArchivoDebug);
+        // Escribir lo que quieras
+        WriteLn(ArchivoDebug, 'Hola Mundo: ' + DateTimeToStr(Now));
+        WriteLn(ArchivoDebug, 'Valor X: ' + IntToStr(123));
+        // MUY IMPORTANTE: Cerrar el archivo apenas terminas de escribir este bloque
+        CloseFile(ArchivoDebug); 
+      except
+        // Si algo falla (archivo en uso, disco lleno), no hagas nada.
+        // Así el programa sigue funcionando y el usuario no se entera.
+      end;
+
+
+       //FIN DE DEBUG
+
+       // VALOR
+       
+       CompName := Format('LValorCan%.2d', [numAsign]);
+       Comp := FindComponent(CompName);
+       if (Comp is TLabel) then begin
+          TLabel(Comp).Caption := strVal;
+          TLabel(Comp).Visible := True;
+          TLabel(Comp).BringToFront;
+       end;
+       
+       // UNIDAD
+       CompName := Format('LUnidadCan%.2d', [numAsign]);
+       Comp := FindComponent(CompName);
+       if (Comp is TLabel) then begin
+          TLabel(Comp).Caption := strUnit;
+          TLabel(Comp).Visible := True;
+          TLabel(Comp).BringToFront;
+       end;
+       
+       // DESCRIPCION
+       CompName := Format('LDescripcionCan%.2d', [numAsign]);
+       Comp := FindComponent(CompName);
+       if (Comp is TLabel) then begin
+          TLabel(Comp).Caption := strDesc;
+          TLabel(Comp).Visible := True;
+          TLabel(Comp).BringToFront;
+       end;
+    end;
+    numAsign:=numAsign + 1;
+    
+  end; // End For
   
-  // Display digital values in LValorCanDig00-03
-  if Assigned(LValorCanDig00) then begin
-    if Equipo.ThreadComm.UsarCHDigB[0] then
-      LValorCanDig00.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[0])
-    else
-      LValorCanDig00.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[0]);
-  end;
-  
-  if (Equipo.NumCanales > 8) and Assigned(LValorCanDig01) then begin
-    if Equipo.ThreadComm.UsarCHDigB[1] then
-      LValorCanDig01.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[1])
-    else
-      LValorCanDig01.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[1]);
-  end;
-  
-  if (Equipo.NumCanales > 16) and Assigned(LValorCanDig02) then begin
-    if Equipo.ThreadComm.UsarCHDigB[2] then
-      LValorCanDig02.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[2])
-    else
-      LValorCanDig02.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[2]);
-  end;
-  
-  if (Equipo.NumCanales > 24) and Assigned(LValorCanDig03) then begin
-    if Equipo.ThreadComm.UsarCHDigB[3] then
-      LValorCanDig03.Caption := IntToStr(Equipo.ThreadComm.pvalorDigB[3])
-    else
-      LValorCanDig03.Caption := IntToStr(Equipo.ThreadComm.pvalorDigA[3]);
-  end;
+ 
 
   // --- FIN DE LA SECCIÓN DE CARGA DE CANALES ---
 
@@ -2597,7 +2587,6 @@ begin
   cbIntervalo.ItemIndex := 0;
   for i := 0 to length(TablaT) - 1 do
     if (Equipo.Tmuestreo = TablaT[i]) then cbIntervalo.ItemIndex := i;
-
   // Cargo la info de los canales
   // Canal 0
   LConfig00.Caption := ListaSensores[Equipo.Canales[0].PosLista].Nombre;
@@ -2644,8 +2633,9 @@ begin
   // Canales Digitales (Tengo 2 pero lo Uso como uno)
   // Canal 8
   if (Equipo.NumCanales > 8) then
+  
   begin
-    if not Equipo.UsarCH9 then
+    if not Equipo.UsarCH9[0] then
     begin
       LConfig08.Caption := ListaSensores[Equipo.Canales[8].PosLista].Nombre;
       LDescConfig08.Caption :=
@@ -2679,6 +2669,9 @@ begin
   begin
     NCanal := (Sender as TLabel).Tag;
     
+    // Si es un canal digital (termina en 8) y UsarCH9 está activo, usar el canal x9
+    if ((NCanal mod 10) = 8) and Equipo.UsarCH9[NCanal div 10] then
+      NCanal := NCanal + 1;
     // Posiciono el combo sobre el label
     cbSensores.Left := (Sender as TLabel).Left;
     cbSensores.Top  := (Sender as TLabel).Top;
@@ -2711,6 +2704,7 @@ var
   LConfig     : TLabel;
   LDesc       : TLabel;
   fDbg        : TextFile;
+  i           : integer;
 begin
   if cbSensores.ItemIndex = -1 then
   begin
@@ -2718,20 +2712,28 @@ begin
     exit;
   end;
 
-  // Busco el sensor seleccionado en la lista
-  if (cbSensores.ItemIndex < length(ListaSensores)) then
-    SensorSel := ListaSensores[cbSensores.ItemIndex]
-  else
-    exit; 
+  // Busco el sensor cuyo Config coincida con el ItemIndex del combo
+  // (el combo está ordenado por Config en CrearListaSensores)
+  SensorSel := nil;
+  for i := 0 to length(ListaSensores) - 1 do begin
+    if (ListaSensores[i].Config = cbSensores.ItemIndex) then begin
+      SensorSel := ListaSensores[i];
+      break;
+    end;
+  end;
+  
+  if SensorSel = nil then begin
+    ShowMessage('No se encontró sensor con Config=' + IntToStr(cbSensores.ItemIndex));
+    cbSensores.Visible := False;
+    exit;
+  end;
 
   descripcion := SensorSel.Descripcion;
 
-  // Validaciones
-   if ((NCanal <= 7) or 
-       ((NCanal >= 9) and (NCanal <= 16)) or 
-       ((NCanal >= 18) and (NCanal <= 26)) or 
-       ((NCanal >= 28) and (NCanal <= 35))) then
+  // Validaciones: canales 0-7 de cada bloque son analógicos, 8 y 9 son digitales
+   if ((NCanal mod 10) <= 7) then
    begin
+       // Canal ANALOGICO
        if (SensorSel.Entrada <> 'TENSION') and (SensorSel.Config > 1) then
        begin
           MessageBox(Handle,'El sensor seleccionado corresponde a un canal DIGITAL. Este canal es ANALOGICO.', PChar(Caption), MB_OK or MB_ICONERROR );
@@ -2740,8 +2742,8 @@ begin
        end;
    end;
    
-   // Canal 8 es Digital (y los huecos 17, 27 se asumen digitales o sin uso)
-   if (NCanal = 8) or (NCanal = 17) or (NCanal = 27) then
+   // Canal DIGITAL (8 o 9 de cada bloque)
+   if ((NCanal mod 10) = 8) or ((NCanal mod 10) = 9) then
    begin
        if (SensorSel.Entrada <> 'PULSO') and (SensorSel.Config > 1) then
        begin
@@ -2752,11 +2754,17 @@ begin
    end;
 
    // Actualizo la UI - LConfig
-   LConfig := TLabel(FindComponent('LConfig' + Format('%.2d', [NCanal])));
+   // Si NCanal fue ajustado por UsarCH9 (ej: 9 en vez de 8), el label sigue siendo LConfig08
+   if ((NCanal mod 10) = 9) and Equipo.UsarCH9[NCanal div 10] then begin
+     LConfig := TLabel(FindComponent('LConfig' + Format('%.2d', [NCanal - 1])));
+     LDesc   := TLabel(FindComponent('LDescConfig' + Format('%.2d', [NCanal - 1])));
+   end else begin
+     LConfig := TLabel(FindComponent('LConfig' + Format('%.2d', [NCanal])));
+     LDesc   := TLabel(FindComponent('LDescConfig' + Format('%.2d', [NCanal])));
+   end;
    If Assigned(LConfig) then LConfig.Caption := cbSensores.Text;
   
    // Actualizo la UI - LDesc (Restaurado con seguridad)
-   LDesc   := TLabel(FindComponent('LDescConfig' + Format('%.2d', [NCanal])));
    If Assigned(LDesc) then LDesc.Caption := descripcion;
  
    // Actualizo la configuracion del equipo
@@ -3457,7 +3465,7 @@ begin
   {FGraficoSensor := TFGraficoSensor.Create(self);
   Canal          := (sender as TSpeedButton).Tag;
   // Solo cuando uso el canal 9 
-  if (Canal=8) and Equipo.UsarCH9 then Canal:=9;
+  if ((Canal mod 10)=8) and Equipo.UsarCH9[Canal div 10] then Canal:=Canal+1;
 
   FGraficoSensor.Caption                              := FGraficoSensor.ListaCanales.Strings[Canal];
   FGraficoSensor.CanalOrg                             := Canal;
@@ -3479,7 +3487,7 @@ var
 begin
   Canal := (Sender as TSpeedButton).Tag;
   // Solo cuando uso el canal 9
-  if (Canal = 8) and Equipo.UsarCH9 then Canal := 9;
+  if ((Canal mod 10) = 8) and Equipo.UsarCH9[Canal div 10] then Canal := Canal + 1;
 
   NuevaDesc := Equipo.Canales[Canal].Descripcion;
   if not InputQuery('Cambiar Descripci�n del Canal ' + IntToStr(Canal),
