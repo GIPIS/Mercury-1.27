@@ -2590,83 +2590,224 @@ end;
 procedure TFprincipal.tsConfiguracionShow(Sender: TObject);
 var
   i: integer;
+  debug_conf: TextFile;
+  nombre_debug: string;
+  cantBloques: integer;
+  j:integer;
+  LabelIdx: integer;
+  contadorCanales:integer;
+    Comp: TComponent; // Variable auxiliar para guardar los componentes de forma dinamica
+  NombreComp: string;
+  contadorLabels:integer;
+  flagUltimoCanal:boolean;
 begin
+ 
   // Oculto el ComboBox
+  flagUltimoCanal:=false;
   cbSensores.Visible := False;
-
   // Cargo el Nombre del Equipo
   eNombre.Text := Equipo.Nombre;
 
+  // DEBUG INICIO
+  try
+    nombre_debug := ExtractFilePath(ParamStr(0)) + 'debug_funcion_configuracion.txt';
+    AssignFile(debug_conf, nombre_debug);
+    Rewrite(debug_conf);
+    WriteLn(debug_conf, 'INICIO CONFIGURACION - ' + DateTimeToStr(Now));
+    WriteLn(debug_conf, 'NumCanales: ' + IntToStr(Equipo.NumCanales));
+  except
+  end;
+
   // Averiguo el periodo de muestro para el ComboBox
   cbIntervalo.ItemIndex := 0;
-  for i := 0 to length(TablaT) - 1 do
+  for i := 0 to length(TablaT) - 1 do 
     if (Equipo.Tmuestreo = TablaT[i]) then cbIntervalo.ItemIndex := i;
+    
   // Cargo la info de los canales
-  // Canal 0
-  LConfig00.Caption := ListaSensores[Equipo.Canales[0].PosLista].Nombre;
-  LDescConfig00.Caption :=
-    ListaSensores[Equipo.Canales[0].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[0] := Equipo.Canales[0].Config;
-  // Canal 1
-  LConfig01.Caption := ListaSensores[Equipo.Canales[1].PosLista].Nombre;
-  LDescConfig01.Caption :=
-    ListaSensores[Equipo.Canales[1].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[1] := Equipo.Canales[1].Config;
-  // Canal 2
-  LConfig02.Caption := ListaSensores[Equipo.Canales[2].PosLista].Nombre;
-  LDescConfig02.Caption :=
-    ListaSensores[Equipo.Canales[2].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[2] := Equipo.Canales[2].Config;
-  // Canal 3
-  LConfig03.Caption := ListaSensores[Equipo.Canales[3].PosLista].Nombre;
-  LDescConfig03.Caption :=
-    ListaSensores[Equipo.Canales[3].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[3] := Equipo.Canales[3].Config;
-  // Canal 4
-  LConfig04.Caption := ListaSensores[Equipo.Canales[4].PosLista].Nombre;
-  LDescConfig04.Caption :=
-    ListaSensores[Equipo.Canales[4].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[4] := Equipo.Canales[4].Config;
-  // Canal 5
-  LConfig05.Caption := ListaSensores[Equipo.Canales[5].PosLista].Nombre;
-  LDescConfig05.Caption :=
-    ListaSensores[Equipo.Canales[5].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[5] := Equipo.Canales[5].Config;
-  // Canal 6
-  LConfig06.Caption := ListaSensores[Equipo.Canales[6].PosLista].Nombre;
-  LDescConfig06.Caption :=
-    ListaSensores[Equipo.Canales[6].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[6] := Equipo.Canales[6].Config;
-  // Canal 7
-  LConfig07.Caption := ListaSensores[Equipo.Canales[7].PosLista].Nombre;
-  LDescConfig07.Caption :=
-    ListaSensores[Equipo.Canales[7].PosLista].Descripcion;
-  Equipo.ThreadComm.ConfigCHs[7] := Equipo.Canales[7].Config;
+  contadorCanales:=0;
+  cantBloques := Equipo.NumCanales div 10;
+  
+  try
+    WriteLn(debug_conf, 'CantBloques: ' + IntToStr(cantBloques));
+  except
+  end;
+
+  for i := 1 to cantBloques do 
+  begin
+    try
+        WriteLn(debug_conf, '--- Bloque ' + IntToStr(i) + ' ---');
+    except
+    end;
+
+    // Recorro 10 canales por bloque (ej: 0-9, 10-19, 20-29)
+    for j := contadorCanales to (contadorCanales + 9) do 
+    begin
+      try
+         WriteLn(debug_conf, '  Iteracion j=' + IntToStr(j));
+         WriteLn(debug_conf, '  PosLista: ' + IntToStr(Equipo.Canales[j].PosLista));
+         if (Equipo.Canales[j].PosLista >= 0) and (Equipo.Canales[j].PosLista < Length(ListaSensores)) then
+             WriteLn(debug_conf, '  Sensor: ' + ListaSensores[Equipo.Canales[j].PosLista].Nombre);
+      except
+      end;
+
+      // Calculo indice del Label (0..35)
+      // Cada bloque visual tiene 9 labels (0..8)
+      // Los canales logicos son 10 por bloque (0..9)
+      // Analogs (box 0..7) -> map directly relative to block start
+      // Digitals (box 8, 9) -> map to label 8 relative to block start
+      
+      if (j mod 10 <= 7) then
+      begin
+        // Analogico: 0..7 -> 0..7 + offset bloque
+        LabelIdx := (j div 10) * 9 + (j mod 10);
+        
+        // Asignacion normal
+        NombreComp := Format('LConfig%.2d', [LabelIdx]);
+        try WriteLn(debug_conf, '    Buscando Config (Analog): ' + NombreComp); except end;
+        
+        Comp := FindComponent(NombreComp);
+        if (Comp <> nil) and (Comp is TLabel) then
+        begin
+            TLabel(Comp).Caption := ListaSensores[Equipo.Canales[j].PosLista].Nombre;
+            TLabel(Comp).Tag := LabelIdx; // Asegurar Tag correcto
+        end;
+
+        NombreComp := Format('LDescConfig%.2d', [LabelIdx]);
+        try WriteLn(debug_conf, '    Buscando Desc (Analog): ' + NombreComp); except end;
+        
+        Comp := FindComponent(NombreComp);
+        if (Comp <> nil) and (Comp is TLabel) then
+            TLabel(Comp).Caption := ListaSensores[Equipo.Canales[j].PosLista].Descripcion;
+      end
+      else
+      begin
+        // Digital: 8 o 9 -> 8 + offset bloque
+        // Pero solo mostramos UNO de los dos dependiendo de UsarCH9
+        
+        // Bloque actual (0, 1, 2, 3)
+        // j div 10 me da el bloque
+        
+        if (j mod 10 = 8) and (not Equipo.UsarCH9[j div 10]) then
+        begin
+             // Es el canal 8 y NO estamos usando el 9 -> Mostrar el 8
+             LabelIdx := (j div 10) * 9 + 8;
+             
+             NombreComp := Format('LConfig%.2d', [LabelIdx]);
+             try WriteLn(debug_conf, '    Buscando Config (Dig 8): ' + NombreComp); except end;
+             Comp := FindComponent(NombreComp);
+             if (Comp <> nil) and (Comp is TLabel) then
+             begin
+                TLabel(Comp).Caption := ListaSensores[Equipo.Canales[j].PosLista].Nombre;
+                TLabel(Comp).Tag := LabelIdx; // Asegurar Tag correcto
+             end;
+
+             NombreComp := Format('LDescConfig%.2d', [LabelIdx]);
+             Comp := FindComponent(NombreComp);
+             if (Comp <> nil) and (Comp is TLabel) then
+                TLabel(Comp).Caption := ListaSensores[Equipo.Canales[j].PosLista].Descripcion;
+        end
+        else if (j mod 10 = 9) and (Equipo.UsarCH9[j div 10]) then
+        begin
+             // Es el canal 9 y SI estamos usando el 9 -> Mostrar el 9
+             LabelIdx := (j div 10) * 9 + 8;
+
+             NombreComp := Format('LConfig%.2d', [LabelIdx]);
+             try WriteLn(debug_conf, '    Buscando Config (Dig 9): ' + NombreComp); except end;
+             Comp := FindComponent(NombreComp);
+             if (Comp <> nil) and (Comp is TLabel) then
+             begin
+                TLabel(Comp).Caption := ListaSensores[Equipo.Canales[j].PosLista].Nombre;
+                TLabel(Comp).Tag := LabelIdx; // Asegurar Tag correcto
+             end;
+
+             NombreComp := Format('LDescConfig%.2d', [LabelIdx]);
+             Comp := FindComponent(NombreComp);
+             if (Comp <> nil) and (Comp is TLabel) then
+                TLabel(Comp).Caption := ListaSensores[Equipo.Canales[j].PosLista].Descripcion;
+        end;
+      end;
+
+      // Asignación de configuración al thread (común a todos - indice lineal j)
+      if j < Length(Equipo.ThreadComm.ConfigCHs) then
+         Equipo.ThreadComm.ConfigCHs[j] := Equipo.Canales[j].Config;
+    end;
+    
+    // Avanzo al siguiente bloque de 10
+    contadorCanales := contadorCanales + 10;
+  end;
+  
+  // DEBUG FIN
+  try
+    CloseFile(debug_conf);
+  except
+  end;
+  // ShowMessage('cantidad de canales ' + intToStr(cantBloques));
+
+  // LConfig00.Caption := ListaSensores[Equipo.Canales[0].PosLista].Nombre;
+  // LDescConfig00.Caption :=
+  //   ListaSensores[Equipo.Canales[0].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[0] := Equipo.Canales[0].Config;
+  // // Canal 1
+  // LConfig01.Caption := ListaSensores[Equipo.Canales[1].PosLista].Nombre;
+  // LDescConfig01.Caption :=
+  //   ListaSensores[Equipo.Canales[1].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[1] := Equipo.Canales[1].Config;
+  // // Canal 2
+  // LConfig02.Caption := ListaSensores[Equipo.Canales[2].PosLista].Nombre;
+  // LDescConfig02.Caption :=
+  //   ListaSensores[Equipo.Canales[2].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[2] := Equipo.Canales[2].Config;
+  // // Canal 3
+  // LConfig03.Caption := ListaSensores[Equipo.Canales[3].PosLista].Nombre;
+  // LDescConfig03.Caption :=
+  //   ListaSensores[Equipo.Canales[3].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[3] := Equipo.Canales[3].Config;
+  // // Canal 4
+  // LConfig04.Caption := ListaSensores[Equipo.Canales[4].PosLista].Nombre;
+  // LDescConfig04.Caption :=
+  //   ListaSensores[Equipo.Canales[4].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[4] := Equipo.Canales[4].Config;
+  // // Canal 5
+  // LConfig05.Caption := ListaSensores[Equipo.Canales[5].PosLista].Nombre;
+  // LDescConfig05.Caption :=
+  //   ListaSensores[Equipo.Canales[5].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[5] := Equipo.Canales[5].Config;
+  // // Canal 6
+  // LConfig06.Caption := ListaSensores[Equipo.Canales[6].PosLista].Nombre;
+  // LDescConfig06.Caption :=
+  //   ListaSensores[Equipo.Canales[6].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[6] := Equipo.Canales[6].Config;
+  // // Canal 7
+  // LConfig07.Caption := ListaSensores[Equipo.Canales[7].PosLista].Nombre;
+  // LDescConfig07.Caption :=
+  //   ListaSensores[Equipo.Canales[7].PosLista].Descripcion;
+  // Equipo.ThreadComm.ConfigCHs[7] := Equipo.Canales[7].Config;
+
 
   // Canales Digitales (Tengo 2 pero lo Uso como uno)
   // Canales Digitales (Tengo 2 pero lo Uso como uno)
-  // Canal 8
-  if (Equipo.NumCanales > 8) then
+  // // Canal 8
+  // if (Equipo.NumCanales > 8) then
   
-  begin
-    if not Equipo.UsarCH9[0] then
-    begin
-      LConfig08.Caption := ListaSensores[Equipo.Canales[8].PosLista].Nombre;
-      LDescConfig08.Caption :=
-        ListaSensores[Equipo.Canales[8].PosLista].Descripcion;
-      Equipo.ThreadComm.ConfigCHs[8] := Equipo.Canales[8].Config;
-    end
-    else
-    begin // Canal 9
-      if (Equipo.NumCanales > 9) then
-      begin
-        LConfig08.Caption := ListaSensores[Equipo.Canales[9].PosLista].Nombre;
-        LDescConfig08.Caption :=
-          ListaSensores[Equipo.Canales[9].PosLista].Descripcion;
-        Equipo.ThreadComm.ConfigCHs[9] := Equipo.Canales[9].Config;
-      end;
-    end;
-  end;
+  // begin
+  //   if not Equipo.UsarCH9[0] then
+  //   begin
+  //     LConfig08.Caption := ListaSensores[Equipo.Canales[8].PosLista].Nombre;
+  //     LDescConfig08.Caption :=
+  //       ListaSensores[Equipo.Canales[8].PosLista].Descripcion;
+  //     Equipo.ThreadComm.ConfigCHs[8] := Equipo.Canales[8].Config;
+  //   end
+  //   else
+  //   begin // Canal 9
+  //     if (Equipo.NumCanales > 9) then
+  //     begin
+  //       LConfig08.Caption := ListaSensores[Equipo.Canales[9].PosLista].Nombre;
+  //       LDescConfig08.Caption :=
+  //         ListaSensores[Equipo.Canales[9].PosLista].Descripcion;
+  //       Equipo.ThreadComm.ConfigCHs[9] := Equipo.Canales[9].Config;
+  //     end;
+  //   end;
+  // end;
 
 
 
@@ -2681,9 +2822,15 @@ procedure TFprincipal.LConfigsClick(Sender: TObject);
 begin
   if (Sender is TLabel) then
   begin
-    NCanal := (Sender as TLabel).Tag;
+    // Convertimos el Tag Visual (0..35) al Canal Logico (0..39)
+    // Cada bloque visual tiene 9 items (0-8)
+    // Si Tag=0 -> Ch=0
+    // Si Tag=8 -> Ch=8
+    // Si Tag=9 -> Ch=10 (Primer analogo del 2do bloque)
+    NCanal := ((Sender as TLabel).Tag div 9) * 10 + ((Sender as TLabel).Tag mod 9);
     
     // Si es un canal digital (termina en 8) y UsarCH9 está activo, usar el canal x9
+    // Nota: (NCanal mod 10) aqui siempre sera <= 8 por la formula de arriba (resto mod 9)
     if ((NCanal mod 10) = 8) and Equipo.UsarCH9[NCanal div 10] then
       NCanal := NCanal + 1;
     // Posiciono el combo sobre el label
