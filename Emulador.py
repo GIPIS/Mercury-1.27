@@ -8,7 +8,7 @@ PORT = 'COM2'
 BAUD = 9600
 NOMBRE_EQUIPO = b'TEST'
 
-CANTIDAD_BLOQUES = 3
+CANTIDAD_BLOQUES = 4
 # 20 canales lineales (sin estructura de bloques en el frame)
 # Para simular, definimos 10 canales por bloque lógico, pero el frame es lineal.
 CANALES_CONFIG = [12,1,2,3,4,5,6,7,8,9] * CANTIDAD_BLOQUES  

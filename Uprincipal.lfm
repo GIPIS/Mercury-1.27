@@ -12,7 +12,7 @@ object Fprincipal: TFprincipal
   DesignTimePPI = 120
   Font.CharSet = ANSI_CHARSET
   Font.Color = clWindowText
-  Font.Height = -2547975
+  Font.Height = -3981211
   Font.Name = 'Tahoma'
   Menu = MenuPrincipal
   Position = poScreenCenter
@@ -3412,8 +3412,8 @@ object Fprincipal: TFprincipal
           Height = 280
           Top = 24
           Width = 610
-          ActivePage = tsExp0
-          TabIndex = 1
+          ActivePage = tsExp2
+          TabIndex = 3
           TabOrder = 2
           object tsMon: TTabSheet
             Caption = 'Monitoreo '
@@ -4994,16 +4994,17 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel11: TBevel
-                Left = 352
+                Tag = 40
+                Left = 345
                 Height = 21
-                Top = 264
+                Top = 215
                 Width = 101
                 Shape = bsFrame
               end
               object Bevel12: TBevel
                 Left = 119
                 Height = 21
-                Top = 214
+                Top = 213
                 Width = 216
                 Shape = bsFrame
               end
@@ -5223,9 +5224,9 @@ object Fprincipal: TFprincipal
               end
               object LValorCanDig00: TLabel
                 Tag = 8
-                Left = 344
+                Left = 346
                 Height = 20
-                Top = 213
+                Top = 215
                 Width = 100
                 Alignment = taCenter
                 AutoSize = False
@@ -6897,12 +6898,53 @@ object Fprincipal: TFprincipal
               end
               object LUnidadDigCan01: TLabel
                 Tag = 8
-                Left = 456
+                Left = 453
                 Height = 16
-                Top = 216
+                Top = 217
                 Width = 60
                 Alignment = taCenter
                 AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object Bevel323: TBevel
+                Left = 20
+                Height = 21
+                Top = 214
+                Width = 89
+                Shape = bsFrame
+              end
+              object Bevel324: TBevel
+                Left = 119
+                Height = 21
+                Top = 214
+                Width = 216
+                Shape = bsFrame
+              end
+              object Bevel325: TBevel
+                Left = 344
+                Height = 21
+                Top = 213
+                Width = 101
+                Shape = bsFrame
+              end
+              object Bevel326: TBevel
+                Left = 453
+                Height = 21
+                Top = 213
+                Width = 63
+                Shape = bsFrame
+              end
+              object Label67: TLabel
+                Left = 32
+                Height = 16
+                Top = 213
+                Width = 62
+                Caption = 'Canal D-1'
                 Font.CharSet = ANSI_CHARSET
                 Font.Color = 14648845
                 Font.Height = -13
@@ -8577,6 +8619,47 @@ object Fprincipal: TFprincipal
                 Font.Style = [fsBold]
                 ParentFont = False
               end
+              object Bevel327: TBevel
+                Left = 20
+                Height = 21
+                Top = 213
+                Width = 89
+                Shape = bsFrame
+              end
+              object Bevel328: TBevel
+                Left = 119
+                Height = 21
+                Top = 214
+                Width = 216
+                Shape = bsFrame
+              end
+              object Bevel329: TBevel
+                Left = 448
+                Height = 21
+                Top = 214
+                Width = 63
+                Shape = bsFrame
+              end
+              object Bevel330: TBevel
+                Left = 343
+                Height = 21
+                Top = 214
+                Width = 101
+                Shape = bsFrame
+              end
+              object Label68: TLabel
+                Left = 32
+                Height = 16
+                Top = 213
+                Width = 62
+                Caption = 'Canal D-2'
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
             end
           end
           object tsExp2: TTabSheet
@@ -9984,7 +10067,7 @@ object Fprincipal: TFprincipal
                 Shape = bsFrame
               end
               object Bevel201: TBevel
-                Left = 344
+                Left = 345
                 Height = 21
                 Top = 141
                 Width = 101
@@ -10214,6 +10297,47 @@ object Fprincipal: TFprincipal
                 Width = 60
                 Alignment = taCenter
                 AutoSize = False
+                Font.CharSet = ANSI_CHARSET
+                Font.Color = 14648845
+                Font.Height = -13
+                Font.Name = 'Tahoma'
+                Font.Style = [fsBold]
+                ParentFont = False
+              end
+              object Bevel331: TBevel
+                Left = 20
+                Height = 21
+                Top = 214
+                Width = 89
+                Shape = bsFrame
+              end
+              object Bevel332: TBevel
+                Left = 119
+                Height = 21
+                Top = 213
+                Width = 216
+                Shape = bsFrame
+              end
+              object Bevel333: TBevel
+                Left = 453
+                Height = 21
+                Top = 213
+                Width = 63
+                Shape = bsFrame
+              end
+              object Bevel335: TBevel
+                Left = 345
+                Height = 21
+                Top = 213
+                Width = 101
+                Shape = bsFrame
+              end
+              object Label69: TLabel
+                Left = 32
+                Height = 16
+                Top = 213
+                Width = 62
+                Caption = 'Canal D-3'
                 Font.CharSet = ANSI_CHARSET
                 Font.Color = 14648845
                 Font.Height = -13
@@ -15118,6 +15242,20 @@ object Fprincipal: TFprincipal
     Left = 343
     Height = 5
     Top = 200
+    Width = 101
+    Shape = bsFrame
+  end
+  object Bevel322: TBevel
+    Left = 344
+    Height = 21
+    Top = 189
+    Width = 101
+    Shape = bsFrame
+  end
+  object Bevel334: TBevel
+    Left = 344
+    Height = 21
+    Top = 165
     Width = 101
     Shape = bsFrame
   end

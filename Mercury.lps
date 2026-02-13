@@ -10,9 +10,8 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="9"/>
         <CursorPos X="36" Y="7"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
         <Filename Value="Uprincipal.pas"/>
@@ -21,36 +20,33 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="1663"/>
-        <CursorPos Y="1675"/>
-        <ComponentState Value="1"/>
-        <UsageCount Value="64"/>
+        <TopLine Value="1825"/>
+        <CursorPos X="7" Y="1827"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
         <Filename Value="UEquipo.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="15"/>
         <CursorPos X="70" Y="7"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="PuertoSerie.pas"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="10"/>
-        <TopLine Value="648"/>
-        <CursorPos X="2" Y="658"/>
-        <UsageCount Value="64"/>
+        <TopLine Value="611"/>
+        <CursorPos X="3" Y="623"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
         <Filename Value="UUtiles.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UPresentacion.pas"/>
@@ -58,7 +54,7 @@
         <ComponentName Value="FPresentacion"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="USensor.pas"/>
@@ -66,9 +62,8 @@
         <EditorIndex Value="1"/>
         <TopLine Value="242"/>
         <CursorPos X="4" Y="255"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
         <Filename Value="UPreferencias.pas"/>
@@ -78,26 +73,26 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="3"/>
         <CursorPos X="40" Y="9"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="UGrafico.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UOpciones3D.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UColor.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UDataModule.pas"/>
@@ -105,7 +100,7 @@
         <ComponentName Value="DataModule1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UFormulas.pas"/>
@@ -113,7 +108,7 @@
         <EditorIndex Value="14"/>
         <TopLine Value="205"/>
         <CursorPos Y="208"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -123,19 +118,19 @@
         <EditorIndex Value="16"/>
         <TopLine Value="16"/>
         <CursorPos X="3" Y="6"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="UConexionesRemotas.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UConexiones.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UConexionAuto.pas"/>
@@ -143,7 +138,7 @@
         <HasResources Value="True"/>
         <EditorIndex Value="13"/>
         <CursorPos X="12" Y="6"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -152,22 +147,22 @@
         <ComponentName Value="FConfiguracionInternet"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UServerSocket.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UEquipoInternet.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UDiaJuliano.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="UExpansion.pas"/>
@@ -175,7 +170,7 @@
         <ComponentName Value="FExpansion"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="64"/>
+        <UsageCount Value="65"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
@@ -229,7 +224,7 @@
         <EditorIndex Value="11"/>
         <TopLine Value="1139"/>
         <CursorPos X="18" Y="1152"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -237,130 +232,130 @@
         <EditorIndex Value="12"/>
         <TopLine Value="5461"/>
         <CursorPos X="20" Y="5474"/>
-        <UsageCount Value="12"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="644" Column="46" TopLine="625"/>
-      </Position>
-      <Position>
-        <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="638" Column="45" TopLine="625"/>
-      </Position>
-      <Position>
-        <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="649" Column="5" TopLine="625"/>
-      </Position>
-      <Position>
-        <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="642" Column="36" TopLine="630"/>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1697" Column="100" TopLine="1685"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="2678" Column="3" TopLine="2667"/>
+        <Caret Line="2774" Column="68" TopLine="2762"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="2682" Column="63" TopLine="2673"/>
-      </Position>
-      <Position>
-        <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1361" Column="3" TopLine="1332"/>
-      </Position>
-      <Position>
-        <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1336" Column="3" TopLine="1332"/>
-      </Position>
-      <Position>
-        <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1560" Column="3" TopLine="1560"/>
-      </Position>
-      <Position>
-        <Filename Value="C:\lazarus\lcl\include\control.inc"/>
-        <Caret Line="4010" TopLine="3997"/>
-      </Position>
-      <Position>
-        <Filename Value="Mercury.lpr"/>
-        <Caret Line="7" Column="36"/>
+        <Caret Line="1697" Column="100" TopLine="1686"/>
       </Position>
       <Position>
         <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="631" Column="27" TopLine="631"/>
-      </Position>
-      <Position>
-        <Filename Value="C:\lazarus\fpc\3.2.2\source\rtl\objpas\fgl.pp"/>
-        <Caret Line="1152" Column="18" TopLine="1139"/>
+        <Caret Line="658" Column="2" TopLine="648"/>
       </Position>
       <Position>
         <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="631" Column="27" TopLine="631"/>
-      </Position>
-      <Position>
-        <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="177" Column="21" TopLine="165"/>
-      </Position>
-      <Position>
-        <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="79" TopLine="66"/>
-      </Position>
-      <Position>
-        <Filename Value="PuertoSerie.pas"/>
-        <Caret Line="656" TopLine="645"/>
+        <Caret Line="623" Column="3" TopLine="611"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1706" TopLine="1694"/>
+        <Caret Line="1810" Column="7" TopLine="1808"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1689" Column="3" TopLine="1676"/>
+        <Caret Line="1811" Column="7" TopLine="1809"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1568" Column="3" TopLine="1555"/>
+        <Caret Line="1812" Column="7" TopLine="1810"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1689" Column="3" TopLine="1677"/>
+        <Caret Line="1813" Column="7" TopLine="1811"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1690" Column="3" TopLine="1679"/>
+        <Caret Line="1812" Column="7" TopLine="1810"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1704" Column="17" TopLine="1692"/>
+        <Caret Line="1813" Column="7" TopLine="1811"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1710" Column="3" TopLine="1698"/>
+        <Caret Line="1814" Column="7" TopLine="1812"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1709" Column="3" TopLine="1697"/>
+        <Caret Line="1813" Column="7" TopLine="1811"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1708" Column="3" TopLine="1696"/>
+        <Caret Line="1814" Column="7" TopLine="1812"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1836" Column="15" TopLine="1824"/>
+        <Caret Line="1813" Column="7" TopLine="1811"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="3340" Column="26" TopLine="3328"/>
+        <Caret Line="1814" Column="7" TopLine="1812"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1837" Column="10" TopLine="1825"/>
+        <Caret Line="1815" Column="7" TopLine="1813"/>
       </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1746" Column="28" TopLine="1734"/>
+        <Caret Line="1816" Column="7" TopLine="1814"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1817" Column="7" TopLine="1815"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1818" Column="7" TopLine="1816"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1819" Column="7" TopLine="1817"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1818" Column="7" TopLine="1816"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1819" Column="7" TopLine="1817"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1820" Column="7" TopLine="1818"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1821" Column="7" TopLine="1819"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1822" Column="7" TopLine="1820"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1823" Column="7" TopLine="1821"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1824" Column="7" TopLine="1822"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1825" Column="7" TopLine="1823"/>
+      </Position>
+      <Position>
+        <Filename Value="Uprincipal.pas"/>
+        <Caret Line="1826" Column="7" TopLine="1824"/>
       </Position>
     </JumpHistory>
     <RunParams>

@@ -252,7 +252,21 @@ type
     Bevel32: TBevel;
     Bevel320: TBevel;
     Bevel321: TBevel;
+    Bevel322: TBevel;
+    Bevel323: TBevel;
+    Bevel324: TBevel;
+    Bevel325: TBevel;
+    Bevel326: TBevel;
+    Bevel327: TBevel;
+    Bevel328: TBevel;
+    Bevel329: TBevel;
     Bevel33: TBevel;
+    Bevel330: TBevel;
+    Bevel331: TBevel;
+    Bevel332: TBevel;
+    Bevel333: TBevel;
+    Bevel334: TBevel;
+    Bevel335: TBevel;
     Bevel34: TBevel;
     Bevel35: TBevel;
     Bevel36: TBevel;
@@ -376,6 +390,9 @@ type
     Label64: TLabel;
     Label65: TLabel;
     Label66: TLabel;
+    Label67: TLabel;
+    Label68: TLabel;
+    Label69: TLabel;
     LConfig00: TLabel;
     LConfig01: TLabel;
     LConfig02: TLabel;
@@ -1566,8 +1583,7 @@ var
   
   //variable que utilizo para poder asignar los valores a los labels de manera correcta
   numAsign: integer;
-  ArchivoDebug: TextFile;
-  NombreArchivoDebuf: string;
+  TempConfig: array of integer;
 
 begin
   if (Cerrando or Creando) then exit;
@@ -1578,9 +1594,9 @@ begin
     StatusBar.Panels[0].Text    := 'Equipo fuera de Linea';
     ActualizarCHs               := true;
    // LimpiarMonitor;
-    if (PageControl.ActivePageIndex = 2) then
-      if PageControl.Pages[0].TabVisible then PageControl.ActivePageIndex := 0
-      else PageControl.ActivePageIndex := 1;
+    // if (PageControl.ActivePageIndex = 2) then
+    //   if PageControl.Pages[0].TabVisible then PageControl.ActivePageIndex := 0
+    //   else PageControl.ActivePageIndex := 1;
     // Desabilito los botones del monitoreo en linea
     sbGrabar.Enabled := false;
     tbGrabar.Enabled := false;
@@ -1599,7 +1615,23 @@ begin
   if ActualizarCHs and (not Equipo.ThreadComm.ConfigEquipo) then begin
     // DEBUG LOG REMOVED
 
+    // BACKUP CONFIG
+    SetLength(TempConfig, Equipo.NumCanales);
+    for i := 0 to Equipo.NumCanales - 1 do
+      TempConfig[i] := Equipo.Canales[i].Config;
+
     Equipo.CargarEquipo(Mercury.DirEquipos);
+
+    // RESTORE CONFIG
+    for i := 0 to Equipo.NumCanales - 1 do begin
+       // Restore only if we had a valid config from serial, or just overwrite?
+       // The serial source is the truth for "what is connected".
+       // If serial says 12 and INI says 0, we want 12.
+       if TempConfig[i] <> 0 then
+         Equipo.Canales[i].Config := TempConfig[i];
+    end;
+    SetLength(TempConfig, 0);
+
     for i:=0 to Equipo.NumCanales-1 do begin
       ExisteSensor := false; //Flag para determinar si no existe el archivo del sensor
       for j:=0 to length(ListaSensores)-1 do begin
@@ -1689,15 +1721,18 @@ begin
   
   for i := 0 to Equipo.NumCanales - 1 do begin
   
-       // DEBUG: Loguear valores calculados
-       NombreArchivoDebuf := ExtractFilePath(ParamStr(0)) + 'debug_actualizarinfo.txt';
-       AssignFile(ArchivoDebug, NombreArchivoDebuf); 
-       try
-        if FileExists(NombreArchivoDebuf) then Append(ArchivoDebug) else Rewrite(ArchivoDebug);
-        WriteLn(ArchivoDebug, 'CH' + IntToStr(i) + ': ' + FloatToStr(Equipo.Canales[i].ValorSensor));
-        CloseFile(ArchivoDebug); 
-       except
-       end;
+  //  
+  //  try
+  //    NombreArchivoDebuf := ExtractFilePath(ParamStr(0)) + 'debug_actualizarinfo.txt';
+  //    AssignFile(ArchivoDebug, NombreArchivoDebuf); 
+  //    try
+  //      if FileExists(NombreArchivoDebuf) then Append(ArchivoDebug) else Rewrite(ArchivoDebug);
+  //      WriteLn(ArchivoDebug, 'CH' + IntToStr(i) + ': ' + FloatToStr(Equipo.Canales[i].ValorSensor) + '  config: ' + intToStr( Equipo.Canales[i].Config));
+  //      CloseFile(ArchivoDebug); 
+  //    except
+  //    end;
+  //  except
+  //  end;
     
     // 1. Calcular el valor real del canal
     if Equipo.Canales[i].Config <> 0 then begin
@@ -1788,28 +1823,7 @@ begin
        // ES CANAL ANALOGICO NORMAL (0-7, 10-17, etc)
        // Aseguar que sean visibles por si acaso
 
-       //COMIENZO DE DEBUG
-       NombreArchivoDebuf := ExtractFilePath(ParamStr(0)) + 'mi_debug.txt';
-       AssignFile(ArchivoDebug, NombreArchivoDebuf); 
-       try
-        // Si existe, lo ABRO para añadir info al final (Append)
-        // Si NO existe, lo CREO de cero (Rewrite)
-        if FileExists(NombreArchivoDebuf) then 
-          Append(ArchivoDebug) 
-        else 
-          Rewrite(ArchivoDebug);
-        // Escribir lo que quieras
-        WriteLn(ArchivoDebug, 'Hola Mundo: ' + DateTimeToStr(Now));
-        WriteLn(ArchivoDebug, 'Valor X: ' + IntToStr(123));
-        // MUY IMPORTANTE: Cerrar el archivo apenas terminas de escribir este bloque
-        CloseFile(ArchivoDebug); 
-      except
-        // Si algo falla (archivo en uso, disco lleno), no hagas nada.
-        // Así el programa sigue funcionando y el usuario no se entera.
-      end;
 
-
-       //FIN DE DEBUG
 
        // VALOR
        

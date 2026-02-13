@@ -620,7 +620,7 @@ var
   BytesToRead : Integer;
   HayCambios  : Boolean;
   bAux        : Byte;
-  StrLog      : string;
+  bAux        : Byte;
 begin
   auxStr := '';
   
@@ -641,7 +641,7 @@ begin
   if not PSerie.LeerDelPuertoSerie(auxStr, BytesToRead) then exit;
   
   // 1. Obtengo todos los valores de los canales
-  StrLog := '';
+  // 1. Obtengo todos los valores de los canales
   i := 1;
   for NCanal := 0 to CantCanales - 1 do begin
     // Se reconstruye el valor de 16 bits (Word/SmallInt)
@@ -650,15 +650,11 @@ begin
     pvalorCH[NCanal]^ := num;
     inc(i, 2);
     
-    // Acumulo info para debug
-    StrLog := StrLog + 'CH' + IntToStr(NCanal) + ': ' + IntToStr(num) + #13#10;
     
+  end;
 
-  end;
-  if StrLog <> '' then begin
-    DebugMsg := 'Resto canales:' + #13#10 + StrLog;
-    Synchronize(SyncShowDebug);
-  end;
+
+
 
   // 2. Leo la Hora del Equipo (4 bytes)
   numDate := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
@@ -683,36 +679,6 @@ begin
   // 5. Gap de firmware (2 bytes)
   inc(i, 2);
 
-  // 6. Leo la configuración de los Canales
-  HayCambios := False;
-  if (not ConfigEquipo) and (not PendingUserConfig) then begin
-    for NCanal := 0 to CantCanales - 1 do begin
-      bAux := Byte(auxStr[i + NCanal]);
-      if pCH_conf[NCanal]^ <> bAux then begin
-        pCH_conf[NCanal]^ := bAux;
-        HayCambios := True;
-      end;
-    end;
-    if HayCambios then NuevaConfiguracionRemota := true;
-  end;
-  inc(i, CantCanales);
-
-  // 7. Leo el nombre del Equipo (4 bytes)
-  pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
-  // Sanitizar caracteres inválidos para nombres de archivo
-  if not (pNombre^[1] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[1] := '_';
-  if not (pNombre^[2] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[2] := '_';
-  if not (pNombre^[3] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[3] := '_';
-  if not (pNombre^[4] in ['A'..'Z', 'a'..'z', '0'..'9', '_', '-', ' ']) then pNombre^[4] := '_';
-  inc(i, 4);
-
-  // 8. Leo la cantidad de memoria ocupada (3 bytes)
-  pMemoria^ := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])+Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535;
-  inc(i, 3);
-
-  // 9. Leo la capacidad de memoria del equipo (1 byte, potencia de 2)
-  pCantMemory^ := trunc(power(2, Byte(auxStr[i])));
-  
   NuevaConfiguracionRemota := true;
 end;
 
