@@ -15402,7 +15402,7 @@ object Fprincipal: TFprincipal
         object mTelefoniaCelular: TMenuItem
           Tag = 1
           Caption = 'Telefonía Celular (Puerto Serie)'
-          Enabled = False
+          Enabled = True
           SubMenuImages = DataModule1.ImageList18x18
           OnClick = TipoDeComunicacionClick
         end

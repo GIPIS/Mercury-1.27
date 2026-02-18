@@ -2915,14 +2915,16 @@ begin
    end;
 
    // Actualizo la UI - LConfig
-   // Si NCanal fue ajustado por UsarCH9 (ej: 9 en vez de 8), el label sigue siendo LConfig08
+   // Convierto NCanal (lógico, 0-39, 10 por bloque) a índice visual (0-35, 9 por bloque)
+   // para encontrar el label correcto
    if ((NCanal mod 10) = 9) and Equipo.UsarCH9[NCanal div 10] then begin
-     LConfig := TLabel(FindComponent('LConfig' + Format('%.2d', [NCanal - 1])));
-     LDesc   := TLabel(FindComponent('LDescConfig' + Format('%.2d', [NCanal - 1])));
+     // UsarCH9: el label es el del canal x8 (digital del bloque)
+     i := (NCanal div 10) * 9 + 8;
    end else begin
-     LConfig := TLabel(FindComponent('LConfig' + Format('%.2d', [NCanal])));
-     LDesc   := TLabel(FindComponent('LDescConfig' + Format('%.2d', [NCanal])));
+     i := (NCanal div 10) * 9 + (NCanal mod 10);
    end;
+   LConfig := TLabel(FindComponent('LConfig' + Format('%.2d', [i])));
+   LDesc   := TLabel(FindComponent('LDescConfig' + Format('%.2d', [i])));
    If Assigned(LConfig) then LConfig.Caption := cbSensores.Text;
   
    // Actualizo la UI - LDesc (Restaurado con seguridad)
@@ -2995,18 +2997,22 @@ begin
   
   if Assigned(Equipo) and Assigned(Equipo.ThreadComm) then
   begin
-     Equipo.ThreadComm.NombreEquipo := auxNombre;
-     
-     // Cargo el nuevo periodo de muestreo con validación de rango
-     if (cbIntervalo.ItemIndex >= 0) and (cbIntervalo.ItemIndex <= 13) then
-     begin
-        Equipo.ThreadComm.T := TablaT[cbIntervalo.ItemIndex];
-     end
-     else
-     begin
-        // Valor por defecto si no hay selección válida (ej: 60 seg)
-        Equipo.ThreadComm.T := 60; 
-     end;
+      Equipo.ThreadComm.NombreEquipo := auxNombre;
+      // Actualizar también el modelo del equipo para que la UI refleje el cambio
+      Equipo.Nombre := auxNombre;
+      
+      // Cargo el nuevo periodo de muestreo con validación de rango
+      if (cbIntervalo.ItemIndex >= 0) and (cbIntervalo.ItemIndex <= 13) then
+      begin
+         Equipo.ThreadComm.T := TablaT[cbIntervalo.ItemIndex];
+         Equipo.Tmuestreo := TablaT[cbIntervalo.ItemIndex];
+      end
+      else
+      begin
+         // Valor por defecto si no hay selección válida (ej: 60 seg)
+         Equipo.ThreadComm.T := 60; 
+         Equipo.Tmuestreo := 60;
+      end;
   end
   else
   begin

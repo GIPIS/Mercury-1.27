@@ -672,12 +672,30 @@ begin
   pIniMuestreo^ := FechaINI;
   inc(i, 4);
 
-  // 4. Leo el intervalo de muestreo (2 bytes)
-  pTmuestreo^ := (Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255);
+  // 4. Consumo el intervalo de muestreo (2 bytes)
+  // NO sobreescribo pTmuestreo^ porque la UI copia de ahí,
+  // y pisar este valor borra los cambios del usuario.
   inc(i, 2);
 
   // 5. Gap de firmware (2 bytes)
   inc(i, 2);
+
+  // 6. Consumo la configuración de los canales (CantCanales × 1 byte)
+  // NO sobreescribo pCH_conf porque EscribirConfig copia de ahí,
+  // y pisar estos valores borra los cambios pendientes del usuario.
+  inc(i, CantCanales);
+
+  // 7. Consumo el nombre del Equipo (4 bytes)
+  // NO sobreescribo pNombre^ porque la UI copia de ahí,
+  // y pisar este valor borra los cambios del usuario.
+  inc(i, 4);
+
+  // 8. Leo la cantidad de memoria ocupada (3 bytes)
+  pMemoria^ := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])+Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535;
+  inc(i, 3);
+
+  // 9. Leo la capacidad total de memoria (1 byte)
+  pCantMemory^ := trunc(power(2,Byte(auxStr[i])));
 
   NuevaConfiguracionRemota := true;
 end;
@@ -777,18 +795,9 @@ begin
   // Escribo la Cuenta regresiva para muestrear
   PSerie.EscribirAlPuertoSerie(chr(Tregre00));
   PSerie.EscribirAlPuertoSerie(chr(Tregre01));
-  //MANDA LA CONFIGURACION DE CADA CANAL.
-  // SE ADAPTA A BLOQUES DE 8 CANALES (10 bytes = 8 config + 2 padding)
-  
-  for i:=0 to CantCanales - 1 do begin
-      PSerie.EscribirAlPuertoSerie(chr(ConfigCHs[i]));
-      
-      // If end of block (every 8 channels), send 2 bytes padding
-      if ((i + 1) mod 8 = 0) then begin
-         PSerie.EscribirAlPuertoSerie(chr(0)); // Padding
-         PSerie.EscribirAlPuertoSerie(chr(0)); // Padding
-      end;
-  end;
+  // Escribo la nueva configuración de cada canal
+  for i:=0 to CantCanales - 1 do
+    PSerie.EscribirAlPuertoSerie(chr(ConfigCHs[i]));
 
   //ENVIA 4 BYTES PARA EL NOMBRE
   // Escribo el Nombre del Equipo

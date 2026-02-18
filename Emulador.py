@@ -3,21 +3,19 @@ import struct
 import time
 
 # --- CONFIGURACIÓN ---
-# --- CONFIGURACIÓN ---
 PORT = 'COM2'
 BAUD = 9600
-NOMBRE_EQUIPO = b'TEST'
+NOMBRE_EQUIPO = bytearray(b'TEST')
 
-CANTIDAD_BLOQUES = 4
-# 20 canales lineales (sin estructura de bloques en el frame)
-# Para simular, definimos 10 canales por bloque lógico, pero el frame es lineal.
+CANTIDAD_BLOQUES = 3
+# Canales lineales: 10 por bloque (8 analógicos + 2 digitales)
 CANALES_CONFIG = [12,1,2,3,4,5,6,7,8,9] * CANTIDAD_BLOQUES  
 
 INTERVALO_MUESTREO = 120
 
 def generar_respuesta_CE():
     """
-    Genera respuesta CE con estructura LINEAL (sin bloques de padding):
+    Genera respuesta CE con estructura LINEAL:
     - Datos:      NumCanales * 2 bytes
     - Hora:       4 bytes
     - FechaIni:   4 bytes
@@ -35,13 +33,11 @@ def generar_respuesta_CE():
     
     # 1. Datos de Canales (NumCanales * 2 bytes)
     for i in range(num_canales):
-        # Generar valor simulado
-        # Simular variación para ver que refresca
         valor = (1000 + i * 100 + int(time.time()) % 100) % 65535
         respuesta.extend(struct.pack('<H', valor))
 
     # 2. Hora (4 bytes)
-    hora = int(time.time()) - 946684800 # Ajuste fecha base Delphi (aprox)
+    hora = int(time.time()) - 946684800
     respuesta.extend(struct.pack('<I', hora))
     
     # 3. Fecha Inicio (4 bytes)
@@ -58,19 +54,17 @@ def generar_respuesta_CE():
         respuesta.append(config)
 
     # 7. Nombre (4 bytes)
-    if len(NOMBRE_EQUIPO) >= 4:
-        respuesta.extend(NOMBRE_EQUIPO[:4])
-    else:
-        respuesta.extend(NOMBRE_EQUIPO + b'_'*(4-len(NOMBRE_EQUIPO)))
+    nombre = NOMBRE_EQUIPO[:4]
+    if len(nombre) < 4:
+        nombre = nombre + bytearray(b'_' * (4 - len(nombre)))
+    respuesta.extend(nombre)
     
     # 8. Memoria Ocupada (3 bytes)
-    # Simular 3 bytes: 0x10, 0x20, 0x00 -> 0x002010
     respuesta.append(0x10)
     respuesta.append(0x20)
     respuesta.append(0x00)
 
     # 9. Capacidad Memoria (1 byte)
-    # Potencia de 2. Ej: 16 -> 2^16 = 65536 bytes
     respuesta.append(16)
 
     print(f"CE Frame: {len(respuesta)} bytes ({num_canales} canales)")
@@ -96,10 +90,65 @@ def generar_datos_muestras():
             pos += 2
     return bytes(datos)
 
+
+def procesar_config_recibida(raw_data):
+    """Parsea los datos de configuración recibidos del PC."""
+    global INTERVALO_MUESTREO, NOMBRE_EQUIPO
+    
+    num_canales = len(CANALES_CONFIG)
+    # Header: Hora(4) + IniMuest(4) + T(2) + Tregre(2) = 12 bytes
+    # Config: NumCanales bytes
+    # Nombre: 4 bytes
+    # Total esperado: 12 + NumCanales + 4
+    esperado = 12 + num_canales + 4
+    
+    print(f"  Bytes recibidos: {len(raw_data)}, esperados: {esperado}")
+    
+    idx = 0
+    
+    # 1. Hora (4 bytes) - solo log
+    if idx + 4 <= len(raw_data):
+        hora = struct.unpack_from('<I', raw_data, idx)[0]
+        print(f"  Hora recibida: {hora}")
+        idx += 4
+    
+    # 2. Inicio Muestreo (4 bytes) - solo log
+    if idx + 4 <= len(raw_data):
+        ini = struct.unpack_from('<I', raw_data, idx)[0]
+        print(f"  Inicio Muestreo: {ini}")
+        idx += 4
+    
+    # 3. Intervalo (2 bytes) - GUARDAR
+    if idx + 2 <= len(raw_data):
+        intervalo = struct.unpack_from('<H', raw_data, idx)[0]
+        INTERVALO_MUESTREO = intervalo
+        print(f"  Intervalo ACTUALIZADO: {INTERVALO_MUESTREO} seg")
+        idx += 2
+    
+    # 4. Cuenta Regresiva (2 bytes) - solo log
+    if idx + 2 <= len(raw_data):
+        tregre = struct.unpack_from('<H', raw_data, idx)[0]
+        print(f"  Cuenta Regresiva: {tregre}")
+        idx += 2
+    
+    # 5. Config de Canales (NumCanales bytes) - GUARDAR
+    for i in range(num_canales):
+        if idx < len(raw_data):
+            CANALES_CONFIG[i] = raw_data[idx]
+            idx += 1
+    print(f"  Config APLICADA: {CANALES_CONFIG}")
+    
+    # 6. Nombre (4 bytes) - GUARDAR
+    if idx + 4 <= len(raw_data):
+        NOMBRE_EQUIPO = bytearray(raw_data[idx:idx+4])
+        print(f"  Nombre ACTUALIZADO: {NOMBRE_EQUIPO}")
+        idx += 4
+
+
 # --- FLUJO PRINCIPAL ---
 try:
-    ser = serial.Serial(PORT, BAUD, timeout=0.1) # Timeout bajo para no bloquear el script
-    print(f"Simulador iniciado en {PORT}. Esperando comandos...")
+    ser = serial.Serial(PORT, BAUD, timeout=0.1)
+    print(f"Simulador CABLE iniciado en {PORT}. Esperando comandos...")
 
     while True:
         data = ser.read(1)
@@ -108,8 +157,9 @@ try:
             print("Recibido: X (heartbeat)")
             ser.write(b'CE')
             ser.write(generar_respuesta_CE())
-            ser.flush() # Asegura el envío
-            print("Enviado: CE + "+str(len(generar_respuesta_CE()))+" bytes")
+            ser.flush()
+            print("Enviado: CE + frame")
+            
         elif data == b'L':
             next_byte = ser.read(1)
             if next_byte == b'D':
@@ -126,45 +176,28 @@ try:
                 ser.write(b'OK')
                 ser.flush()
                 
-                # Leer bytes de configuración (aprox 50 bytes)
-                # 4(Hora)+4(Ini)+2(T)+2(Regre) + (10*Bloques)
-                time.sleep(0.5) # Esperar a que lleguen
+                # Esperar a recibir los bytes de configuración
+                # Esperamos: Header(12) + Config(NumCanales) + Nombre(4) = 16 + NumCanales
+                expected_bytes = 12 + len(CANALES_CONFIG) + 4
+                raw_data = b''
+                timeout_start = time.time()
+                while len(raw_data) < expected_bytes and (time.time() - timeout_start) < 3.0:
+                    chunk = ser.read(expected_bytes - len(raw_data))
+                    if chunk:
+                        raw_data += chunk
                 
-                num_config_bytes = ser.in_waiting
-                if num_config_bytes > 0:
-                    raw_data = ser.read(num_config_bytes)
-                    print(f"Recibidos {len(raw_data)} bytes de configuración.")
-                    
-                    # 1. Skip Header (12 bytes)
-                    # Hora(4) + Ini(4) + T(2) + Regre(2)
-                    header_size = 12
-                    
-                    # 2. Parse Channel Config
-                    current_idx = header_size
-                    
+                if len(raw_data) > 0:
+                    print(f"Recibidos {len(raw_data)} de {expected_bytes} bytes de configuración.")
                     try:
-                        # Assuming PC sends config for OUR number of channels
-                        for i in range(len(CANALES_CONFIG)):
-                            if current_idx < len(raw_data):
-                                CANALES_CONFIG[i] = raw_data[current_idx]
-                                current_idx += 1
-                                
-                                # Skip padding if block boundary (every 8 channels)
-                                if (i + 1) % 8 == 0:
-                                    current_idx += 2
-                        
-                        print(f"Configuración APLICADA: {CANALES_CONFIG}")
+                        procesar_config_recibida(raw_data)
                     except Exception as e:
                         print(f"Error parseando config: {e}")
                 else:
                     print("No llegaron datos de conf.")
                 
-                # Opcional: Actualizar INTERVALO_MUESTREO si se decodifica
-                print("Configuración aplicada en simulador.")
+                print("Configuración procesada.")
                 
-        # --- PAUSA DEL BUCLE PRINCIPAL ---
-        # Reduce CPU usage and slows down the loop as requested
-        time.sleep(1) 
+        time.sleep(0.1)
 
 except serial.SerialException as e:
     print(f"Error al abrir el puerto: {e}")
