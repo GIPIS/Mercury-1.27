@@ -2214,6 +2214,7 @@ object FPreferencias: TFPreferencias
           ParentFont = False
           TabOrder = 0
           EditMask = '!99999;1;#'
+          
           Text = '40000'
           SpaceChar = '#'
         end

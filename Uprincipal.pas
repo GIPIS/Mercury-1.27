@@ -1697,14 +1697,16 @@ begin
   end;
 
   // Cargo la Info del Equipo en pantalla
-  // Cargo la Info del Equipo en pantalla
   if Equipo.NumCanales > 7 then
     LNombreEquipo.Caption := Equipo.Nombre + Format(' [NC:%d C8:%d]', [Equipo.NumCanales, Equipo.Canales[7].Config])
   else
     LNombreEquipo.Caption := Equipo.Nombre + Format(' [NC:%d]', [Equipo.NumCanales]);
   LHoraEquipo.Caption := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm', Equipo.Hora);
   LNbytesEquipo.Caption := IntToStr(Equipo.Memoria) + ' bytes';
-  Gauge.Position := (Equipo.Memoria * 100) div Equipo.CantMemory;
+  if Equipo.CantMemory > 0 then
+    Gauge.Position := (Int64(Equipo.Memoria) * 100) div Equipo.CantMemory
+  else
+    Gauge.Position := 0;
   LIniMuesEquipo.Caption := FormatDateTime('dd/mm/yyyy hh:nn:ss am/pm', Equipo.iniMuestr) + ' - (int ' + Mercury.GenerarStrTmuest(Equipo.Tmuestreo) + ')';
   //ActualizarCHs := False; // NO BORRAR FLAG AQUI -> Se borra dentro del IF cuando termina la carga
 

@@ -641,7 +641,6 @@ begin
   if not PSerie.LeerDelPuertoSerie(auxStr, BytesToRead) then exit;
   
   // 1. Obtengo todos los valores de los canales
-  // 1. Obtengo todos los valores de los canales
   i := 1;
   for NCanal := 0 to CantCanales - 1 do begin
     // Se reconstruye el valor de 16 bits (Word/SmallInt)
@@ -673,8 +672,7 @@ begin
   inc(i, 4);
 
   // 4. Consumo el intervalo de muestreo (2 bytes)
-  // NO sobreescribo pTmuestreo^ porque la UI copia de ahí,
-  // y pisar este valor borra los cambios del usuario.
+  pTmuestreo^ := (Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255);
   inc(i, 2);
 
   // 5. Gap de firmware (2 bytes)
@@ -685,9 +683,9 @@ begin
   // y pisar estos valores borra los cambios pendientes del usuario.
   inc(i, CantCanales);
 
+
   // 7. Consumo el nombre del Equipo (4 bytes)
-  // NO sobreescribo pNombre^ porque la UI copia de ahí,
-  // y pisar este valor borra los cambios del usuario.
+  pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
   inc(i, 4);
 
   // 8. Leo la cantidad de memoria ocupada (3 bytes)
