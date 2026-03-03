@@ -75,10 +75,17 @@ type
       //
     protected
       procedure   Execute; override;
+      procedure   SyncActualizar; // Wrapper para Synchronize
 
     public
       pvalorCH        : array of ^integer;
       pCH_conf        : array of ^byte;
+      
+      // Digital channel values (2 alternates per module, choose one)
+      // Index 0-3 corresponds to modules (0=Monitoreo, 1=Exp1, 2=Exp2, 3=Exp3)
+      pvalorDigA      : array[0..3] of integer;  // First digital option (ch 8, 16, 24, 32)
+      pvalorDigB      : array[0..3] of integer;  // Second digital option (ch 9, 17, 25, 33)
+      UsarCHDigB      : array[0..3] of boolean;  // True = use B, False = use A
 
       // Info que leo del equipo
       pNombre         : ^string;
@@ -136,6 +143,8 @@ type
       pActualProgres  : TNotifyEvent;      // Actualiza la barra de progreso para la descarga
       POnConectRemoto : TNotifyEvent;      // Realiza algún proceso cuando se CONECTA en forma remoto
       POnDesConRemoto : TNotifyEvent;      // Realiza algún proceso cuando se DESCONECTA en forma remoto
+      NuevaConfiguracionRemota : boolean;  // Indica si se recibio una nueva configuracion desde el equipo
+      PendingUserConfig : boolean;           // Indica que el usuario selecciono un sensor pero no confirmo aun
 
       // Comunicación remota
       ConexOK         : boolean;           // Me indica si establecí alguna conexión remota
@@ -148,7 +157,8 @@ type
       AutoDesconecDesc : boolean;          // Una vez terminadas la descarga se desconecta automaticamente
       AutoDesconecConf : boolean;          // Una vez terminadas la config se desconecta automaticamente
       Ntelefono        : string;           // Número de telefono al cual llama para conectarse
-      NombreConex      : string;           // Nombre de la conexión remota      
+      NombreConex      : string;           // Nombre de la conexión remota
+      DebugMsg         : string;           // Variable para debug seguro      
 
       constructor crear(CreateSuspended: Boolean; NCanales:byte);
       destructor  Destruir;
@@ -161,6 +171,7 @@ type
       procedure   DesConectarTelefon;     // Corta la comunicación telefonica
       procedure   IniComTelefon;          // Inicializa el Hardware de la comunicación telefonica
       function    CalcPeriodoConect(index: byte):integer;
+      procedure   ActualizarCantidadCanales(NCanales: byte);
   end;
 
   // Funciones y Procedimientos de uso generales
@@ -424,6 +435,8 @@ begin
   pActualProgres  := nil;
   POnConectRemoto := nil;
   POnDesConRemoto := nil;
+  NuevaConfiguracionRemota := false;
+  PendingUserConfig := false;
   CantCanales     := NCanales;
   SetLength(pvalorCH ,NCanales);
   SetLength(pCH_conf ,NCanales);
@@ -440,6 +453,17 @@ begin
   AutoDesconecConf := false;         // Una vez terminadas la config se desconecta automaticamente
   Ntelefono        := '';            // Número de telefono al cual llama para conectarse
   NombreConex      := '';            // Nombre de la conexión remota
+end;
+
+procedure TThreadComm.ActualizarCantidadCanales(NCanales: byte);
+begin
+  // Update internal count
+  CantCanales := NCanales;
+  
+  // Resize dynamic arrays
+  SetLength(pvalorCH, NCanales);
+  SetLength(pCH_conf, NCanales);
+  SetLength(ConfigCHs, NCanales);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -460,14 +484,22 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
+procedure TThreadComm.SyncActualizar;
+begin
+  if Assigned(pActualizar) then
+     pActualizar(Self); // Llama al evento en el contexto del hilo principal
+end;
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 procedure TThreadComm.Execute;
 var
   auxStr  : string;
-
+  i      : integer;
 begin
-  ConexOK := false;
-
-  // Inicializo el sistema de trandmisión por Telefonia Celular
+  // Inicializo las variables
+  ConfigEquipo     := false;//telefonia Celular
   if (ThTipoCom = 1) then begin
     IniComTelefon;
     retardo(500);   // Espero 1/2seg hasta que se inicialize
@@ -545,7 +577,9 @@ begin
         end;
       end;
       //ESTO AVISA AL FORMULARIO QUE DATOS NUEVOS, PARA QUE VUELVA A RENDERIZARSE Y SE VEA EN PANTALLA
-      pActualizar(Self);                      // Actualizo la info en pantalla
+      // USO SYNCHRONIZE PARA EVITAR ERRORES DE PANTALLA (VCL/LCL no es thread-safe)
+      if Assigned(pActualizar) then Synchronize(SyncActualizar); 
+      //pActualizar(Self);                      // Actualizo la info en pantalla
 
       // Configuro las variables básicas del Equipo
       //ESTO VERIFICA SI EL USUARIO CAMBIO ALGUNA CONFIGURACION PARA EL EQUIPO
@@ -582,79 +616,86 @@ var
   num      : integer;
   FechaINI : double;
   auxStr   : string;
-  i        : byte;
+  i        : integer;
+  BytesToRead : Integer;
+  HayCambios  : Boolean;
+  bAux        : Byte;
+
 begin
   auxStr := '';
-  //AL HABER RECIBIDO 'CE' ANTES, MANDA UN PAQUETE DE 50 BYTES CON TODA SU INFORMACION
-  if not PSerie.LeerDelPuertoSerie(auxStr,50) then exit;
-  // Obtengo todos los valores de los canales
-  //[PUNTERO AL INICIO DEL PAQUETE]
+  
+  // Estructura del frame LINEAL (igual al protocolo original, escalado):
+  // Datos:     CantCanales × 2 bytes (todos los canales secuenciales)
+  // Hora:      4 bytes
+  // FechaIni:  4 bytes
+  // Intervalo: 2 bytes
+  // Gap:       2 bytes (firmware)
+  // Config:    CantCanales × 1 byte
+  // Nombre:    4 bytes
+  // Memoria:   3 bytes
+  // MemTotal:  1 byte
+  // Total = CantCanales × 3 + 20
+  
+  BytesToRead := CantCanales * 3 + 20;
+
+  if not PSerie.LeerDelPuertoSerie(auxStr, BytesToRead) then exit;
+  
+  // 1. Obtengo todos los valores de los canales
   i := 1;
-//ACA, BASICAMENTE, LEE LOS PRIMEROS 20 BYTES
-//ESTE BUCLE ES EL ENCARGADO DE LEER LOS VALORES ACTUALES DE LOS 10 SENSORES
-//DE A 2 BYTES PARA CADA CANAL
-//length(pvalorCH)-1 me devuelve 9
-  for NCanal:=0 to length(pvalorCH)-1 do begin
-  //ESTA ES UNA FORMULA PARA SUMAR LOS VALORES DE LOS 2 BYTES QUE CORREPSONDEN A CADA CANAL
-    num := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255;
-    //LO GUARDAMOS EN pvalorCH, POR LO QUE AUTOMATICAMENTE SE MUESTRA
-    //RECORDEMOS EL 'PUENTE' ARMADO ENTRE EL BUFFER DEL SENSOR Y EL BUFFER DEL THREAD
+  for NCanal := 0 to CantCanales - 1 do begin
+    // Se reconstruye el valor de 16 bits (Word/SmallInt)
+    // El protocolo original usaba: LowByte + HighByte * 256.
+    num := Byte(auxStr[i]) + (Byte(auxStr[i+1]) shl 8); 
     pvalorCH[NCanal]^ := num;
-    //AVANZA 2 PASOS
-    inc(i,2);
+    inc(i, 2);
+    
     
   end;
 
-  // Leeo la Hora del Equipo
-  //AHORA LEE A PARTIR DEL BYTE 21, PORQUE YA LEIMOS LOS PRIMEROS 20
-  i := 21;
-        // Formo el número de la fecha a partir de los 4 Bytes (32 bits)
-        //ESO, COMO LA INFO ESTA DIVIDIDA EN 4 BYTES, NECESITA SUMARLA
+
+
+
+  // 2. Leo la Hora del Equipo (4 bytes)
   numDate := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
              Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
-        //Paso a Días la fecha de numDate que esta en segundos
-        //CONVIERTE LOS TIPOS
   numDate := numDate/86400 + StrToDateTime(Hora_Base);
   pHoraEquipo^ := numDate;
   pHoraActual^ := now;
-  // Leo la fecha inicial del muestreo
-  //AHORA A PARTIR DEL BYTE 25
-  i := 25;
-        // Formo el número de la fecha a partir de los 4 Bytes (32 bits)
+  inc(i, 4);
+  
+  
+  // 3. Leo la fecha inicial del muestreo (4 bytes)
   numDate  := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
               Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
-        //Paso a Días la fecha de numDate que esta en segundos
   FechaINI      := numDate/86400 + StrToDateTime(Hora_Base);
   pIniMuestreo^ := FechaINI;
+  inc(i, 4);
 
-  // Leo el intervalo de muestreo
-  //A PARTIR DEL BYTE 29
-  i := 29;
+  // 4. Consumo el intervalo de muestreo (2 bytes)
   pTmuestreo^ := (Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255);
-  // Leeo la configuración de los Canales
-  //A PARTIR DEL BYTE 33
-  i := 33;
-  for NCanal:=0 to length(pvalorCH)-1 do
-  //ACA LEE BYTE A BYTE, NO NECESITA COMBINARLOS
-  //SI EL BYTE ES 1, EL CANAL ES VOLTAJE. 
-  //SI EL BYTE ES 2, ES CORRIENTE
-    pCH_conf[NCanal]^ := Byte(auxStr[i+NCanal]);
-  // Leo el nombre del Equipo
-  //A PARTIR DEL BYTE 43, NOMBRE DEL EQUIPO
-  i := 43;
+  inc(i, 2);
+
+  // 5. Gap de firmware (2 bytes)
+  inc(i, 2);
+
+  // 6. Consumo la configuración de los canales (CantCanales × 1 byte)
+  // NO sobreescribo pCH_conf porque EscribirConfig copia de ahí,
+  // y pisar estos valores borra los cambios pendientes del usuario.
+  inc(i, CantCanales);
+
+
+  // 7. Consumo el nombre del Equipo (4 bytes)
   pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
-  //A PARTIR DEL BYTE 47, CANTIDAD DE MEMORIA OCUPADA
-  // Leo la cantidad de memoria ocupada (Numeros de Bytes)
-  i := 47;
+  inc(i, 4);
+
+  // 8. Leo la cantidad de memoria ocupada (3 bytes)
   pMemoria^ := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])+Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535;
-  // Leo la cantidad de memoria que tiene el equipo disponible (Numeros de Bytes)
-  i := 50;
+  inc(i, 3);
+
+  // 9. Leo la capacidad total de memoria (1 byte)
   pCantMemory^ := trunc(power(2,Byte(auxStr[i])));
-  // guardo la config en el disco
-{  au := TStringList.Create;
-  for i:=0 to length(auxStr) do au.Add(IntToStr(byte(auxStr[i])));
-  au.SaveToFile('d:\logConf.txt');
-  au.Destroy;}
+
+  NuevaConfiguracionRemota := true;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -700,6 +741,16 @@ begin
   ABytes := NumToAbytes( round((HoraAux-now)*86400) );
   Tregre00 := ABytes[0];
   Tregre01 := ABytes[1];
+
+  // IMPORTANTE: Actualizar el arreglo ConfigCHs con los valores actuales de los sensores
+  // Los sensores se modifican en la UI (pCH_conf apunta a Canales[i].Config), 
+  // pero ConfigCHs es una copia local que se usa para enviar.
+  for i := 0 to CantCanales - 1 do begin
+    if Assigned(pCH_conf[i]) then
+       ConfigCHs[i] := pCH_conf[i]^
+    else
+       ConfigCHs[i] := 0; 
+  end;  
 //DE ACA NO HABRIA QUE TOCAR MUCHO
 //LO IMPORTANTE ES SABER QUE TODA ESTA INFORMAICON OCUPA 12 BYTES.
 //4 BYTES PARA LA HORA DEL EQUIPO, 4 PARA HORA DE INICIO DE MUESTREO...
@@ -742,21 +793,18 @@ begin
   // Escribo la Cuenta regresiva para muestrear
   PSerie.EscribirAlPuertoSerie(chr(Tregre00));
   PSerie.EscribirAlPuertoSerie(chr(Tregre01));
-//MANDA LA CONFIGURACION DE CADA CANAL.
-// DESDE 0 HASTA 9, ENVIA 10 BYTES
-//1 = VOLTAJE, 2 = CORRIENTE, 0 = DESACTIVADO
-//FIJEMONOS QUE EL BUCLE SE ADAPTA A LA CANTIDAD DE CANALES, ESTA LIMITADO POR LA LONGITUD DE ConfigCHs
   // Escribo la nueva configuración de cada canal
-  for i:=0 to length(ConfigCHs)-1 do
+  for i:=0 to CantCanales - 1 do
     PSerie.EscribirAlPuertoSerie(chr(ConfigCHs[i]));
-//ENVIA 4 BYTES PARA EL NOMBRE
+
+  //ENVIA 4 BYTES PARA EL NOMBRE
   // Escribo el Nombre del Equipo
   PSerie.EscribirAlPuertoSerie(NombreEquipo[1]);
   PSerie.EscribirAlPuertoSerie(NombreEquipo[2]);
   PSerie.EscribirAlPuertoSerie(NombreEquipo[3]);
   PSerie.EscribirAlPuertoSerie(NombreEquipo[4]);
-  //TOTAL: 26 BYTES DE CONFIGURACION
-
+  //TOTAL: Variable dependent on CantCanales
+ 
   if AutoDesconecConf then DesConecTelef := true;
 end;
 

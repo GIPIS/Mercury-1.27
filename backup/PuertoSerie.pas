@@ -75,10 +75,17 @@ type
       //
     protected
       procedure   Execute; override;
+      procedure   SyncActualizar; // Wrapper para Synchronize
 
     public
       pvalorCH        : array of ^integer;
       pCH_conf        : array of ^byte;
+      
+      // Digital channel values (2 alternates per module, choose one)
+      // Index 0-3 corresponds to modules (0=Monitoreo, 1=Exp1, 2=Exp2, 3=Exp3)
+      pvalorDigA      : array[0..3] of integer;  // First digital option (ch 8, 16, 24, 32)
+      pvalorDigB      : array[0..3] of integer;  // Second digital option (ch 9, 17, 25, 33)
+      UsarCHDigB      : array[0..3] of boolean;  // True = use B, False = use A
 
       // Info que leo del equipo
       pNombre         : ^string;
@@ -136,6 +143,8 @@ type
       pActualProgres  : TNotifyEvent;      // Actualiza la barra de progreso para la descarga
       POnConectRemoto : TNotifyEvent;      // Realiza algún proceso cuando se CONECTA en forma remoto
       POnDesConRemoto : TNotifyEvent;      // Realiza algún proceso cuando se DESCONECTA en forma remoto
+      NuevaConfiguracionRemota : boolean;  // Indica si se recibio una nueva configuracion desde el equipo
+      PendingUserConfig : boolean;           // Indica que el usuario selecciono un sensor pero no confirmo aun
 
       // Comunicación remota
       ConexOK         : boolean;           // Me indica si establecí alguna conexión remota
@@ -148,11 +157,12 @@ type
       AutoDesconecDesc : boolean;          // Una vez terminadas la descarga se desconecta automaticamente
       AutoDesconecConf : boolean;          // Una vez terminadas la config se desconecta automaticamente
       Ntelefono        : string;           // Número de telefono al cual llama para conectarse
-      NombreConex      : string;           // Nombre de la conexión remota      
+      NombreConex      : string;           // Nombre de la conexión remota
+      DebugMsg         : string;           // Variable para debug seguro      
 
       constructor crear(CreateSuspended: Boolean; NCanales:byte);
       destructor  Destruir;
-      procedure   LeerConfig
+      procedure   LeerConfig;
       procedure   EscribirConfig;
       procedure   EscribirConfigInternet;
       procedure   DescargarLosDatos;      
@@ -161,6 +171,7 @@ type
       procedure   DesConectarTelefon;     // Corta la comunicación telefonica
       procedure   IniComTelefon;          // Inicializa el Hardware de la comunicación telefonica
       function    CalcPeriodoConect(index: byte):integer;
+      procedure   ActualizarCantidadCanales(NCanales: byte);
   end;
 
   // Funciones y Procedimientos de uso generales
@@ -221,19 +232,36 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 function TPuertoSerie.AbrirPuertoSerie(CommPort :string):boolean;
 begin
+//PREPARA EL NOMBRE DEL PUERTO  -- LO RECIBE POR PARAMETRO Y LO COPIA EN DEVICENAME
+//POR QUE NO LO MANDA DIRECTO? PASCAL USA STRING, Y LA API DE WINDOWS (ESCRITA EN C ESPERA UN PUNTERO
+// (Pchar) O UN ARRAY DE CARACTERES TERMINADO EN NULO (Array of char))
+//ENTONCES LO TRANSFORMA A UN ARRAY DE CARACTERES
   StrPCopy(DeviceName, CommPort);
+  //LLAMA A LA API
+// CreateFile FUNCION NATIVA DE WINDOWS. 
+//SE LLAMA CREATE FILE PORQUE EN WINDOWS TODO SE MANEJA COMO UN ARCHIVO
+//LE PASA: 
+//DEVICENAME: EL NOMBRE
+//GENERIC_READ or GENERIC_WRITE: "QUIERO LEER Y ESCRIBIR DATOS"
+//0: ES UN SEMAFORO QUE ME DA ACCESO EXLCUSIVO, NADIE MAS PUEDE USAR ESTE RECURSO
+//OPEN_EXISTING: SOLO SI EXISTE ESTE ARCHIVO, SI NO, NO LO VUELVE A CREAR 
+
+//DEVUELVE: 
+//UN HANDLE, QUE SE VA A USAR PARA LEER O ESCRIBIR EL PUERTO
+//ESTE HANDLE TRABAJA CON UN BUFFER EN MEMORIA RAM, EL CUAL RECIBE LOS DATOS DEL PUERTO...
+// Y LO GUARDA
   ComFile := CreateFile(DeviceName,
                         GENERIC_READ or GENERIC_WRITE,
                         0, Nil,
                         OPEN_EXISTING,
                         FILE_ATTRIBUTE_NORMAL, 0);
-
+//MANEJADOR DE EXCEPCIONES, SI HUBO UN ERROR LANZA LA ESCEPCION, Y LA FUNCION TERMINA ACA
   if ComFile = INVALID_HANDLE_VALUE then begin
     ShowMessage('No se puede acceder al '+ CommPort);
     result := false;
     exit;
   end;
-
+//SI NO HUBO ERROR, VIENE ACA Y TODO OK
   PserieOpen := true;
   result     := true;
 end;
@@ -247,16 +275,25 @@ var
 //  ConfigCom    : TCOMMCONFIG;
 
 begin
+//EN UEquipo.pas SOLO SE LLENABAN LAS VARIABLES, PERO AHORA SE SETEA EL HARDWARE
+//ACA SE DEFINE EL TAMANIO DE LOS BUFFERS TANTO DE LECTURA COMO DE ESCRITURA
+//AMBOS SE DEFINEN EN TPUERTOSERIE.CREAR COMO 256
   if not SetupComm(ComFile, RxBufferSize, TxBufferSize) then  begin
     result := false;
     exit;
   end;
-
+//SE LEE LA CONFIGURACION ACTUAL PARA VER SUS VALORES ACTUALES
+//ESTO SE HACE PORQUE HAY ALGUNOS PARAMETROS QUE NO SE DESEAN MODIFICAR
+//ESA CONFIGURACION SE GUARDA EN DCB
   if not GetCommState(ComFile, DCB) then begin
     result := false;
     exit;
   end;
-
+//ACA SE ARMA UN PARAMETRO DE CONFIGURACION
+//USAMOS EL BAUD = 19200 (VELOCIDAD DE TRANSMISION)
+//PARITY = N, SIN BIT DE PARIDAD
+//DATA = 8, CANTIDAD DE BITS POR CADA LETRA/PALABRA
+//STOP = 1, UN BIT DE ESPERA/PARADA POR CADA 8 BITS
   //Config := 'baud=9600 parity=n data=8 stop=1';
   Config := 'baud='+Baud+' parity='+Parity+' data='+Data+' stop='+Stop;
   {
@@ -283,22 +320,15 @@ begin
     //DCB.fDsrSensitivity := false;
     DCB.fDsrSensitivity := true;
   }
+  //ESTA FUNCION DE WINDOWS USA LA CONFIGURACION QUE ARMAMOS, Y TERMINA DE COMPLETAR..
+  //LA ESTRUCTURA BINARIA DCB CON LOS BITS CORRECTOS, PARA NO HACERLO MANUALMENTE
   if not BuildCommDCB(@Config[1], DCB) then begin
     result := false;
     exit;
   end;
 
-{  DCB.BaudRate := CBR_19200; //CBR_9600	; //CBR_57600;
-  DCB.ByteSize := 8;
-  DCB.Parity := NOPARITY;
-  DCB.StopBits := ONESTOPBIT;}
 
-{  Config := 'COM1';
-  if not CommConfigDialog(@Config[1],0,@ConfigCom) then begin
-    result := false;
-    exit;
-  end;}
-
+//ACA SE APLICAN LOS CAMBIOS AL HARDWARE: "CONFIGURA EL CHIP DEL PUERTO SERIE DE TAL MANERA"
   if not SetCommState(ComFile, DCB) then begin
     result := false;
     exit;
@@ -307,11 +337,11 @@ begin
   with CommTimeouts do  begin
     ReadIntervalTimeout         := 0;
     ReadTotalTimeoutMultiplier  := 0;
-    ReadTotalTimeoutConstant    := RxTimeout;//1000;
+    ReadTotalTimeoutConstant    := RxTimeout;// IMPORTANTE: 750 MS SIN LEER NADA Y "CORTA" CONEXION
     WriteTotalTimeoutMultiplier := 0;
-    WriteTotalTimeoutConstant   := TxTimeout;//1000;
+    WriteTotalTimeoutConstant   := TxTimeout;//IMPORTANTE: NO HAY TIEMPO DE ESPERA DEFINIDO PARA ESCRITURA;
   end;
-
+//SE CONFIGURAN LOS TIMEOUTS EN ELCHIP
   if not SetCommTimeouts(ComFile, CommTimeouts) then begin
     result := false;
     exit;
@@ -326,6 +356,10 @@ var
   BytesEscritos : dword;
 
 begin
+//EN VEZ DE CONVERTIR UN STRING, A UN ARRAY DE CARACTERES, LE PASA EL PRIMER CARACTER DEL STRING..
+//COMO REFERENCIA.
+//ENTONCES LA FUNCION WriteFile TERMINA DE LEER EL RESTO DEL STRING COMO SI FUERA UN ARRAY
+//POR ESO ES QUE TAMBIEN LE PASAMOS LA LONGITUD DEL STRING
   if not WriteFile(ComFile, chs[1], Length(chs), BytesEscritos, Nil) then begin
     result := false;
     exit;
@@ -337,21 +371,37 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 function TPuertoSerie.LeerDelPuertoSerie(var chs :string; TamBuffer: integer): boolean;
 var
+//BUFFER TEMPORAL LOCAL
    d            : array[1..256] of Char; //Buffer de lectura
+   //CONTADOR REAL
    BytesLeidos  : dword;
    i            : Integer;
 
 begin
+//EL BUFFER 'd' TIENE TAMANIO FIJO DE 256
+//SI SE PIDE LEER, POR EJEMPLO, 1000 BYTES, SE ROMPE
+//ENTONCES ESTA LINEA EVITA ESTO RECORTANDO EL PEDIDO A 256
+//PERO SI QUISIERAMOS LEER MAS INFORMAICON, TENEMOS QUE AUMENTAR EL TAMANIO DE 'd'
+//O LEER DE A 256 BYTES EN UN BUCLE
   if (TamBuffer > length(d)) then TamBuffer := length(d);
-  
+
+  //FUNCION DE LA API DE WINDOWS
+  //ComFile ES EL MANEJADR DEL PUERTO QUE YA HABIAMOS VISTO
+  //'d' ES A DONDE GUARDA LOS DATOS CRUDOS
+  //TamBuffer CUANTOS BYTES MAXIMOS QUEREMOS LEER
+  //BytesLeidos: WINDOWS ESCRIBE ACA REALMENTE CUANTOS BYTES LLEGARON
+  //nil INFO TECNICA
+  //FUNCIONA COMO UNA COLA, SI LEO 2 BYTES, ENTONCES SACA ESOS 3 BYTES DE LA COLA, NO ESTAN MAS EN EL..
+  //BUFFER DE LA RAM
   if not ReadFile(ComFile, d, TamBuffer, BytesLeidos, nil) then begin
-    result := false;
+    result := false; //FALLO, SE DESCONECTA
     exit;
   end;
-
+//CONVERSION DE TIPOS: COMO DIJIMOS ANTES, WINDOWS USA C, POR LO QUE DEVUELVE UN ARREGLO DE CARACTERES
+//ENTONCES LO TRANSFORMAMOS A UN TIPO STRING
+//PASA DE ['C','E'] a 'ABC'
   chs := '';
   for i := 1 to BytesLeidos do chs := chs + d[i];
-
 //  FlushFileBuffers(ComFile);
   result := true;
 end;
@@ -385,6 +435,8 @@ begin
   pActualProgres  := nil;
   POnConectRemoto := nil;
   POnDesConRemoto := nil;
+  NuevaConfiguracionRemota := false;
+  PendingUserConfig := false;
   CantCanales     := NCanales;
   SetLength(pvalorCH ,NCanales);
   SetLength(pCH_conf ,NCanales);
@@ -401,6 +453,17 @@ begin
   AutoDesconecConf := false;         // Una vez terminadas la config se desconecta automaticamente
   Ntelefono        := '';            // Número de telefono al cual llama para conectarse
   NombreConex      := '';            // Nombre de la conexión remota
+end;
+
+procedure TThreadComm.ActualizarCantidadCanales(NCanales: byte);
+begin
+  // Update internal count
+  CantCanales := NCanales;
+  
+  // Resize dynamic arrays
+  SetLength(pvalorCH, NCanales);
+  SetLength(pCH_conf, NCanales);
+  SetLength(ConfigCHs, NCanales);
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -421,19 +484,28 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
+procedure TThreadComm.SyncActualizar;
+begin
+  if Assigned(pActualizar) then
+     pActualizar(Self); // Llama al evento en el contexto del hilo principal
+end;
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 procedure TThreadComm.Execute;
 var
   auxStr  : string;
-
+  i      : integer;
 begin
-  ConexOK := false;
-
-  // Inicializo el sistema de trandmisión por Telefonia Celular
+  // Inicializo las variables
+  ConfigEquipo     := false;//telefonia Celular
   if (ThTipoCom = 1) then begin
     IniComTelefon;
     retardo(500);   // Espero 1/2seg hasta que se inicialize
   end;
-
+//ESTA ES LA FUNCION QUE SE ESTA EJECUTANDO EN BACKGROUND TODO EL TIEMPO
+//TERMINATED SE PONE EN TRUE SOLO CUANDO SE CIERRA EL PROGRAMA
   while not Terminated do begin
     try
       // Conexión por Telefónica (Puerto Serie)
@@ -441,34 +513,25 @@ begin
         if ConecTelef then begin
           // Ejecuto el procedure que realiza cosas cuando me conecto
           POnConectRemoto(nil);
-
           ConecTelef    := false;
           DesConecTelef := false;
-
           // Me indica si establecí alguna conexión remota
           ConexOK       := true;
-
           // Inicia la conección telefónica
           ConectarTelefon;
-
           // Espero 15seg hasta que se conecte
           retardo(15000);
         end;
-
         // Termina la conección telefónica
         if DesConecTelef  and ConexOK then begin
           // Ejecuto el procedure que realiza cosas cuando me desconecto
           POnDesConRemoto(nil);
-
           // Acutalizo el flag
           DesConecTelef := false;
-
           // Inicia la Desconección telefónica
           DesConectarTelefon;
-
           // Espero 1seg hasta que se Desconecte
           retardo(1000);
-
           // Me aseguro que no haga nada una vez desconectado
           ONLine           := false;
           ConfigEquipo     := false;
@@ -491,14 +554,21 @@ begin
       if (ThTipoCom = 2) then begin
         //
       end;
-
+//ESTA ES LA CONEXION QUE NOS IMPORTA A NOSOTROS, LAS ANTERIORES ERAN TELEFONICAS O TCP/IP
       // Indico al equipo que esta conectado a la PC
+      //SI NO ESTAMOS CONECTADOS, EL EQUIPO ENVIA CONSTANTEMENTE LA LETRA X POR EL CABLE
       if not ONLine then PSerie.EscribirAlPuertoSerie('X');
+      //ACA LA RESPUESTA. SE ESPERA A RECIBIR 'CE' A TRAVES DEL PUERTO
       auxStr := '';
       if PSerie.LeerDelPuertoSerie(auxStr,2) then begin
         if (auxStr = 'CE') then begin
+        //SI SE RECIBE EXACTAMENTE 'CE', SE ESTABLECE LA CONEXION
+        //APENAS SE RECIBE 'CE', SE LLAMA A LEERCONFIG QUE BAJA:
+        //EL NOMBRE DEL EQUIPO, LA HORA, LA MEMORIA USADA, ETC.
           LeerConfig;                         // Leeo toda la config del equipo
+          //VUELVE A ENVIAR X PARA CONFIRMAR QUE SE RECIBIO LA INFORMACION
           PSerie.EscribirAlPuertoSerie('X');  // Indico al equipo que esta conectado a la PC
+          //ONLINE ES TRUE, YA NO SE EJECUTA EL IF DENTRO DEL BUCLE
           ONLine := true;
         end
         else begin
@@ -506,20 +576,26 @@ begin
           DesConecTelef := true;              // Si se pierde la comunicación me desconecto
         end;
       end;
-      pActualizar(Self);                      // Actualizo la info en pantalla
+      //ESTO AVISA AL FORMULARIO QUE DATOS NUEVOS, PARA QUE VUELVA A RENDERIZARSE Y SE VEA EN PANTALLA
+      // USO SYNCHRONIZE PARA EVITAR ERRORES DE PANTALLA (VCL/LCL no es thread-safe)
+      if Assigned(pActualizar) then Synchronize(SyncActualizar); 
+      //pActualizar(Self);                      // Actualizo la info en pantalla
 
       // Configuro las variables básicas del Equipo
+      //ESTO VERIFICA SI EL USUARIO CAMBIO ALGUNA CONFIGURACION PARA EL EQUIPO
+      //SI SE CAMBIO ALGO, ConfigEquipo ESTA EN TRUE.
       if ConfigEquipo  and ONLine then begin
+        //ESCRIBE LA NUEVA CONFIGURACION DEL EQUIPO
         EscribirConfig;
         ConfigEquipo := false;
       end;
-
+  //SI HAY QUE CONFIGURAR INTERNET (POR AHORA NO LO VEREMOS)
       // Configuro las variables de internet del Equipo
       if ConfigInternetEquipo  and ONLine then begin
         EscribirConfigInternet;
         ConfigInternetEquipo := false;
       end;
-
+//SI HAY QUE DESCARGAR UN HISTORIAL DE INFORMACION
       // Descargo los datos almacenado en la memoria del Equipo 
       if DescargarDatos and ONLine then begin
         DescargarDatos := false;
@@ -529,6 +605,7 @@ begin
       Mercury.Configurar := false;
     end;
   end;
+  //SE EJECUTA EL BUCLE CONSTANTEMENTE, ESPERANDO OTRO 'CE'
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -539,70 +616,70 @@ var
   num      : integer;
   FechaINI : double;
   auxStr   : string;
-  i        : byte;
-
-  //au       : Tstrings;
-
+  i        : integer;
+  BytesToRead : Integer;
+  HayCambios  : Boolean;
+  bAux        : Byte;
+  bAux        : Byte;
 begin
   auxStr := '';
-  if not PSerie.LeerDelPuertoSerie(auxStr,50) then exit;
+  
+  // Estructura del frame LINEAL (igual al protocolo original, escalado):
+  // Datos:     CantCanales × 2 bytes (todos los canales secuenciales)
+  // Hora:      4 bytes
+  // FechaIni:  4 bytes
+  // Intervalo: 2 bytes
+  // Gap:       2 bytes (firmware)
+  // Config:    CantCanales × 1 byte
+  // Nombre:    4 bytes
+  // Memoria:   3 bytes
+  // MemTotal:  1 byte
+  // Total = CantCanales × 3 + 20
+  
+  BytesToRead := CantCanales * 3 + 20;
 
-  // Obtengo todos los valores de los canales
+  if not PSerie.LeerDelPuertoSerie(auxStr, BytesToRead) then exit;
+  
+  // 1. Obtengo todos los valores de los canales
+  // 1. Obtengo todos los valores de los canales
   i := 1;
-  for NCanal:=0 to length(pvalorCH)-1 do begin
-    num := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255;
+  for NCanal := 0 to CantCanales - 1 do begin
+    // Se reconstruye el valor de 16 bits (Word/SmallInt)
+    // El protocolo original usaba: LowByte + HighByte * 256.
+    num := Byte(auxStr[i]) + (Byte(auxStr[i+1]) shl 8); 
     pvalorCH[NCanal]^ := num;
-    inc(i,2);
+    inc(i, 2);
+    
+    
   end;
 
-  // Leeo la Hora del Equipo
-  i := 21;
-        // Formo el número de la fecha a partir de los 4 Bytes (32 bits)
+
+
+
+  // 2. Leo la Hora del Equipo (4 bytes)
   numDate := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
              Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
-
-        //Paso a Días la fecha de numDate que esta en segundos
   numDate := numDate/86400 + StrToDateTime(Hora_Base);
   pHoraEquipo^ := numDate;
   pHoraActual^ := now;
-
-  // Leo la fecha inicial del muestreo
-  i := 25;
-        // Formo el número de la fecha a partir de los 4 Bytes (32 bits)
+  inc(i, 4);
+  
+  
+  // 3. Leo la fecha inicial del muestreo (4 bytes)
   numDate  := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
               Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
-        //Paso a Días la fecha de numDate que esta en segundos
   FechaINI      := numDate/86400 + StrToDateTime(Hora_Base);
   pIniMuestreo^ := FechaINI;
+  inc(i, 4);
 
-  // Leo el intervalo de muestreo
-  i := 29;
+  // 4. Leo el intervalo de muestreo (2 bytes)
   pTmuestreo^ := (Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255);
+  inc(i, 2);
 
+  // 5. Gap de firmware (2 bytes)
+  inc(i, 2);
 
-  // Leeo la configuración de los Canales
-  i := 33;
-  for NCanal:=0 to length(pvalorCH)-1 do
-    pCH_conf[NCanal]^ := Byte(auxStr[i+NCanal]);
-
-
-  // Leo el nombre del Equipo
-  i := 43;
-  pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
-
-  // Leo la cantidad de memoria ocupada (Numeros de Bytes)
-  i := 47;
-  pMemoria^ := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])+Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535;
-
-  // Leo la cantidad de memoria que tiene el equipo disponible (Numeros de Bytes)
-  i := 50;
-  pCantMemory^ := trunc(power(2,Byte(auxStr[i])));
-
-  // guardo la config en el disco
-{  au := TStringList.Create;
-  for i:=0 to length(auxStr) do au.Add(IntToStr(byte(auxStr[i])));
-  au.SaveToFile('d:\logConf.txt');
-  au.Destroy;}
+  NuevaConfiguracionRemota := true;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -617,7 +694,7 @@ var
 
 begin
   // Calculos de los Valores Nuevos de Configuración //
-
+//SE CONVIERTE LA HORA, A BYTES INDIVUDUALES
   // Nueva hora del Equipo la paso a un formato de 4 bytes
   hora   := round((now-StrToDateTime(Hora_Base))*86400);
   ABytes := NumToAbytes(hora);
@@ -625,7 +702,8 @@ begin
   Hora01 := Abytes[1];
   Hora02 := Abytes[2];
   Hora03 := Abytes[3];
-
+//ACA HACE UN REDONDEO 
+//SI SE VA A MUESTREAR CADA 10 MINUTOS, Y SON LAS 10:14, EL MUESTREO ESPERA A LAS 10:20 PARA EMPEZAR
   // Cálculo la hora del inicio de muestreo
   if (T<60) then Tt := 60 else Tt := T;
   HoraAux := trunc(now*24)/24;
@@ -648,15 +726,26 @@ begin
   Tregre00 := ABytes[0];
   Tregre01 := ABytes[1];
 
+  // IMPORTANTE: Actualizar el arreglo ConfigCHs con los valores actuales de los sensores
+  // Los sensores se modifican en la UI (pCH_conf apunta a Canales[i].Config), 
+  // pero ConfigCHs es una copia local que se usa para enviar.
+  for i := 0 to CantCanales - 1 do begin
+    if Assigned(pCH_conf[i]) then
+       ConfigCHs[i] := pCH_conf[i]^
+    else
+       ConfigCHs[i] := 0; 
+  end;  
+//DE ACA NO HABRIA QUE TOCAR MUCHO
+//LO IMPORTANTE ES SABER QUE TODA ESTA INFORMAICON OCUPA 12 BYTES.
+//4 BYTES PARA LA HORA DEL EQUIPO, 4 PARA HORA DE INICIO DE MUESTREO...
+//2 PARA EL INICIO DE MUESTREO, Y 2 PARA CUENTA REGRESIVA
 
   //--------------------------------------------------------------------------//
+  //ENVIA 'CE' PARA AVISARLE AL EQUIPO QUE VA A EMPEZAR UNA CONFIGURACION
   // Escribo el codigo para que entre a la subrrutina
   if not PSerie.EscribirAlPuertoSerie('CE') then exit;
 
-{  // Espero la señal que indica que esta listo para recibir la nueva config
-  if not PSerie.LeerDelPuertoSerie(auxStr,2) then exit;
-  Retardo(20);}
-
+//ESPERA HASTA RECIBI 'OKDEL EQUIPO'
   // Espero la señal ("OK") que indica que esta listo para recibir la nueva config
   i      := 0;
   auxStr := '';
@@ -664,40 +753,51 @@ begin
     if not PSerie.LeerDelPuertoSerie(auxStr,2) then break;
     inc(i,1);
   end;
-
+//SI NO SE RECIBIO NADA EN 200 ITERACIONES SE CORTA LA CONFIGURACION
   // Me aseguro que si hay problemas aborto
   if (i>200) then exit;
-
+//MANDA LOS 4 BYTES DE LA HORA
   // Escribo la nueva hora al equipo
   PSerie.EscribirAlPuertoSerie(chr(Hora00));
   PSerie.EscribirAlPuertoSerie(chr(Hora01));
   PSerie.EscribirAlPuertoSerie(chr(Hora02));
   PSerie.EscribirAlPuertoSerie(chr(Hora03));
 //aca hay que trabajar 
+//MANDA LOS 4 BYTES DEL INICIO DE MUESTREO
   // Escribo la nueva hora de inicio del muestreo
   PSerie.EscribirAlPuertoSerie(chr(IniMuest00));
   PSerie.EscribirAlPuertoSerie(chr(IniMuest01));
   PSerie.EscribirAlPuertoSerie(chr(IniMuest02));
   PSerie.EscribirAlPuertoSerie(chr(IniMuest03));
-
+//MANDA LOS 2 BYTES DEL PERIODO DE MUESTREO
   // Escribo el nuevo periodo de muestreo
   PSerie.EscribirAlPuertoSerie(chr(T00));
   PSerie.EscribirAlPuertoSerie(chr(T01));
-
+//MANDA LOS 2 BYTES DE LA CUENTA REGRESIVA
   // Escribo la Cuenta regresiva para muestrear
   PSerie.EscribirAlPuertoSerie(chr(Tregre00));
   PSerie.EscribirAlPuertoSerie(chr(Tregre01));
+  //MANDA LA CONFIGURACION DE CADA CANAL.
+  // SE ADAPTA A BLOQUES DE 8 CANALES (10 bytes = 8 config + 2 padding)
+  
+  for i:=0 to CantCanales - 1 do begin
+      PSerie.EscribirAlPuertoSerie(chr(ConfigCHs[i]));
+      
+      // If end of block (every 8 channels), send 2 bytes padding
+      if ((i + 1) mod 8 = 0) then begin
+         PSerie.EscribirAlPuertoSerie(chr(0)); // Padding
+         PSerie.EscribirAlPuertoSerie(chr(0)); // Padding
+      end;
+  end;
 
-  // Escribo la nueva configuración de cada canal
-  for i:=0 to length(ConfigCHs)-1 do
-    PSerie.EscribirAlPuertoSerie(chr(ConfigCHs[i]));
-
+  //ENVIA 4 BYTES PARA EL NOMBRE
   // Escribo el Nombre del Equipo
   PSerie.EscribirAlPuertoSerie(NombreEquipo[1]);
   PSerie.EscribirAlPuertoSerie(NombreEquipo[2]);
   PSerie.EscribirAlPuertoSerie(NombreEquipo[3]);
   PSerie.EscribirAlPuertoSerie(NombreEquipo[4]);
-
+  //TOTAL: Variable dependent on CantCanales
+ 
   if AutoDesconecConf then DesConecTelef := true;
 end;
 

@@ -114,7 +114,9 @@
       <Unit>
         <Filename Value="UConfiguracionInternet.pas"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="FConfiguracionInternet"/>
         <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
         <Filename Value="UServerSocket.pas"/>
@@ -131,7 +133,7 @@
       <Unit>
         <Filename Value="UExpansion.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
+        <ComponentName Value="FExpansion"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
@@ -172,6 +174,9 @@
       </Item>
       <Item>
         <Name Value="EFOpenError"/>
+      </Item>
+      <Item>
+        <Name Value="EFCreateError"/>
       </Item>
     </Exceptions>
   </Debugging>
