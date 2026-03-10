@@ -2,123 +2,114 @@ unit UServerSocket;
 
 interface
 uses
-  Windows, Registry, Classes, SysUtils, Dialogs, StdCtrls, SyncObjs, Math,
-  UUtiles, Sockets, UEquipoInternet;
+  Classes, SysUtils, Sockets, UUtiles, blcksock, UEquipoInternet;
 
 type
-  TServer = class(Tobject)
-    private
-      //
-    public
-      SrvSocket   : TServerSocket;
-      pTStrings   : TpTstrings;
-      FormatFecha : string;
-
-      constructor Crear(port: integer; pTString: TpTstrings);
-      destructor  Destruir;
-      procedure   ServerSocket_OnListen(Sender: TObject; Socket: TCustomWinSocket);
-      procedure   ServerSocket_OnAccept(Sender: TObject; Socket: TCustomWinSocket);
-      procedure   ServerSocket_ClientDisconnect(Sender: TObject; Socket: TCustomWinSocket);
-      procedure   ServerSocket_OnClientError(Sender: TObject; Socket: TCustomWinSocket;
-                                             ErrorEvent: TErrorEvent; var ErrorCode: Integer);
-      procedure   ServerSocket_OnGetThread(Sender: TObject; ClientSocket: TServerClientWinSocket;
-                                           var SocketThread: TServerClientThread);
+  { Creamos un Hilo puro de Free Pascal }
+  TServerListenerThread = class(TThread)
+  private
+    FPort: Integer;
+    FpTStrings: TpTstrings; // Puntero al cuadro de Logs de la ventana
+    FServerIP: string;
+    FListenerSocket: TTCPBlockSocket; // El 'socket padre' de Synapse
+    
+    // Variables temporales para el Log a través de Synchronize
+    FLogMsg: string;
+    procedure LogMessage;
+  protected
+    procedure Execute; override;
+  public
+    constructor Create(Port: Integer; pStrings: TpTstrings; IP: string = '0.0.0.0');
+    destructor Destroy; override;
+    procedure Detener;
   end;
 
 implementation
 
-////////////////////////////////////////////////////////////////////////////////
-//TServerSocket
-////////////////////////////////////////////////////////////////////////////////
-constructor TServer.Crear(port: integer; pTString: TpTStrings);
+constructor TServerListenerThread.Create(Port: Integer; pStrings: TpTstrings; IP: string = '0.0.0.0');
 begin
-  // Configuro las variables generales del Server
-  FormatFecha := 'dd/mm/yy hh:nn:ss ';
-  pTStrings   := pTString;
-
-  // Creo los sockets
-  SrvSocket := TServerSocket.Create(nil);
-
-  // Configuro el socket servidor
-  //Socket.OnClientRead       := ServerSocket_ClientRead;
-
-  // Configuro el socket servidor
-  SrvSocket.OnListen           := ServerSocket_OnListen;
-  SrvSocket.OnAccept           := ServerSocket_OnAccept;
-  SrvSocket.OnClientDisconnect := ServerSocket_ClientDisconnect;
-  SrvSocket.OnClientError      := ServerSocket_OnClientError;
-  SrvSocket.OnGetThread        := ServerSocket_OnGetThread;
-  SrvSocket.Port               := port;
-  SrvSocket.ServerType         := stTHREADBLOCKING; //stNonBlocking;//stTHREADBLOCKING;
-  SrvSocket.Active             := false;
+  inherited Create(True); // Se crea suspendido (Esperando a que le den a Start)
+  FreeOnTerminate := True;
+  FPort := Port;
+  FpTStrings := pStrings;
+  FServerIP := IP;
+  FListenerSocket := TTCPBlockSocket.Create;
 end;
 
-destructor TServer.Destruir;
+destructor TServerListenerThread.Destroy;
 begin
-  SrvSocket.Destroy;
+  FListenerSocket.Free;
+  inherited Destroy;
 end;
 
-////////////////////////////////////////////////////////////////////////////////
-procedure TServer.ServerSocket_OnListen(Sender: TObject; Socket: TCustomWinSocket);
+procedure TServerListenerThread.Detener;
+begin
+  Terminate;
+  // Al cerrar el socket, destrabamos instantáneamente el Hilo.
+  if Assigned(FListenerSocket) then
+    FListenerSocket.CloseSocket; 
+end;
+
+procedure TServerListenerThread.LogMessage;
 var
-  strHora : string;
-
+  strHora: string;
 begin
-  if (pTStrings = nil) then exit;
-
-  strHora := FormatDateTime(FormatFecha, now);
-  pTStrings^.Add(strHora + ' -> El servidor est� escuchando en el puerto ' + IntToStr(SrvSocket.Port) +'...');
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-procedure TServer.ServerSocket_OnAccept(Sender: TObject; Socket: TCustomWinSocket);
-var
-  strHora : string;
-
-begin
-  if (pTStrings = nil) then exit;
-
-  strHora := FormatDateTime(FormatFecha, now);
-  pTStrings^.Add(strHora + ' -> Cliente conectado.');
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-procedure TServer.ServerSocket_ClientDisconnect(Sender: TObject; Socket: TCustomWinSocket);
-var
-  strHora : string;
-
-begin
-  if (pTStrings = nil) then exit;
-
-  strHora := FormatDateTime(FormatFecha, now);
-  pTStrings^.Add(strHora + ' -> Cliente desconectado.');
-end;
-
-////////////////////////////////////////////////////////////////////////////////
-procedure TServer.ServerSocket_OnClientError(Sender: TObject; Socket: TCustomWinSocket;
-          ErrorEvent: TErrorEvent; var ErrorCode: Integer);
-begin
-  if (pTStrings = nil) then exit;
-
-  case ErrorEvent of
-    eeGeneral    : pTStrings^.Add('Ocurrio un error general en la conexi�n');
-    eeSend       : pTStrings^.Add('Ocurrio un error al escribir en la conexi�n');
-    eeReceive    : pTStrings^.Add('Ocurrio un error al leer de la conexi�n');
-    eeConnect    : pTStrings^.Add('Un pedido de conexi�n fue aceptado pero no completado');
-    eeDisconnect : pTStrings^.Add('Un error ocurrio cuando se trataba de cerrar la conexi�n');
-    eeAccept     : pTStrings^.Add('Un error ocurrio cuando se trataba de aceptar un pedido de conexi�n');
-  else
-    pTStrings^.Add('Ocurrio un error general en la conexi�n');
+  if FpTStrings <> nil then
+  begin
+    strHora := FormatDateTime('dd/mm/yy hh:nn:ss ', now);
+    FpTStrings^.Add(strHora + ' -> ' + FLogMsg);
   end;
 end;
 
-////////////////////////////////////////////////////////////////////////////////
-procedure TServer.ServerSocket_OnGetThread(Sender: TObject; ClientSocket: TServerClientWinSocket;
-          var SocketThread: TServerClientThread);
+procedure TServerListenerThread.Execute;
+var
+  ClientSocketHandle: TSocket;
+  WorkerThread: TServEquipoThread;
 begin
-  // 50000
-  SocketThread := TServEquipoThread.Create( false, ClientSocket, 50000, 10, pTStrings, Mercury.DirDatosInternet);
+  FListenerSocket.CreateSocket;
+  FListenerSocket.EnableReuse(True);
+  FListenerSocket.setLinger(True, 10000);
+  
+  // Le decimos al puerto que escuche
+  FListenerSocket.Bind(FServerIP, IntToStr(FPort));
+  FListenerSocket.Listen;
+
+  if FListenerSocket.LastError = 0 then
+  begin
+    FLogMsg := 'El servidor est escuchando en el puerto ' + IntToStr(FPort) + '...';
+    Synchronize(LogMessage); // Escribimos en el Memo principal de forma segura
+  end
+  else
+  begin
+    FLogMsg := 'Error al iniciar escucha: ' + FListenerSocket.LastErrorDesc;
+    Synchronize(LogMessage);
+    Exit;
+  end;
+
+  // LOOP PRINCIPAL DE ESTADOS ========================
+  while not Terminated do
+  begin
+    // Se "duerme" 1000ms esperando que un equipo intente conectarse. 
+    // Como está en un hilo, no traba la pantalla del usuario.
+    if FListenerSocket.CanRead(1000) then
+    begin
+      ClientSocketHandle := FListenerSocket.Accept;
+      
+      if FListenerSocket.LastError = 0 then
+      begin
+        FLogMsg := 'Cliente GPRS conectado.';
+        Synchronize(LogMessage);
+
+        // ¡Acá nace el hilo esclavo que atenderá "individualmente" a este equipo!
+        WorkerThread := TServEquipoThread.Create(False, ClientSocketHandle, 50000, 10, FpTStrings, Mercury.DirDatosInternet);
+        // Note: FreeOnTerminate should be set inside TServEquipoThread
+      end;
+    end;
+  end;
+  // FIN LOOP =========================================
+
+  FLogMsg := 'Apagando el servidor...';
+  Synchronize(LogMessage);
 end;
 
-////////////////////////////////////////////////////////////////////////////////
 end.

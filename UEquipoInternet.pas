@@ -3,7 +3,7 @@ unit UEquipoInternet;
 interface
 uses
   Windows, Registry, Classes, SysUtils, Dialogs, StdCtrls, SyncObjs, Math,
-  UUtiles, IniFiles, USensor, UFormulas, Sockets, ExtCtrls, DateUtils;
+  UUtiles, IniFiles, USensor, UFormulas, Sockets, ExtCtrls, DateUtils, blcksock;
 
 const
     BlockSize = 1024;
@@ -12,12 +12,12 @@ type
   TAbytes    = array [0..3] of byte;
   TpTstrings = ^TStrings;
 
-  TServEquipoThread = class(TServerClientThread)
+  TServEquipoThread = class(TThread)
     private
       //
     public
       // Variables propias de Thread Server
-      SockStream     : TWinSocketStream;
+      FSocket        : TTCPBlockSocket;
       FClientTimeOut : integer;
       pTStrings      : TpTstrings;
 
@@ -88,10 +88,10 @@ type
       ForzarVaLInsta  : char;              // Char que indica si uso modalidad de valores instantaneos por errores en memoria
 
       // Funciones propias del Thread Server
-      constructor Create( StartSuspended: boolean; ClientSocket: TServerClientWinSocket;
+      constructor Create( StartSuspended: boolean; ClientSocketHandle: TSocket;
                           ClientTimeOut : integer; NCanales:byte; pTStrs : TpTstrings; Dirpath: string);
       destructor  Destroy; override;
-      procedure   ClientExecute; override;
+      procedure   Execute; override;
       procedure   MensajeLog(mensaje : string);
 
       // Propias del Equipo
@@ -132,15 +132,16 @@ implementation
 ////////////////////////////////////////////////////////////////////////////////
 // TServEquipoThread
 ////////////////////////////////////////////////////////////////////////////////
-constructor TServEquipoThread.Create( StartSuspended: boolean; ClientSocket: TServerClientWinSocket;
+constructor TServEquipoThread.Create( StartSuspended: boolean; ClientSocketHandle: TSocket;
                                       ClientTimeOut : integer; NCanales:byte; pTStrs : TpTstrings; Dirpath: string);
 var
   i : byte;
 
 begin
-  inherited Create( StartSuspended, ClientSocket );
-  KeepInCache     := true;
+  inherited Create( StartSuspended );
   FreeOnTerminate := true;
+  FSocket         := TTCPBlockSocket.Create;
+  FSocket.Socket  := ClientSocketHandle;
   FClientTimeOut  := ClientTimeOut;
   pTStrings       := pTStrs;
   path            := Dirpath;
@@ -233,13 +234,11 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
-procedure TServEquipoThread.ClientExecute; //override;
+procedure TServEquipoThread.Execute;
 var
  auxStr : string;
 
 begin
-  SockStream := TWinSocketStream.Create( ClientSocket, FClientTimeOut );
-
   // Me aseguro que no quede ninguna informaci�n recidente  
   Limpiar;
 
@@ -248,7 +247,7 @@ begin
 
   // Me aseguro que entre
   auxStr := ' '; 
-  while (not Terminated) and ClientSocket.Connected and (length(auxStr)>0) do begin
+  while (not Terminated) and (length(auxStr)>0) do begin
     try
       //
       auxStr := '';
@@ -322,9 +321,8 @@ begin
     end;
   end;
 
-  SockStream.Destroy;
-  SockStream := nil;
-  ClientSocket.Close;
+  FSocket.CloseSocket;
+  FSocket.Free;
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -874,7 +872,8 @@ begin
 
   try
     // Me aseguro que trasmita todos los bytes
-    if SockStream.Write( chs[1], Length(chs)) < length(chs) then result := false;
+    FSocket.SendString(chs);
+    if FSocket.LastError <> 0 then result := false;
   except
     // Desconexi�n inesperada
     result := false;
@@ -890,10 +889,10 @@ begin
   result := true;
   chs    := '';
 
-  if SockStream.WaitForData(FClientTimeOut) then begin
+  if FSocket.CanRead(FClientTimeOut) then begin
     try
       SetLength( RequestBuf, TamBuffer );
-      if (SockStream.Read( RequestBuf[1], TamBuffer) >= TamBuffer) then chs := RequestBuf
+      RequestBuf := FSocket.RecvBufferStr(TamBuffer, FClientTimeOut); if (Length(RequestBuf) >= TamBuffer) then chs := RequestBuf
       else result := false;   // El cliente envi� menos datos datos de lo esperado
     except
       result := false;        // Desconexi�n inesperada

@@ -7,7 +7,7 @@ uses
   Dialogs, Menus, ComCtrls, ShellAPI, LCLIntf, PuertoSerie,
   ImgList, StdCtrls, Buttons, UUtiles, UEquipo, MaskEdit, UPresentacion, UExpansion,
   USensor, UPreferencias, ExtCtrls, UDataModule, UCalculoParam,
-  UConexionesRemotas, UConexionAuto, UConfiguracionInternet, Types;
+  UConexionesRemotas, UConexionAuto, UConfiguracionInternet, Types, UServerSocket;
 
 const
   WM_ICONTRAY = WM_USER + 1;
@@ -1036,7 +1036,7 @@ var
   Creando: boolean;
   Equipo: TEquipo;
   // Objeto que realiza toda la intefaze con el equipo fisico
-  //Server        : TServer;                  // Objeto que administra la conexin por Internet
+  ServerListener : TServerListenerThread;                  // Objeto que administra la conexin por Internet
   NCanal: integer;
   // Numero del Canal Activo por el ComboBox de Config
   TagOLD: integer;
@@ -1084,7 +1084,7 @@ begin
   //SE CREA EL OBJETO ADMINISTRATIVO GLOBAL
   Mercury := TMercury.Crear;
   Equipo := nil;
-  //Server                           := nil;
+  ServerListener := nil;
 
   // Cargo la configuraci�n del programa guardada en el Archivo INI
   FPresentacion.LMensaje.Caption := 'Cargando Configuraci�n...';
@@ -1210,7 +1210,8 @@ begin
   end;
 
   // Creo y configuro el Socket si es necesario para porder comunicarme por internet
-  //if (Mercury.TipoDeComm = 2) then Server := TServer.Crear(Mercury.Puerto,@mHistorialInternet.Lines);
+  if (Mercury.TipoDeComm = 2) then
+    ServerListener := TServerListenerThread.Create(Mercury.Puerto, @mHistorialInternet.Lines);
 
   // Creo la lista de los sensores que se encuentran el  DirSensores
   FPresentacion.LMensaje.Caption := 'Generando lista de Sensores...';
@@ -1434,6 +1435,8 @@ begin
   Shell_NotifyIcon(NIM_DELETE, PNOTIFYICONDATAA(@TrayIconData));
   if (Equipo <> nil) then Equipo.Destruir;
   //if (Server <> nil) then Server.Destroy;
+  if Assigned(ServerListener) then ServerListener.Detener;  // Detención segura Synapse
+  
   Mercury.GuardarConfig;
   Mercury.Destruir;
 
@@ -1567,7 +1570,7 @@ begin
     tsMonitorOnLine.Enabled := False;
 
     // Activo el Server para que se ponga a escuchar en el puerto predeterminado
-    //Server.SrvSocket.Active     := true;
+    if Assigned(ServerListener) then ServerListener.Start;
   end;
 end;
 

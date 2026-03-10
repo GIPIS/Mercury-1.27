@@ -1,0 +1,60 @@
+# Plan de Implementación: Migración a Synapse
+
+Este plan detalla los pasos técnicos exactos para reemplazar la librería obsoleta `ScktComp` (Borland Sockets) por la librería multiplataforma `Synapse` (`blcksock`) en el proyecto Mercury, habilitando nuevamente la comunicación por Internet (GPRS/TCP-IP) en Lazarus.
+
+## Verificación Requerida
+> [!WARNING]
+> Dado que la librería Synapse (`blcksock.pas` y sus dependencias) debe instalarse en el proyecto, se asume que proveeremos o descargaremos dichos archivos fuente al directorio del proyecto (ej. `lib/synapse/`). El código propuesto asume que la unidad `blcksock` estará disponible en el *Search Path* de Lazarus.
+
+## Cambios Propuestos
+
+### Módulo de Escucha del Servidor
+Se reemplaza la arquitectura orientada a eventos (Windows Messages) por un Hilo Dedicado (Listener Thread).
+
+#### [MODIFY] UServerSocket.pas
+- Eliminar la clase `TServer`.
+- Crear la nueva clase `TServerListenerThread` heredera de `TThread`.
+- Añadir un objeto interno `TTCPBlockSocket` de Synapse.
+- Implementar el método `Execute` con el bucle infinito que llama a `FListenerSocket.CanRead(1000)` y `FListenerSocket.Accept`.
+- Implementar el método seguro de Logueo (`LogMessage`) usando `Synchronize` para no congelar la UI de Lazarus al escribir en el memo de historial.
+- Instanciar dinámicamente el hilo obrero (`TServEquipoThread`) pasándole el *Socket Handle* bruto (entero) obtenido tras aceptar el cliente.
+
+### Módulo del Hilo Esclavo (Worker)
+Se desacopla el hilo particular de cada equipo de la jerarquía de Borland, dándole control directo sobre su propio socket sincrónico.
+
+#### [MODIFY] UEquipoInternet.pas
+- Cambiar la herencia de `TServEquipoThread` de `TServerClientThread` a `TThread`.
+- Modificar el constructor para recibir el `ClientSocketHandle: TSocket` (puntero entero) en lugar del viejo objeto de Borland.
+- Instanciar dentro del constructor su propio `TTCPBlockSocket` y asignarle el handle recibido (`FSocket.Socket := ClientSocketHandle`).
+- Eliminar el uso de `TWinSocketStream`.
+- Reescribir `LeerDelSocket` usando los métodos de Synapse (`FSocket.RecvString` o iterando `RecvBuffer` según corresponda al protocolo) respetando el `TimeOut`.
+- Reescribir `EscribirAlSocket` usando `FSocket.SendString`.
+- Asegurar que al destruirse el hilo (en `Destructor Destroy; override;`) se llame a `FSocket.CloseSocket` y `FSocket.Free`.
+
+### Ventana Principal
+Se inyecta la nueva clase listener sin tocar dependencias gráficas.
+
+#### [MODIFY] Uprincipal.pas
+- En la declaración de `Fprincipal`, cambiar la variable `Server: TServer;` a `ServerListener: TServerListenerThread;`.
+- En el procedimiento de inicialización (donde el tipo de comunicación = 2), cambiar la instanciación por `ServerListener := TServerListenerThread.Create(...)`.
+- En `FormActivate`, cambiar `Server.SrvSocket.Active := true;` por `ServerListener.Start;`.
+- En `FormClose`, invocar el método de detención segura (`ServerListener.Detener;`) para liberar el puerto inmediatamente.
+- Eliminar de la cláusula `uses` general de [Uprincipal.pas](file:///c:/Users/hotma/Desktop/L%C3%A1zarus/Documento%20de%20Carlos%20De%20Marziani/Mercury%201.27/Uprincipal.pas) e [UServerSocket.pas](file:///c:/Users/hotma/Desktop/L%C3%A1zarus/Documento%20de%20Carlos%20De%20Marziani/Mercury%201.27/UServerSocket.pas) cualquier referencia a `ScktComp` (si la hubiera remanente).
+
+---
+
+## Plan de Verificación
+
+Dado que la comunicación de red involucra hardware remoto y puertos del sistema, la verificación se dividirá en dos fases: compilación y simulación.
+
+### Compilación y Prueba de Vuelo (Automática/Agente)
+- **Construcción:** Se ejecutará `lazbuild project1.lpi` para asegurar que el reemplazo de las clases no genera errores de sintaxis, que las firmas de los constructores coinciden en [Uprincipal.pas](file:///c:/Users/hotma/Desktop/L%C3%A1zarus/Documento%20de%20Carlos%20De%20Marziani/Mercury%201.27/Uprincipal.pas) y que no quedan rastros de Borland.
+- **Logueo Terminal:** Se validará que no existan Warnings graves sobre punteros incompatibles al hacer *casting* del `TSocket` hacia Synapse.
+
+### Verificación Funcional (Manual/Usuario)
+Debido a que no poseemos el equipo físico Mercury ni módems GPRS simulados en este entorno, la prueba real deberá hacerla el usuario:
+1. Abrir la aplicación y seleccionar menú "Configuración -> Parámetros de Comunicación -> Internet".
+2. Reiniciar la aplicación (si es requerido) para que ingrese en el modo escucha TCP.
+3. Observar el cuadro de "Historial de Internet" / Logs en la interfaz principal. Debería aparecer un mensaje similar a: *"El servidor está escuchando en el puerto X..."*.
+4. **Simulación de Cliente:** Usar una herramienta como `Telnet` o `PacketSender` enviando cualquier dato al puerto del servidor (es decir, a `127.0.0.1:puerto`).
+5. La aplicación debería responder logueando *"Cliente GPRS conectado. IP: 127.0.0.1"* y no debería congelarse ni colgarse (demostrando que el ListenerThread y los Synapse Sockets están trabajando correctamente en background).
