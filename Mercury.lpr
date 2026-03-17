@@ -21,8 +21,8 @@ uses
   UConexiones in 'UConexiones.pas',
   UConexionAuto in 'UConexionAuto.pas' {FConexionAuto},
   UConfiguracionInternet in 'UConfiguracionInternet.pas' {FConfiguracionInternet},
-  UServerSocket in 'UServerSocket.pas', // Temporarily disabled - requires socket implementation
-  UEquipoInternet in 'UEquipoInternet.pas', // Temporarily disabled - requires socket implementation
+  UServerSocket in 'UServerSocket.pas',
+  UEquipoInternet in 'UEquipoInternet.pas',
   UDiaJuliano in 'UDiaJuliano.pas',
   UExpansion in 'UExpansion.pas' {FExpansion};
 
