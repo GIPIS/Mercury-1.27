@@ -2,7 +2,7 @@ unit UServerSocket;
 
 interface
 uses
-  Classes, SysUtils, Sockets, UUtiles, blcksock, UEquipoInternet;
+  Classes, SysUtils, Sockets, UUtiles, blcksock, UEquipo, UEquipoInternet;
 
 type
   { Creamos un Hilo puro de Free Pascal }
@@ -65,6 +65,7 @@ procedure TServerListenerThread.Execute;
 var
   ClientSocketHandle: TSocket;
   WorkerThread: TServEquipoThread;
+  EqInternet: TEquipoInternet;
 begin
   FListenerSocket.CreateSocket;
   FListenerSocket.EnableReuse(True);
@@ -100,8 +101,12 @@ begin
         FLogMsg := 'Cliente GPRS conectado.';
         Synchronize(LogMessage);
 
-        // ¡Acá nace el hilo esclavo que atenderá "individualmente" a este equipo!
-        WorkerThread := TServEquipoThread.Create(False, ClientSocketHandle, 50000, 10, FpTStrings, Mercury.DirDatosInternet);
+        // Crear el modelo de equipo para esta conexion (TipoCom=2 evita crear TThreadComm)
+        EqInternet := TEquipoInternet(TEquipo.Crear(Mercury.NumCanales, 'TCP', 2));
+
+        // Crear hilo esclavo con referencia al modelo y al log
+        WorkerThread := TServEquipoThread.Create(False, ClientSocketHandle,
+            50000, EqInternet, FpTStrings, Mercury.DirDatosInternet);
         // Note: FreeOnTerminate should be set inside TServEquipoThread
       end;
     end;

@@ -21,6 +21,9 @@
     </RunParams>
     <RequiredPackages>
       <Item>
+        <PackageName Value="laz_synapse"/>
+      </Item>
+      <Item>
         <PackageName Value="LCL"/>
       </Item>
     </RequiredPackages>

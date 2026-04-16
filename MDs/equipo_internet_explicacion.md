@@ -133,6 +133,203 @@ En el caso de `EscribirConfigInternet`, no usa la trama CE, sino que envía inye
 
 ## 4. Notas para la Refactorización
 
-Como se observó, `UEquipoInternet.pas` funciona como **Capa de Red**, **Decodificador de Protocolo**, **Máquina de Estado** y **Sistema de Archivos IO** simultáneamente. 
+Como se observó, `UEquipoInternet.pas` funcionaba como **Capa de Red**, **Decodificador de Protocolo**, **Máquina de Estado** y **Sistema de Archivos IO** simultáneamente. 
 
 Actualmente, estos componentes (como el formateo de posiciones lógicas de índices en `CE` de `LeerConfig`) se reportan casi clonados en la comunicación por puerto serie local. El esfuerzo en mover los componentes rotos de Windows hacia paquetes limpios de Synapse debería acompañarse con una extracción del protocolo binario CE/LD hacia una entidad pasiva abstracta, para que tanto Sockets (Internet) como Rs232 (PuertoSerie) solamente pasen `arrays` de bytes ya recibidos y reciban instrucciones listas.
+
+---
+
+## 5. Cambios Realizados (Refactorización — Abril 2026)
+
+La refactorización se realizó en **4 archivos** siguiendo un diseño de 3 capas:
+
+### Capa 1 — Modelo: `TEquipoInternet` hereda de `TEquipo`
+
+**`UEquipoInternet.pas`** ahora declara:
+
+```pascal
+TEquipoInternet = class(TEquipo)
+  function GuardarEquipo(DirINI: string): boolean; override;
+  function CargarEquipo(DirINI: string): boolean; override;
+  function BorrarEquipo(DirINI: string): boolean; override;
+end;
+```
+
+Los overrides adaptan la ruta de archivos a la estructura de internet (`DirINI+Nombre\conf\`) vs. la de cable serie (`DirINI\Nombre\`). Todo el resto del modelo (`Canales[]`, `CalcParam`, `Tmuestreo`, `Memoria`, etc.) es heredado directamente de `TEquipo` — sin duplicación.
+
+### Capa 2 — Protocolo compartido: `PuertoSerie.pas`
+
+Se extrajeron dos funciones puras (sin dependencia de transporte) declaradas en la sección `interface` de `PuertoSerie.pas`:
+
+```pascal
+function ParsearTramaCE(const auxStr: string; CantCanales: byte;
+                         var Config: TConfigEquipo): boolean;
+
+function ConstruirTramaConfig(T: integer; CantCanales: byte;
+                         const ConfigCHs: array of byte;
+                         const NombreEquipo: string;
+                         DelayCom: integer): string;
+```
+
+El record `TConfigEquipo` es la estructura de retorno de `ParsearTramaCE` y contiene todos los campos del frame CE.
+
+**Bug crítico resuelto:** los índices hardcodeados de `LeerConfig` (`i:=21`, `i:=25`, `i:=43`, `i:=50`) fueron eliminados. Ahora el parseo usa `CantCanales` dinámico (`CantCanales * 3 + 20` bytes totales), lo que permite cualquier cantidad de sensores.
+
+`DelayCom` en `ConstruirTramaConfig` permite compensar la latencia de cada transporte:
+- Serie/Teléfono: `DelayCom = 0`
+- Internet GPRS:  `DelayCom = 1`
+
+### Capa 3 — Transporte: `TServEquipoThread` simplificado
+
+**`TServEquipoThread`** ahora recibe una referencia `Equipo: TEquipoInternet` en su constructor (creada por `UServerSocket`). Ya no declara variables de modelo propias (`Nombre`, `Canales[]`, `Memoria`, etc.) — todo acceso es via `Equipo.Nombre`, `Equipo.Canales[i]`, etc.
+
+Su `LeerConfig` llama a `ParsearTramaCE` y escribe el resultado directamente en `Equipo.*`.
+Su `EscribirConfig` llama a `ConstruirTramaConfig` y envía el string resultante por socket de una vez (`'CE' + trama`), en vez de byte a byte como hace la comunicación serie.
+
+Ciclo de vida del hilo:
+```
+TServerListenerThread acepta conexión
+  → crea TEquipoInternet (TEquipo.Crear con TipoCom=2)
+  → crea TServEquipoThread pasando el modelo
+TServEquipoThread.Execute() procesa la sesión GPRS
+TServEquipoThread.Destroy() llama Equipo.Destruir → libera modelo
+  (FreeOnTerminate = true: el hilo se libera solo)
+```
+
+### `UEquipo.pas` — Opción B para TipoCom=2
+
+Se agregó un bloque de salida anticipada en `TEquipo.Crear`:
+
+```pascal
+if TipoCom = 2 then begin
+  ThreadComm := nil;
+  Exit;          // No crea TThreadComm ni abre puerto serie
+end;
+```
+
+El destructor y `ActualizarCantidadCanales` fueron protegidos con `Assigned(ThreadComm)` para ser seguros cuando `ThreadComm = nil`.
+
+Los métodos `GuardarEquipo`, `CargarEquipo` y `BorrarEquipo` fueron marcados como `virtual` para permitir el override en `TEquipoInternet`.
+
+### `UServerSocket.pas` — Instanciación dinámica
+
+```pascal
+var EqInternet: TEquipoInternet;
+EqInternet := TEquipoInternet(TEquipo.Crear(Mercury.NumCanales, 'TCP', 2));
+
+WorkerThread := TServEquipoThread.Create(False, ClientSocketHandle,
+    50000, EqInternet, FpTStrings, Mercury.DirDatosInternet);
+```
+
+`Mercury.NumCanales` reemplaza el `10` hardcodeado anterior.
+
+### Resultado
+
+| Métrica | Antes | Después |
+|---|---|---|
+| Líneas `UEquipoInternet.pas` | 1689 | ~680 |
+| Canales hardcodeados | Sí (`i:=21`, `i:=50`) | No (dinámico) |
+| Herencia de `TEquipo` | No | Sí |
+| Protocolo duplicado | Sí (2 copias) | No (1 función compartida) |
+| Variables de modelo en el hilo | Sí (duplicadas) | No (via `Equipo.*`) |
+
+---
+
+## 6. Estructura de Directorios en Disco
+
+### 6.1 Raíces de directorio (`UUtiles.pas`)
+
+Cada variable tiene un **valor por defecto** definido en el código, pero se persiste en `Mercury.ini` y se puede cambiar desde la UI:
+
+```pascal
+// TMercury.Crear — valores por defecto (usados solo la primera vez, sin Mercury.ini)
+DirEquipos       := ExePath + 'Equipos\';   // config de equipos cable/teléfono
+DirDatos         := ExePath + 'Datos\';     // datos descargados cable/teléfono
+DirDatosInternet := ExePath + 'Datos\';     // ← mismo valor que DirDatos (por defecto)
+```
+
+**Ciclo de vida del valor en cada arranque:**
+
+```
+1ª vez (sin Mercury.ini)
+  TMercury.Crear → DirDatosInternet := ExePath + 'Datos\'   ← default del código
+
+Arranques posteriores
+  CargarConfig → lee Mercury.ini → DirDatosInternet := INI['DatosInternet']
+                                   (si la clave no existe, usa ExePath+'Datos\' como fallback)
+
+Cuando el usuario cambia el campo en Preferencias → Aceptar
+  GuardarConfig → escribe INI['DatosInternet'] := DirDatosInternet
+```
+
+> El código solo define el **fallback de la primera vez**. A partir de que `Mercury.ini` existe,
+> el valor real viene de ese archivo y se edita desde **Preferencias**.
+
+### 6.2 Árbol real generado
+
+```
+lib\x86_64-win64\
+│
+├── Equipos\                        ← Mercury.DirEquipos
+│     └── {NombreEquipo}\
+│           ├── conf\
+│           │     └── {Nombre}.ini  ← config de canales (guardada por Uprincipal, cable/teléf.)
+│           └── datos\              ← siempre vacía (los datos van a Datos\)
+│
+└── Datos\                          ← Mercury.DirDatos = Mercury.DirDatosInternet (por defecto)
+      │
+      ├── {fecha}.txt/.csv          ← datos descargados por CABLE o TELÉFONO (TThreadComm)
+      │
+      └── {NombreEquipo}\           ← subcarpeta creada autónomamente por la conexión INTERNET
+            ├── conf\
+            │     ├── {Nombre}.ini        ← config de canales (TEquipoInternet.GuardarEquipo)
+            │     ├── {Nombre}Conf.ini    ← flags de operación (GuardarNuevaConf)
+            │     ├── {Nombre}*.sen       ← archivos de sensores individuales
+            │     └── ListaSensores.txt   ← catálogo de sensores disponibles
+            └── datos\
+                  ├── Canales.txt         ← descrip. y unidades de canales activos (fijo, siempre)
+                  ├── {mm-yyyy}.txt       ← datos mensuales  (si PeriodoDescarga=1)
+                  ├── {dd-mm-yyyy}.txt    ← datos diarios    (si PeriodoDescarga=0)
+                  └── datosDiarios\
+                        └── {yyyy-mm-dd}.txt  ← backup diario de datos históricos
+```
+
+### 6.3 Por qué la división `Equipos\` vs `Datos\{Nombre}\`
+
+Los dos orígenes de comunicación tienen filosofías distintas:
+
+- **Cable/Teléfono:** la UI principal (`Uprincipal.pas`) está activa y controla la sesión. La config del equipo se guarda en `Equipos\` (donde la UI la lee/escribe), y los datos descargados van directamente a `Datos\`.
+
+- **Internet:** el `TServEquipoThread` es completamente autónomo — nace y muere con cada conexión TCP sin interacción de la UI. Por eso necesita su propia subcarpeta (`Datos\{Nombre}\`) con `conf\` y `datos\` adentro: se autogestiona todo.
+
+### 6.4 Archivos generados en `\datos\` — explicación
+
+| Archivo | Cuándo se genera | Contenido |
+|---|---|---|
+| `Canales.txt` | Siempre, al inicio de `DescargarLosDatos` | Encabezado con nombre, unidad y descripción de cada canal activo. Sirve como leyenda permanente del equipo |
+| `{mm-yyyy}.txt` | `PeriodoDescarga = 1` (mensual) | Una línea por conexión: fecha + valores de todos los canales activos |
+| `{dd-mm-yyyy}.txt` | `PeriodoDescarga = 0` (diario) | Igual, agrupado por día en vez de mes |
+| `datosDiarios\{fecha}` | Siempre (junto con el archivo principal) | Backup diario del mismo contenido |
+
+El período de descarga (`PeriodoDescarga`) se configura en Preferencias → Internet. El valor `1` (mensual) produce nombres como `04-2026.txt`.
+
+### 6.5 Mejora pendiente
+
+Actualmente `DirDatos` y `DirDatosInternet` tienen el mismo valor por defecto, lo que hace que la subcarpeta del equipo internet aparezca **dentro** de `Datos\` junto con los archivos de cable/teléfono. Esto es funcional pero visualmente confuso.
+
+**La separación se puede hacer desde la UI**, sin tocar el código:
+
+> Preferencias → campo "Directorio Datos Internet" → cambiar a `...\DatosInternet\` → Aceptar
+
+Esto escribe el nuevo valor en `Mercury.ini` y Mercury lo usa en la siguiente conexión. Los datos históricos existentes en `Datos\{Nombre}\` **no se migran automáticamente** — habría que moverlos a mano.
+
+**Si se quisiera cambiar el default en el código** (para instalaciones nuevas) bastaría con:
+
+```pascal
+// UUtiles.pas — constructor TMercury.Crear
+DirDatosInternet := ExtractFilePath(ParamStr(0)) + 'DatosInternet\';
+// (actualmente: mismo valor que DirDatos → 'Datos\')
+```
+
+> **No se cambia en producción** porque los centros existentes ya tienen archivos en `Datos\{Nombre}\`
+> y cambiar el default en una actualización rompería la lectura de datos históricos en esas instalaciones.

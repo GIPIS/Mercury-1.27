@@ -12,6 +12,7 @@ type
   TEquipo = class(Tobject)
     private
       FGuardando : boolean;
+      FTipoCom   : byte;         // Guardado para que Destruir sepa si hay ThreadComm
     public
       Nombre      : string;                  // Nombre del Equipo
       Memoria     : longint;                 // Cantidad de bytes ocupados de la Memoria
@@ -38,9 +39,9 @@ type
       destructor  Destruir;
       procedure   Limpiar;
       procedure   ActualizarCantidadCanales(NCanales: byte);
-      function    GuardarEquipo(DirINI : string):boolean;
-      function    CargarEquipo(DirINI : string):boolean;
-      function    BorrarEquipo(DirINI : string):boolean;
+      function    GuardarEquipo(DirINI : string):boolean; virtual;
+      function    CargarEquipo(DirINI : string):boolean; virtual;
+      function    BorrarEquipo(DirINI : string):boolean; virtual;
   end;
 
 implementation
@@ -56,6 +57,7 @@ begin
   // Inicializo las variables mas importantes
   //SE ESTABLECEN VALORES POR DEFECTO PARA EVITAR VALORES BASURA
   FGuardando  := False;
+  FTipoCom    := TipoCom;  // Guardar para uso en Destruir
   Nombre      := 'TEST';
   Memoria     := 0;
   Hora        := now;
@@ -82,6 +84,15 @@ begin
   // Creo el objeto TCalcParam
   //ESTE ES UN OBEJTO MATEMATICO PARA CALCULOS 
   CalcParam := TCalculoParam.Crear; 
+
+  // Opción B: Internet (TipoCom=2) no usa TThreadComm ni puerto serie.
+  // El hilo de comunicación es TServEquipoThread (UEquipoInternet), que gestiona
+  // su propio socket. Salimos antes de crear el hilo innecesario.
+  if TipoCom = 2 then begin
+    ThreadComm := nil;
+    Exit;
+  end;
+
   //TThradComm ES EL ENCARGADO DE REALIZAR LA COMUNICACION POR PUERTO SERIE EN BACKGROUND
 // SE CREA EL HILO DORMIDO PORQUE TODAVIA NO SE LE DIJO QUE PUERTO NI QUE PARAMETROS USAR
   // Creo el Thread suspendido (true)  y lo inicializo
@@ -159,7 +170,8 @@ var
 
 begin
   // Reseteo el modem por las dudas antes de cerrar el programa
-  if (ThreadComm.ThTipoCom = 1) then begin
+  // (solo aplica a telefonia; internet usa TServEquipoThread, no ThreadComm)
+  if Assigned(ThreadComm) and (ThreadComm.ThTipoCom = 1) then begin
     // reseteo el modem por las dudas
     ThreadComm.IniConecTelef := true;
     for i:=0 to 3 do begin
@@ -170,11 +182,11 @@ begin
     end;
   end;
 
-  ThreadComm.Suspend;
+  if Assigned(ThreadComm) then ThreadComm.Suspend;
   for i:=0 to length(Canales)-1 do Canales[i].Destruir;
   for i:=0 to length(ListaSenDir)-1 do ListaSenDir[i].Destruir;
   setLength(ListaSenDir,0);
-  ThreadComm.Terminate;
+  if Assigned(ThreadComm) then ThreadComm.Terminate;
   SetLength(Canales,0);
   CalcParam.Destruir;
 end;
@@ -240,8 +252,8 @@ begin
   // Let's assume for this task we are mostly configuring UP.
   // But I will add the pointer update logic which is CRITICAL.
   
-  // 4. Update ThreadComm
-  if ThreadComm <> nil then
+  // 4. Update ThreadComm (no aplica para internet donde ThreadComm = nil)
+  if Assigned(ThreadComm) then
   begin
     ThreadComm.ActualizarCantidadCanales(NumCanales);
     

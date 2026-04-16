@@ -174,9 +174,35 @@ type
       procedure   ActualizarCantidadCanales(NCanales: byte);
   end;
 
+  // Record que contiene todos los datos parseados de una trama CE del equipo.
+  // Usado por ParsearTramaCE como estructura de retorno compartida entre
+  // TThreadComm (serie/telefono) y TServEquipoThread (internet).
+  TConfigEquipo = record
+    Valores     : array of integer;  // Valores crudos de sensores (CantCanales)
+    Hora        : TDateTime;         // Hora del equipo
+    IniMuestreo : TDateTime;         // Fecha inicio muestreo
+    Tmuestreo   : integer;           // Periodo en segundos
+    ConfigCHs   : array of byte;     // Configuracion de cada canal (CantCanales)
+    Nombre      : string;            // Nombre del equipo (4 chars)
+    Memoria     : longint;           // Bytes ocupados
+    CantMemory  : integer;           // Capacidad total
+    BadChrsName : boolean;           // Nombre con caracteres invalidos
+    NombreRaw   : string;            // Nombre original si BadChrsName=true
+  end;
+
   // Funciones y Procedimientos de uso generales
   Procedure Retardo(tiempo:integer);
   function  NumToAbytes(num : longint):TAbytes;
+
+  // Protocolo compartido: parseo y construccion de tramas binarias CE.
+  // Estas funciones son puras (sin dependencia de transporte) y pueden
+  // ser usadas tanto por TThreadComm (serie) como por TServEquipoThread (internet).
+  function  ParsearTramaCE(const auxStr: string; CantCanales: byte;
+                            var Config: TConfigEquipo): boolean;
+  function  ConstruirTramaConfig(T: integer; CantCanales: byte;
+                            const ConfigCHs: array of byte;
+                            const NombreEquipo: string;
+                            DelayCom: integer): string;
 
 implementation
 
@@ -611,89 +637,44 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TThreadComm.LeerConfig;
 var
-  NCanal   : byte;
-  numDate  : double;
-  num      : integer;
-  FechaINI : double;
-  auxStr   : string;
-  i        : integer;
-  BytesToRead : Integer;
-  HayCambios  : Boolean;
-  bAux        : Byte;
+  auxStr      : string;
+  Config      : TConfigEquipo;
+  BytesToRead : integer;
+  NCanal      : integer;
 
 begin
-  auxStr := '';
-  
-  // Estructura del frame LINEAL (igual al protocolo original, escalado):
-  // Datos:     CantCanales × 2 bytes (todos los canales secuenciales)
-  // Hora:      4 bytes
-  // FechaIni:  4 bytes
-  // Intervalo: 2 bytes
-  // Gap:       2 bytes (firmware)
-  // Config:    CantCanales × 1 byte
-  // Nombre:    4 bytes
-  // Memoria:   3 bytes
-  // MemTotal:  1 byte
-  // Total = CantCanales × 3 + 20
-  
+  // Estructura del frame LINEAL:
+  // CantCanales x 2 bytes (valores) + 4 (hora) + 4 (fechaIni) + 2 (intervalo)
+  // + 2 (gap fw) + CantCanales x 1 byte (config) + 4 (nombre) + 3 (memoria) + 1 (memTotal)
+  // Total = CantCanales * 3 + 20
   BytesToRead := CantCanales * 3 + 20;
 
+  auxStr := '';
   if not PSerie.LeerDelPuertoSerie(auxStr, BytesToRead) then exit;
-  
-  // 1. Obtengo todos los valores de los canales
-  i := 1;
-  for NCanal := 0 to CantCanales - 1 do begin
-    // Se reconstruye el valor de 16 bits (Word/SmallInt)
-    // El protocolo original usaba: LowByte + HighByte * 256.
-    num := Byte(auxStr[i]) + (Byte(auxStr[i+1]) shl 8); 
-    pvalorCH[NCanal]^ := num;
-    inc(i, 2);
-    
-    
+
+  if not ParsearTramaCE(auxStr, CantCanales, Config) then exit;
+
+  // Actualizar punteros compartidos con TEquipo
+  for NCanal := 0 to CantCanales - 1 do
+    pvalorCH[NCanal]^ := Config.Valores[NCanal];
+
+  pHoraEquipo^  := Config.Hora;
+  pHoraActual^  := now;
+  pIniMuestreo^ := Config.IniMuestreo;
+  pTmuestreo^   := Config.Tmuestreo;
+
+  // Copiar la config recibida del equipo a pCH_conf.
+  // Solo si el usuario NO tiene cambios pendientes (PendingUserConfig protege
+  // los cambios hechos en la UI que aun no se confirmaron con EscribirConfig).
+  if not PendingUserConfig then begin
+    for NCanal := 0 to CantCanales - 1 do
+      if Assigned(pCH_conf[NCanal]) then
+        pCH_conf[NCanal]^ := Config.ConfigCHs[NCanal];
   end;
 
-
-
-
-  // 2. Leo la Hora del Equipo (4 bytes)
-  numDate := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
-             Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
-  numDate := numDate/86400 + StrToDateTime(Hora_Base);
-  pHoraEquipo^ := numDate;
-  pHoraActual^ := now;
-  inc(i, 4);
-  
-  
-  // 3. Leo la fecha inicial del muestreo (4 bytes)
-  numDate  := Byte(auxStr[i])+Byte(auxStr[i+1])+ Byte(auxStr[i+2])+Byte(auxStr[i+3])+
-              Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535+Byte(auxStr[i+3])*16777215;
-  FechaINI      := numDate/86400 + StrToDateTime(Hora_Base);
-  pIniMuestreo^ := FechaINI;
-  inc(i, 4);
-
-  // 4. Consumo el intervalo de muestreo (2 bytes)
-  pTmuestreo^ := (Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+1])*255);
-  inc(i, 2);
-
-  // 5. Gap de firmware (2 bytes)
-  inc(i, 2);
-
-  // 6. Consumo la configuración de los canales (CantCanales × 1 byte)
-  // NO sobreescribo pCH_conf porque EscribirConfig copia de ahí,
-  // y pisar estos valores borra los cambios pendientes del usuario.
-  inc(i, CantCanales);
-
-
-  // 7. Consumo el nombre del Equipo (4 bytes)
-  pNombre^ := auxStr[i]+auxStr[i+1]+auxStr[i+2]+auxStr[i+3];
-  inc(i, 4);
-
-  // 8. Leo la cantidad de memoria ocupada (3 bytes)
-  pMemoria^ := Byte(auxStr[i])+Byte(auxStr[i+1])+Byte(auxStr[i+2])+Byte(auxStr[i+1])*255+Byte(auxStr[i+2])*65535;
-  inc(i, 3);
-
-  // 9. Leo la capacidad total de memoria (1 byte)
-  pCantMemory^ := trunc(power(2,Byte(auxStr[i])));
+  pNombre^      := Config.Nombre;
+  pMemoria^     := Config.Memoria;
+  pCantMemory^  := Config.CantMemory;
 
   NuevaConfiguracionRemota := true;
 end;
@@ -701,110 +682,39 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 procedure TThreadComm.EscribirConfig;
 var
-  auxStr  : string;
-  hora    : longint;
-  Abytes  : TAbytes;
-  HoraAux : double;
-  i       : integer;
-  Tt      : integer;   // Periodo auxiliar de muestreo
+  auxStr : string;
+  trama  : string;
+  i      : integer;
 
 begin
-  // Calculos de los Valores Nuevos de Configuración //
-//SE CONVIERTE LA HORA, A BYTES INDIVUDUALES
-  // Nueva hora del Equipo la paso a un formato de 4 bytes
-  hora   := round((now-StrToDateTime(Hora_Base))*86400);
-  ABytes := NumToAbytes(hora);
-  Hora00 := Abytes[0];
-  Hora01 := Abytes[1];
-  Hora02 := Abytes[2];
-  Hora03 := Abytes[3];
-//ACA HACE UN REDONDEO 
-//SI SE VA A MUESTREAR CADA 10 MINUTOS, Y SON LAS 10:14, EL MUESTREO ESPERA A LAS 10:20 PARA EMPEZAR
-  // Cálculo la hora del inicio de muestreo
-  if (T<60) then Tt := 60 else Tt := T;
-  HoraAux := trunc(now*24)/24;
-  while (HoraAux <= (now + 2/86400)) do begin
-    HoraAux := HoraAux + Tt/86400; // Paso el T a Días para poder Sumar con la Fecha Actual
-  end;
-  ABytes := NumToAbytes( round((HoraAux-StrToDateTime(Hora_Base))*86400) );
-  IniMuest00 := Abytes[0];
-  IniMuest01 := Abytes[1];
-  IniMuest02 := Abytes[2];
-  IniMuest03 := Abytes[3];
-
-  // Cálculo del nuevo periodo de muestreo
-  ABytes := NumToAbytes(T);
-  T00    := ABytes[0];
-  T01    := ABytes[1];
-
-  // Calculo la cuenta regresiva para muestrear
-  ABytes := NumToAbytes( round((HoraAux-now)*86400) );
-  Tregre00 := ABytes[0];
-  Tregre01 := ABytes[1];
-
-  // IMPORTANTE: Actualizar el arreglo ConfigCHs con los valores actuales de los sensores
-  // Los sensores se modifican en la UI (pCH_conf apunta a Canales[i].Config), 
-  // pero ConfigCHs es una copia local que se usa para enviar.
+  // IMPORTANTE: Copiar valores actuales de pCH_conf -> ConfigCHs antes de construir trama.
+  // Los sensores se modifican en la UI (pCH_conf apunta a Canales[i].Config),
+  // pero ConfigCHs es la copia local que se usa para enviar.
   for i := 0 to CantCanales - 1 do begin
-    if Assigned(pCH_conf[i]) then
-       ConfigCHs[i] := pCH_conf[i]^
-    else
-       ConfigCHs[i] := 0; 
-  end;  
-//DE ACA NO HABRIA QUE TOCAR MUCHO
-//LO IMPORTANTE ES SABER QUE TODA ESTA INFORMAICON OCUPA 12 BYTES.
-//4 BYTES PARA LA HORA DEL EQUIPO, 4 PARA HORA DE INICIO DE MUESTREO...
-//2 PARA EL INICIO DE MUESTREO, Y 2 PARA CUENTA REGRESIVA
+    if Assigned(pCH_conf[i]) then ConfigCHs[i] := pCH_conf[i]^
+    else ConfigCHs[i] := 0;
+  end;
 
   //--------------------------------------------------------------------------//
   //ENVIA 'CE' PARA AVISARLE AL EQUIPO QUE VA A EMPEZAR UNA CONFIGURACION
-  // Escribo el codigo para que entre a la subrrutina
+  // Handshake serie: CE -> byte a byte -> espera OK
   if not PSerie.EscribirAlPuertoSerie('CE') then exit;
 
-//ESPERA HASTA RECIBI 'OKDEL EQUIPO'
-  // Espero la señal ("OK") que indica que esta listo para recibir la nueva config
+  //ESPERA HASTA RECIBIR 'OK' DEL EQUIPO
   i      := 0;
   auxStr := '';
   while ((auxStr <> 'OK') and (i<=200)) do begin
     if not PSerie.LeerDelPuertoSerie(auxStr,2) then break;
     inc(i,1);
   end;
-//SI NO SE RECIBIO NADA EN 200 ITERACIONES SE CORTA LA CONFIGURACION
-  // Me aseguro que si hay problemas aborto
   if (i>200) then exit;
-//MANDA LOS 4 BYTES DE LA HORA
-  // Escribo la nueva hora al equipo
-  PSerie.EscribirAlPuertoSerie(chr(Hora00));
-  PSerie.EscribirAlPuertoSerie(chr(Hora01));
-  PSerie.EscribirAlPuertoSerie(chr(Hora02));
-  PSerie.EscribirAlPuertoSerie(chr(Hora03));
-//aca hay que trabajar 
-//MANDA LOS 4 BYTES DEL INICIO DE MUESTREO
-  // Escribo la nueva hora de inicio del muestreo
-  PSerie.EscribirAlPuertoSerie(chr(IniMuest00));
-  PSerie.EscribirAlPuertoSerie(chr(IniMuest01));
-  PSerie.EscribirAlPuertoSerie(chr(IniMuest02));
-  PSerie.EscribirAlPuertoSerie(chr(IniMuest03));
-//MANDA LOS 2 BYTES DEL PERIODO DE MUESTREO
-  // Escribo el nuevo periodo de muestreo
-  PSerie.EscribirAlPuertoSerie(chr(T00));
-  PSerie.EscribirAlPuertoSerie(chr(T01));
-//MANDA LOS 2 BYTES DE LA CUENTA REGRESIVA
-  // Escribo la Cuenta regresiva para muestrear
-  PSerie.EscribirAlPuertoSerie(chr(Tregre00));
-  PSerie.EscribirAlPuertoSerie(chr(Tregre01));
-  // Escribo la nueva configuración de cada canal
-  for i:=0 to CantCanales - 1 do
-    PSerie.EscribirAlPuertoSerie(chr(ConfigCHs[i]));
 
-  //ENVIA 4 BYTES PARA EL NOMBRE
-  // Escribo el Nombre del Equipo
-  PSerie.EscribirAlPuertoSerie(NombreEquipo[1]);
-  PSerie.EscribirAlPuertoSerie(NombreEquipo[2]);
-  PSerie.EscribirAlPuertoSerie(NombreEquipo[3]);
-  PSerie.EscribirAlPuertoSerie(NombreEquipo[4]);
-  //TOTAL: Variable dependent on CantCanales
- 
+  // Construir la trama con la funcion compartida (DelayCom=0 para cable/telefono)
+  trama := ConstruirTramaConfig(T, CantCanales, ConfigCHs, NombreEquipo, 0);
+
+  // Enviar trama completa por puerto serie
+  PSerie.EscribirAlPuertoSerie(trama);
+
   if AutoDesconecConf then DesConecTelef := true;
 end;
 
@@ -1155,6 +1065,124 @@ end;
 ////////////////////////////////////////////////////////////////////////////////
 // Funciones de Uso Generales //////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+// ParsearTramaCE: parsea el frame binario CE recibido del equipo.
+// Funcion pura - sin dependencia de transporte (usada por TThreadComm y TServEquipoThread).
+// La Hora_Base es siempre '01/01/2000 12:00 am' (constante del protocolo).
+// Devuelve false si la trama es demasiado corta.
+function ParsearTramaCE(const auxStr: string; CantCanales: byte;
+                         var Config: TConfigEquipo): boolean;
+const
+  HoraBase = '01/01/2000 12:00 am';
+var
+  i, NCanal : integer;
+  numDate   : double;
+begin
+  Result := false;
+  if Length(auxStr) < CantCanales * 3 + 20 then Exit;
+
+  SetLength(Config.Valores,   CantCanales);
+  SetLength(Config.ConfigCHs, CantCanales);
+
+  // 1. Valores de canales (CantCanales x 2 bytes)
+  i := 1;
+  for NCanal := 0 to CantCanales - 1 do begin
+    Config.Valores[NCanal] := Byte(auxStr[i]) + (Byte(auxStr[i+1]) shl 8);
+    inc(i, 2);
+  end;
+
+  // 2. Hora del equipo (4 bytes)
+  numDate := Byte(auxStr[i]) + Byte(auxStr[i+1]) + Byte(auxStr[i+2]) + Byte(auxStr[i+3])
+           + Byte(auxStr[i+1])*255 + Byte(auxStr[i+2])*65535 + Byte(auxStr[i+3])*16777215;
+  Config.Hora := numDate / 86400 + StrToDateTime(HoraBase);
+  inc(i, 4);
+
+  // 3. Fecha inicio muestreo (4 bytes)
+  numDate := Byte(auxStr[i]) + Byte(auxStr[i+1]) + Byte(auxStr[i+2]) + Byte(auxStr[i+3])
+           + Byte(auxStr[i+1])*255 + Byte(auxStr[i+2])*65535 + Byte(auxStr[i+3])*16777215;
+  Config.IniMuestreo := numDate / 86400 + StrToDateTime(HoraBase);
+  inc(i, 4);
+
+  // 4. Intervalo de muestreo (2 bytes)
+  Config.Tmuestreo := Byte(auxStr[i]) + Byte(auxStr[i+1]) + Byte(auxStr[i+1])*255;
+  inc(i, 2);
+
+  // 5. Gap de firmware (2 bytes, ignorado)
+  inc(i, 2);
+
+  // 6. Configuracion de canales (CantCanales x 1 byte)
+  for NCanal := 0 to CantCanales - 1 do
+    Config.ConfigCHs[NCanal] := Byte(auxStr[i + NCanal]);
+  inc(i, CantCanales);
+
+  // 7. Nombre del equipo (4 bytes)
+  Config.Nombre := auxStr[i] + auxStr[i+1] + auxStr[i+2] + auxStr[i+3];
+  Config.BadChrsName := false;
+  Config.NombreRaw   := '';
+  inc(i, 4);
+
+  // 8. Memoria ocupada (3 bytes)
+  Config.Memoria := Byte(auxStr[i]) + Byte(auxStr[i+1]) + Byte(auxStr[i+2])
+                  + Byte(auxStr[i+1])*255 + Byte(auxStr[i+2])*65535;
+  inc(i, 3);
+
+  // 9. Capacidad total de memoria (1 byte)
+  Config.CantMemory := trunc(power(2, Byte(auxStr[i])));
+
+  Result := true;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+// ConstruirTramaConfig: construye el payload binario para EscribirConfig.
+// Funcion pura - sin dependencia de transporte.
+// DelayCom: compensacion en segundos del retardo de comunicacion (0 para serie, 1 para internet).
+// Devuelve el string binario sin el prefijo 'CE' (cada transporte lo agrega como necesite).
+function ConstruirTramaConfig(T: integer; CantCanales: byte;
+                         const ConfigCHs: array of byte;
+                         const NombreEquipo: string;
+                         DelayCom: integer): string;
+const
+  HoraBase = '01/01/2000 12:00 am';
+var
+  hora    : longint;
+  ABytes  : TAbytes;
+  HoraAux : double;
+  Tt, i   : integer;
+begin
+  Result := '';
+
+  // Hora actual del equipo (4 bytes), con compensacion de retardo de comunicacion
+  hora   := round((now - StrToDateTime(HoraBase)) * 86400) + DelayCom;
+  ABytes := NumToAbytes(hora);
+  Result := Result + chr(ABytes[0]) + chr(ABytes[1]) + chr(ABytes[2]) + chr(ABytes[3]);
+
+  // Hora de inicio de muestreo: proximo multiplo del periodo T (4 bytes)
+  // Si T < 60 seg, usar 60 seg como minimo para el calculo del inicio
+  if (T < 60) then Tt := 60 else Tt := T;
+  HoraAux := trunc(now * 24) / 24;
+  while (HoraAux <= (now + 2/86400)) do
+    HoraAux := HoraAux + Tt / 86400;
+  ABytes := NumToAbytes(round((HoraAux - StrToDateTime(HoraBase)) * 86400));
+  Result := Result + chr(ABytes[0]) + chr(ABytes[1]) + chr(ABytes[2]) + chr(ABytes[3]);
+
+  // Periodo de muestreo T (2 bytes)
+  ABytes := NumToAbytes(T);
+  Result := Result + chr(ABytes[0]) + chr(ABytes[1]);
+
+  // Cuenta regresiva hasta primer muestreo (2 bytes), compensada por retardo
+  ABytes := NumToAbytes(round((HoraAux - now) * 86400) - DelayCom);
+  Result := Result + chr(ABytes[0]) + chr(ABytes[1]);
+
+  // Configuracion de cada canal (CantCanales bytes)
+  for i := 0 to CantCanales - 1 do
+    Result := Result + chr(ConfigCHs[i]);
+
+  // Nombre del equipo (4 bytes fijos)
+  Result := Result + NombreEquipo[1] + NombreEquipo[2]
+                   + NombreEquipo[3] + NombreEquipo[4];
+end;
+
 Procedure Retardo(tiempo:integer);
 var
   evento : Tevent;
