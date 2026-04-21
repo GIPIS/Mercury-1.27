@@ -1,4 +1,4 @@
-# Funcionamiento de la Comunicación por Internet del Sistema Mercury
+# Funcionamiento Original de la Comunicación por Internet del Sistema Mercury
 
 El sistema Mercury implementa su comunicación remota (Internet/TCP-IP) delegando cada conexión a un hilo independiente en segundo plano. Esto permite que el servidor atienda a múltiples equipos remotos (generalmente módems GPRS) de forma simultánea sin congelar la interfaz del usuario. 
 
@@ -97,14 +97,14 @@ El siguiente gráfico demuestra el ciclo de vida de un hilo de conexión para un
 El hilo `TServEquipoThread` contiene la inteligencia principal del protocolo Mercury en internet. Sus procedimientos de control abarcan todo el proceso desde el inicio de la sesión hasta su desvinculación.
 
 ### A. `ClientExecute`
-Constituye el método **Main** (Bucle principal) del hilo. 
+Constituye el método **Main** (Bucle principal) del hilo.
 1. Reinstancia un `TWinSocketStream` con el puntero nativo de socket entrante.
 2. Comienza el saludo (*Handshake*) enviando `"OK"`.
 3. Si el equipo del otro lado responde enviando `"CE"` en dos bytes, comienza cascada de configuración invocando a `ConfigEntorno`, `LeerConfig` y `CargarCanales`.
 4. Evalúa variables bandera (`ConfigEquipo`, `DescargarDatos`) para enviar confirmaciones, configuraciones o solicitar la memoria.
 
 ### B. `LeerConfig`
-Procedimiento que *desempaqueta*, decodifica y asigna el frame principal del equipo remoto. 
+Procedimiento que *desempaqueta*, decodifica y asigna el frame principal del equipo remoto.
 1. Lee del buffer del socket los ~50 bytes subsiguientes a la orden `CE`.
 2. Parsea numéricamente usando sumas aritméticas y corrimientos (multiplicaciones por 256, 65535).
 3. **Estructura posicional importante:**
@@ -215,23 +215,38 @@ Los métodos `GuardarEquipo`, `CargarEquipo` y `BorrarEquipo` fueron marcados co
 
 ```pascal
 var EqInternet: TEquipoInternet;
-EqInternet := TEquipoInternet(TEquipo.Crear(Mercury.NumCanales, 'TCP', 2));
+EqInternet := TEquipoInternet(TEquipo.Crear(10, 'TCP', 2));
 
 WorkerThread := TServEquipoThread.Create(False, ClientSocketHandle,
     50000, EqInternet, FpTStrings, Mercury.DirDatosInternet);
 ```
 
-`Mercury.NumCanales` reemplaza el `10` hardcodeado anterior.
+El modelo se crea con **10 canales base**. `LeerConfig` detecta la cantidad real desde la trama CE y redimensiona el modelo dinámicamente (ver Sección 7). `Mercury.NumCanales` sigue vigente solo para la comunicación por cable/teléfono.
+
+### Cambios adicionales en `TEquipoInternet.GuardarEquipo`
+
+Antes de escribir al INI, se hace `ArchivoINI.EraseSection(Nombre)` para borrar la sección existente. Sin esto, si la cantidad de canales se redujo (ej: de 30 a 20), los índices `CH20..CH29` del run anterior quedaban persistidos como datos stale y se releían en la siguiente conexión.
+
+### Política de automatización original conservada
+
+La política original de inicialización en Delphi se mantuvo intacta. `DescargarDatos := true` se preserva porque esta variable maneja la **descarga en ambos bloques** (loguea y realiza la descarga instantánea siempre, y efectúa la descarga histórica si ocurre una ruptura de transmisión). 
+
+De manera análoga, se preservó `ConfigEquipo := true` para forzar el bloque de configuración por defecto. Sin embargo, esto no implica peligro: **esta operación por defecto no reconfigura los sensores del módulo.** La función envía de vuelta exactamente los mismos datos de hardware e intervalo de muestreo (`Tmuestreo`) que el equipo acaba de reportar. Su principal utilidad es realizar un cambio de **hora del equipo**, actualizándola para mantenerla sincronizada con el servidor.
+
+*(Nota técnica: Eventualmente, esto se podría modificar/refactorizar para que el código por esquema separe explícitamente estas acciones. Es decir, que siempre descargue la transmisión instantánea y modifique la hora, pero dejando el resto de las descargas y configuraciones como lógicas completamente separadas y condicionales a elección del operador).*
 
 ### Resultado
 
 | Métrica | Antes | Después |
 |---|---|---|
-| Líneas `UEquipoInternet.pas` | 1689 | ~680 |
+| Líneas `UEquipoInternet.pas` | 1690 | 1309 |
 | Canales hardcodeados | Sí (`i:=21`, `i:=50`) | No (dinámico) |
+| Automatización por defecto | `true` absoluto | `true` absoluto (sincroniza hora / descarga instantánea) |
 | Herencia de `TEquipo` | No | Sí |
 | Protocolo duplicado | Sí (2 copias) | No (1 función compartida) |
 | Variables de modelo en el hilo | Sí (duplicadas) | No (via `Equipo.*`) |
+| Stale data en INI por reducción de canales | Posible | Prevenido (`EraseSection`) |
+| Pérdida de sensores en primera conexión | Posible | Prevenido (respaldo `ConfigsCE[]`) |
 
 ---
 

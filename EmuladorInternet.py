@@ -4,7 +4,7 @@ import struct
 import random
 import datetime
 
-CANALES_CONFIG = [12,1,2,3,4,5,6,7,8,9]*1
+CANALES_CONFIG = [12,1,2,3,4,5,6,7,8,9]*2
 
 def emular_equipo():
     # Configuración de la conexión

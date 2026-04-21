@@ -328,6 +328,7 @@ var
 begin
   Limpiar;
   DescargarDatos := true;
+  ConfigEquipo   := true;
 
   auxStr := ' ';
   while (not Terminated) and (Length(auxStr) > 0) do begin
@@ -342,11 +343,7 @@ begin
           ConfigEntorno;
           LeerConfig;
           CargarCanales(path);
-          // ConfigEquipo NO se fuerza automaticamente: es decision del operador.
-          // ForzarConfig (llamado desde CargarCanales) lo activa si el operador
-          // marco CambiarConf=S en el archivo de configuracion del equipo.
-          ConfigEquipo := false;
-          ONLine       := true;
+          ONLine := true;
 
           if (Equipo.Memoria > (Equipo.CantMemory * 0.9)) then begin
             MensajeLog('--- Reiniciando registro. ---');
