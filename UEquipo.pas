@@ -213,58 +213,28 @@ begin
   if NumCanales = NCanales then Exit;
 
   OldCount := NumCanales;
-  NumCanales := NCanales;
 
-  // 1. Resize Array of Sensors
+  // Si se reduce, liberar sensores sobrantes ANTES de perder los punteros
+  if NCanales < OldCount then
+    for i := NCanales to OldCount - 1 do
+      Canales[i].Destruir;
+
+  // Redimensionar el array
+  NumCanales := NCanales;
   SetLength(Canales, NumCanales);
-  
-  // 2. If growing, create new sensors
+
+  // Si crecio, crear los nuevos sensores
   if NumCanales > OldCount then
-  begin
     for i := OldCount to NumCanales - 1 do
       Canales[i] := TSensor.Crear;
-  end;
-  
-  // 3. If shrinking, free extra sensors (handled automatically by SetLength? No, need to Free objects!)
-  // In Delphi/Lazarus, reducing SetLength on object array doesn't free the objects, just forgets the pointers.
-  // We must free them BEFORE resizing if we are shrinking, or verify logic.
-  // However, SetLength is already called above. If we shrink, we lost the pointers to free.
-  // Correction: We should free before resizing if shrinking.
-  // But for this specific use case (expanding channels), we prioritize growth.
-  // If shrinking, we would leak memory if we don't handle it.
-  // Given the user only requested "expanding" logic and shrinking is rare or just a reset,
-  // I will add a safe shrink loop using a temporary approach or just assume growth for now?
-  // Let's do it right. Redo logic:
-  
-  {
-    if NCanales < OldCount then begin
-       for i := NCanales to OldCount - 1 do
-           Canales[i].Destruir;
-    end;
-    SetLength(Canales, NCanales);
-  }
-  
-  // Since I already wrote SetLength above in this replacement, I'll stick to 'Growth' logic 
-  // or just rely on 'Destruir' to clean up everything on app exit.
-  // Ideally, valid implementation for bidirectional change:
-  
-  // (Safe implementation already handled by previous SetLength? No.)
-  // Let's assume for this task we are mostly configuring UP.
-  // But I will add the pointer update logic which is CRITICAL.
-  
-  // 4. Update ThreadComm (no aplica para internet donde ThreadComm = nil)
-  if Assigned(ThreadComm) then
-  begin
+
+  // Actualizar punteros del hilo de cable/serie (no aplica a internet donde ThreadComm = nil)
+  if Assigned(ThreadComm) then begin
     ThreadComm.ActualizarCantidadCanales(NumCanales);
-    
-    // Re-assign pointers because 'Canales' array memory might have moved
     for i := 0 to NumCanales - 1 do begin
-        ThreadComm.pvalorCH[i] := @Canales[i].ValorSensor;
-        ThreadComm.pCH_conf[i] := @Canales[i].Config;
+      ThreadComm.pvalorCH[i] := @Canales[i].ValorSensor;
+      ThreadComm.pCH_conf[i] := @Canales[i].Config;
     end;
-    
-    // Re-assign other global pointers if they point to dynamic data? No, others are static fields.
-    // Except 'pASensor' which points to 'Canales'.
     ThreadComm.pASensor := @Canales;
   end;
 end;

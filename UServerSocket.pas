@@ -101,8 +101,9 @@ begin
         FLogMsg := 'Cliente GPRS conectado.';
         Synchronize(LogMessage);
 
-        // Crear el modelo de equipo para esta conexion (TipoCom=2 evita crear TThreadComm)
-        EqInternet := TEquipoInternet(TEquipo.Crear(Mercury.NumCanales, 'TCP', 2));
+        // Crear el modelo con cantidad base (10 canales). LeerConfig detectara
+        // la cantidad real desde la trama CE y redimensionara dinamicamente.
+        EqInternet := TEquipoInternet(TEquipo.Crear(10, 'TCP', 2));
 
         // Crear hilo esclavo con referencia al modelo y al log
         WorkerThread := TServEquipoThread.Create(False, ClientSocketHandle,

@@ -10,7 +10,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="11"/>
         <CursorPos X="36" Y="7"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -21,7 +21,7 @@
         <ResourceBaseClass Value="Form"/>
         <TopLine Value="1025"/>
         <CursorPos Y="1039"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -30,9 +30,9 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="17"/>
-        <TopLine Value="289"/>
-        <CursorPos Y="296"/>
-        <UsageCount Value="78"/>
+        <TopLine Value="290"/>
+        <CursorPos Y="300"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -41,13 +41,13 @@
         <EditorIndex Value="12"/>
         <TopLine Value="378"/>
         <CursorPos X="63" Y="389"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="UUtiles.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UPresentacion.pas"/>
@@ -55,7 +55,7 @@
         <ComponentName Value="FPresentacion"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="USensor.pas"/>
@@ -63,7 +63,7 @@
         <EditorIndex Value="3"/>
         <TopLine Value="242"/>
         <CursorPos X="4" Y="255"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -74,26 +74,26 @@
         <ResourceBaseClass Value="Form"/>
         <EditorIndex Value="5"/>
         <CursorPos X="40" Y="9"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="UGrafico.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UOpciones3D.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UColor.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UDataModule.pas"/>
@@ -101,7 +101,7 @@
         <ComponentName Value="DataModule1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="DataModule"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UFormulas.pas"/>
@@ -109,7 +109,7 @@
         <EditorIndex Value="16"/>
         <TopLine Value="205"/>
         <CursorPos Y="208"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -119,19 +119,19 @@
         <EditorIndex Value="18"/>
         <TopLine Value="16"/>
         <CursorPos X="3" Y="6"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="UConexionesRemotas.pas"/>
         <IsPartOfProject Value="True"/>
         <HasResources Value="True"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UConexiones.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UConexionAuto.pas"/>
@@ -139,7 +139,7 @@
         <HasResources Value="True"/>
         <EditorIndex Value="15"/>
         <CursorPos X="12" Y="6"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -148,7 +148,7 @@
         <ComponentName Value="FConfiguracionInternet"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UServerSocket.pas"/>
@@ -156,7 +156,7 @@
         <EditorIndex Value="1"/>
         <TopLine Value="91"/>
         <CursorPos X="12" Y="104"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -165,13 +165,13 @@
         <EditorIndex Value="2"/>
         <TopLine Value="226"/>
         <CursorPos X="29" Y="237"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="UDiaJuliano.pas"/>
         <IsPartOfProject Value="True"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="UExpansion.pas"/>
@@ -179,7 +179,7 @@
         <ComponentName Value="FExpansion"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <UsageCount Value="78"/>
+        <UsageCount Value="79"/>
       </Unit>
       <Unit>
         <Filename Value="C:\lazarus\lcl\include\control.inc"/>
@@ -246,10 +246,6 @@
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="Uprincipal.pas"/>
-        <Caret Line="1818" Column="7" TopLine="1816"/>
-      </Position>
       <Position>
         <Filename Value="Uprincipal.pas"/>
         <Caret Line="1819" Column="7" TopLine="1817"/>
@@ -365,6 +361,10 @@
       <Position>
         <Filename Value="UServerSocket.pas"/>
         <Caret Line="104" Column="12" TopLine="91"/>
+      </Position>
+      <Position>
+        <Filename Value="UEquipo.pas"/>
+        <Caret Line="296" TopLine="289"/>
       </Position>
     </JumpHistory>
     <RunParams>

@@ -71,7 +71,7 @@ def emular_equipo():
             idx += 1
             
         # Sección 7: Nombre del equipo (4 caracteres)
-        nombre = b'EMU2'
+        nombre = b'EMU3'
         payload[idx:idx+4] = nombre[:4]
         idx += 4
         

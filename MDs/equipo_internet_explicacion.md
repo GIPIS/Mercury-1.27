@@ -333,3 +333,116 @@ DirDatosInternet := ExtractFilePath(ParamStr(0)) + 'DatosInternet\';
 
 > **No se cambia en producción** porque los centros existentes ya tienen archivos en `Datos\{Nombre}\`
 > y cambiar el default en una actualización rompería la lectura de datos históricos en esas instalaciones.
+
+---
+
+## 7. Sensores Dinámicos por Equipo Internet (Abril 2026)
+
+### 7.1 Problema
+
+El sistema originalmente usaba `Mercury.NumCanales` (valor global del INI, configurable desde el diálogo de Expansión) para crear el modelo de cada equipo internet:
+
+```pascal
+// UServerSocket.pas (ANTES)
+EqInternet := TEquipoInternet(TEquipo.Crear(Mercury.NumCanales, 'TCP', 2));
+```
+
+Esto asumía que todos los equipos tienen la misma cantidad de sensores. En la práctica, cada equipo remoto puede tener una cantidad diferente (10, 20, 30, etc.) y puede cambiar entre conexiones (ampliación o reducción de canales).
+
+La lectura del socket era fija:
+```pascal
+// LeerConfig (ANTES)
+BytesToRead := Equipo.NumCanales * 3 + 20;
+LeerDelSocket(auxStr, BytesToRead);
+```
+
+Si el equipo real tenía más canales que `Mercury.NumCanales`, los bytes extra quedaban en el buffer TCP. Si tenía menos, la lectura se colgaba esperando bytes que nunca llegaban.
+
+### 7.2 Solución implementada: Autodescubrimiento desde la trama CE
+
+El frame CE tiene un tamaño determinístico: `CantCanales * 3 + 20` bytes. Leyendo **todo** lo disponible en el socket y validando el tamaño, se puede deducir la cantidad de canales sin preguntar.
+
+#### Algoritmo de detección (Enfoque A+D combinado)
+
+```
+1. RecvPacket(timeout) → leer todo lo disponible del socket TCP
+2. Validación estructural:
+   - (len - 20) mod 3 == 0  (largo consistente con protocolo CE)
+   - len >= 50              (mínimo: 10 canales × 3 + 20)
+   → Si falla: esperar 500ms → segundo RecvPacket → concatenar → revalidar
+3. CantCanales = (len - 20) div 3
+4. NombreOffset = CantCanales × 3 + 13  (12 bytes fijos + 1 por indexación Pascal)
+5. Verificar que en NombreOffset haya ≥ 1 byte imprimible (ASCII 32..126)
+   → Esto distingue un nombre real de datos de sensor
+6. Si ambas validaciones pasan → trama válida, parsear con CantCanalesReal
+```
+
+#### ¿Por qué funciona la doble validación?
+
+- **Validación mod 3:** la trama siempre tiene `N*3 + 20` bytes. Si llegan menos (fragmentación TCP), solo pasa el mod por coincidencia si los bytes faltantes son múltiplo de 3.
+- **Validación del nombre:** datos de sensor en la posición del nombre tendrían valores 0-12 (config) o 0-3 (byte alto ADC 10-bit) — ninguno es ASCII imprimible (mínimo 32). Un nombre real, incluso con `BadChrsName`, tiene al menos 1 byte imprimible.
+
+### 7.3 Cambios en archivos
+
+#### `UServerSocket.pas` — Inicialización con cantidad base
+
+```pascal
+// DESPUÉS: modelo con 10 canales base, LeerConfig redimensiona al vuelo
+EqInternet := TEquipoInternet(TEquipo.Crear(10, 'TCP', 2));
+```
+
+`Mercury.NumCanales` sigue vigente para cable/serie (donde la UI controla la cantidad).
+
+#### `UEquipoInternet.pas` — Nuevas funciones
+
+1. **`LeerTodoDelSocket`**: lee todo lo disponible con `RecvPacket`. Si la validación estructural falla (fragmentación TCP), reintenta con timeout corto de 500ms y concatena.
+
+2. **`PosibleNombre`**: verifica que en una posición dada haya al menos 1 byte imprimible. Función pura sin dependencias.
+
+3. **`LeerConfig` reescrito**: usa `LeerTodoDelSocket`, aplica la doble validación, deduce la cantidad de canales, y llama a `ActualizarCantidadCanales` si cambió. Los logs reportan `Configuracion recibida correctamente (N canales).`
+
+#### `UEquipo.pas` — Fix de `ActualizarCantidadCanales`
+
+La lógica de reducción (shrink) estaba comentada y causaba memory leak. Ahora:
+- **Crecimiento:** crea nuevos `TSensor` (como antes)
+- **Reducción:** libera sensores sobrantes con `Destruir` **antes** de `SetLength` (para no perder los punteros)
+
+### 7.4 Flujo actualizado
+
+```
+TServerListenerThread acepta conexión TCP
+  → TEquipo.Crear(10, 'TCP', 2)              ← modelo con 10 canales iniciales
+  → TServEquipoThread.Create(modelo, ...)
+
+TServEquipoThread.Execute():
+  ConfigEntorno()                             ← init con 10 canales
+  LeerConfig()                                ← lee TODO del socket
+    → valida (len-20) mod 3 == 0
+    → CantCanalesReal = (len-20) div 3        ← ej: 30
+    → valida PosibleNombre en offset 103
+    → ActualizarCantidadCanales(30)            ← redimensiona modelo
+    → ParsearTramaCE(auxStr, 30, Config)
+  CargarCanales(path)                         ← usa Equipo.NumCanales = 30
+  EscribirConfig()                            ← construye trama con 30 canales
+  DescargarLosDatos()                         ← guarda datos de 30 canales
+```
+
+### 7.5 Inestabilidad conocida y limitaciones
+
+> ⚠️ **Dependencia de protocolo:** la posición del nombre se calcula como
+> `CantCanales * 3 + 12` bytes desde el inicio del frame. Esto asume que los
+> campos fijos (Hora:4 + FechaIni:4 + Tmuestreo:2 + Gap:2 = **12 bytes**) no
+> cambian. Si se agregan campos al protocolo CE, este offset debe actualizarse
+> en `PosibleNombre` **y** en `ParsearTramaCE` simultáneamente.
+
+> ⚠️ **Criterio relajado:** el umbral `countPrintable >= 1` puede tener falsos
+> positivos en casos extremos (un byte de datos que casualmente sea >= 32).
+> En la práctica, los valores de config de sensor son 0-12 y los bytes altos de
+> ADC son 0-3, por lo que la probabilidad es muy baja. Si se detectan problemas
+> en producción, elevar el umbral a `>= 2`.
+
+> ⚠️ **Fragmentación TCP residual:** si un fragmento llega con un tamaño que
+> coincidentemente pasa `(len-20) mod 3 == 0` (ej: 80 bytes de un frame de 110),
+> y uno de los bytes en la posición calculada del nombre es >= 32, se parsearía
+> con canales incorrectos. El reintento de 500ms mitiga esto, pero no es
+> garantía absoluta en enlaces GPRS muy degradados.

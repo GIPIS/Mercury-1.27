@@ -91,6 +91,7 @@ type
     // --- Transporte TCP ---
     function    EscribirAlSocket(chs: string): boolean;
     function    LeerDelSocket(var chs: string; TamBuffer: integer): boolean;
+    function    LeerTodoDelSocket(var chs: string): boolean;
 
     // --- Protocolo (usa ParsearTramaCE / ConstruirTramaConfig de PuertoSerie) ---
     procedure   LeerConfig;
@@ -136,6 +137,11 @@ begin
     if not DirectoryExists(DirINI + Nombre) then MkDir(DirINI + Nombre);
     if not DirectoryExists(DirINI + Nombre + '\datos\') then MkDir(DirINI + Nombre + '\datos\');
     if not DirectoryExists(PathDir) then MkDir(PathDir);
+
+    // Borrar la seccion existente primero para que el archivo quede limpio.
+    // Sin esto, si la cantidad de canales se redujo (ej: 30→20), los indices
+    // CH20..CH29 del run anterior quedarian en el INI como datos stale.
+    ArchivoINI.EraseSection(Nombre);
 
     for i := 0 to NumCanales - 1 do begin
       ArchivoINI.WriteString(Nombre, 'CH' + IntToStr(i) + '_desc', Canales[i].Descripcion);
@@ -336,7 +342,10 @@ begin
           ConfigEntorno;
           LeerConfig;
           CargarCanales(path);
-          ConfigEquipo := true;
+          // ConfigEquipo NO se fuerza automaticamente: es decision del operador.
+          // ForzarConfig (llamado desde CargarCanales) lo activa si el operador
+          // marco CambiarConf=S en el archivo de configuracion del equipo.
+          ConfigEquipo := false;
           ONLine       := true;
 
           if (Equipo.Memoria > (Equipo.CantMemory * 0.9)) then begin
@@ -430,27 +439,126 @@ begin
 end;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Transporte TCP: lectura dinamica
+////////////////////////////////////////////////////////////////////////////////
+
+function TServEquipoThread.LeerTodoDelSocket(var chs: string): boolean;
+var
+  chunk : string;
+begin
+  result := true;
+  chs    := '';
+
+  // Primera lectura: bloquear hasta que lleguen datos (o timeout)
+  if not FSocket.CanRead(FClientTimeOut) then begin
+    result := false;
+    exit;
+  end;
+
+  try
+    chs := FSocket.RecvPacket(FClientTimeOut);
+    if Length(chs) = 0 then begin
+      result := false;
+      exit;
+    end;
+
+    // En GPRS la trama puede llegar en dos fragmentos TCP consecutivos.
+    // Si el socket todavia tiene datos disponibles inmediatamente despues
+    // de la primera lectura, los agregamos.
+    // La validacion estructural (mod 3, nombre, etc.) es responsabilidad de LeerConfig.
+    if FSocket.CanRead(500) then begin
+      chunk := FSocket.RecvPacket(500);
+      if Length(chunk) > 0 then
+        chs := chs + chunk;
+    end;
+  except
+    result := false;
+  end;
+end;
+
+////////////////////////////////////////////////////////////////////////////////
+// Validacion de protocolo
+////////////////////////////////////////////////////////////////////////////////
+
+// PosibleNombre: verifica que en la posicion 'offset' del string 'datos'
+// haya al menos 1 byte imprimible (ASCII 32..126), lo que indica un nombre
+// de equipo (incluso con BadChrsName). Datos de sensor en esa posicion
+// tendrian valores 0-12, que nunca son imprimibles.
+// DEPENDENCIA DE PROTOCOLO: el offset se calcula como CantCanales*3+13
+// (12 bytes fijos: Hora:4 + FechaIni:4 + Tmuestreo:2 + Gap:2, +1 indexacion Pascal).
+// Si se agregan campos al frame CE, este calculo debe actualizarse
+// junto con ParsearTramaCE.
+function PosibleNombre(const datos: string; offset: integer): boolean;
+var
+  i              : integer;
+  b              : byte;
+  countPrintable : integer;
+begin
+  result := false;
+  if offset + 3 > Length(datos) then exit;
+
+  countPrintable := 0;
+  for i := 0 to 3 do begin
+    b := Byte(datos[offset + i]);
+    if (b >= 32) and (b <= 126) then inc(countPrintable);
+  end;
+
+  result := (countPrintable >= 1);
+end;
+
+////////////////////////////////////////////////////////////////////////////////
 // Protocolo: usa funciones compartidas de PuertoSerie.pas
 ////////////////////////////////////////////////////////////////////////////////
 
 procedure TServEquipoThread.LeerConfig;
 var
-  auxStr      : string;
-  Config      : TConfigEquipo;
-  BytesToRead : integer;
-  NCanal      : integer;
+  auxStr          : string;
+  Config          : TConfigEquipo;
+  NCanal          : integer;
+  CantCanalesReal : integer;
+  NombreOffset    : integer;
 begin
   MensajeLog('Leyendo la configuracion...');
 
-  // Tamano dinamico: arregla el bug de indices hardcodeados (i=21, i=25, etc.)
-  BytesToRead := Equipo.NumCanales * 3 + 20;
-  if not LeerDelSocket(auxStr, BytesToRead) then exit;
+  // 1. Leer todo lo disponible del socket (sin asumir tamaño)
+  if not LeerTodoDelSocket(auxStr) then begin
+    MensajeLog('Error: no se recibieron datos del equipo.');
+    exit;
+  end;
 
-  // Parsear con funcion compartida (misma logica que TThreadComm)
-  if not ParsearTramaCE(auxStr, Equipo.NumCanales, Config) then exit;
+  // 2. Validacion estructural: largo consistente con protocolo CE
+  //    Total = CantCanales * 3 + 20, entonces (len-20) debe ser multiplo de 3
+  if (Length(auxStr) < 50) or ((Length(auxStr) - 20) mod 3 <> 0) then begin
+    MensajeLog('Error: trama CE con tamano invalido (' +
+               IntToStr(Length(auxStr)) + ' bytes).');
+    exit;
+  end;
 
-  // Actualizar el MODELO (Equipo), no variables locales
-  for NCanal := 0 to Equipo.NumCanales - 1 do begin
+  // 3. Deducir la cantidad de canales desde el tamaño recibido
+  CantCanalesReal := (Length(auxStr) - 20) div 3;
+
+  // 4. Validacion del nombre en la posicion calculada
+  //    Offset = CantCanales*3 + 13 (12 bytes fijos + 1 por indexacion Pascal)
+  NombreOffset := CantCanalesReal * 3 + 13;
+  if not PosibleNombre(auxStr, NombreOffset) then begin
+    MensajeLog('Error: validacion de nombre fallida en offset ' +
+               IntToStr(NombreOffset) + '. Posible fragmentacion TCP o trama corrupta.');
+    exit;
+  end;
+
+  // 5. Si la cantidad de canales cambio, redimensionar el modelo
+  if CantCanalesReal <> Equipo.NumCanales then begin
+    MensajeLog('Canales detectados: ' + IntToStr(CantCanalesReal) +
+               ' (anterior: ' + IntToStr(Equipo.NumCanales) + ')');
+    Equipo.ActualizarCantidadCanales(CantCanalesReal);
+    SetLength(ConfigCHs, CantCanalesReal);
+  end;
+
+  // 6. Parsear con funcion compartida (misma logica que TThreadComm)
+  if not ParsearTramaCE(auxStr, CantCanalesReal, Config) then exit;
+
+  // 7. Actualizar el MODELO (Equipo), no variables locales
+  for NCanal := 0 to CantCanalesReal - 1 do begin
     Equipo.Canales[NCanal].ValorSensor := Config.Valores[NCanal];
     Equipo.Canales[NCanal].Config      := Config.ConfigCHs[NCanal];
   end;
@@ -465,7 +573,8 @@ begin
   BadChrsName        := Config.BadChrsName;
   NombreRaw          := Config.NombreRaw;
 
-  MensajeLog('Configuracion recibida correctamente.');
+  MensajeLog('Configuracion recibida correctamente (' +
+             IntToStr(CantCanalesReal) + ' canales).');
 
   if (YearOf(Equipo.Hora) = YearOf(StrToDateTime('01/01/2000 12:00 am'))) then
     MensajeLog('!!Advertencia!! - Equipo Fuera de Linea.');
@@ -787,13 +896,11 @@ var
   i, k, j     : integer;
   ExisteSensor : boolean;
   DDir         : string;
+  ConfigsCE    : array of byte;
 begin
   result := true;
 
   // Crear directorios ANTES de cualquier operacion que pueda fallar.
-  // El codigo viejo los creaba inline aqui; la refactorizacion los movia
-  // dentro de GuardarEquipo (al final del try), lo que causaba que si algo
-  // fallaba en el medio, los dirs nunca se creaban.
   DDir := DirINI + Equipo.Nombre + '\';
   if not DirectoryExists(DDir)                             then MkDir(DDir);
   if not DirectoryExists(DDir + 'datos\')                 then MkDir(DDir + 'datos\');
@@ -801,7 +908,26 @@ begin
   if not DirectoryExists(DDir + 'conf\')                  then MkDir(DDir + 'conf\');
 
   try
+    // Preservar los configs recibidos del CE frame ANTES de que CargarEquipo
+    // los sobreescriba con los valores del INI.
+    // Problema: CargarEquipo hace Config := ConfigINI, y para canales nuevos
+    // (no guardados en INI todavia) ReadString devuelve '0'. Esto borra el
+    // tipo de sensor real que informo el equipo.
+    SetLength(ConfigsCE, Equipo.NumCanales);
+    for i := 0 to Equipo.NumCanales - 1 do
+      ConfigsCE[i] := Equipo.Canales[i].Config;
+
     Equipo.CargarEquipo(DirINI);
+
+    // Restaurar configs del CE para canales donde el INI no tenia dato real
+    // (ConfigINI = 0 puede significar: canal no guardado antes, o INI corrupto).
+    // Si CE tambien decia 0, el canal esta genuinamente desactivado → no se toca.
+    for i := 0 to Equipo.NumCanales - 1 do
+      if (Equipo.Canales[i].ConfigINI = 0) and (ConfigsCE[i] > 0) then begin
+        Equipo.Canales[i].Config    := ConfigsCE[i];
+        Equipo.Canales[i].ConfigINI := ConfigsCE[i];
+      end;
+
     for i := 0 to Equipo.NumCanales - 1 do begin
       ExisteSensor := false;
       for j := 0 to Length(ListaSensores) - 1 do begin
