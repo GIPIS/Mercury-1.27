@@ -2241,7 +2241,7 @@ end;
 procedure TFprincipal.GenerarReporteWeb;
 var
   PaginaWeb    : Tstrings;
-  i            : integer;
+  i, j         : integer;
   FormatoFecha : string;
 
 begin
@@ -2257,7 +2257,7 @@ begin
 
   // Inserto la info en la pagina
   for i:=0 to PaginaWeb.Count-1 do begin
-    // Informarc�on del Equipo
+    // Informaci�n del Equipo
     PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#FECHA#',FormatDateTime(FormatoFecha, now));
     PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#NOMBRE#',Equipo.Nombre);
     if (round(TablaTMonitor[Mercury.IntervaloCaptura]*86400)>30) then
@@ -2265,22 +2265,18 @@ begin
     else
       PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#T#',IntToStr(30));
 
-    // Informarc�on de los valores de los canales
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL0#',Equipo.Canales[0].ValorReal + ' ['+Equipo.Canales[0].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL1#',Equipo.Canales[1].ValorReal + ' ['+Equipo.Canales[1].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL2#',Equipo.Canales[2].ValorReal + ' ['+Equipo.Canales[2].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL3#',Equipo.Canales[3].ValorReal + ' ['+Equipo.Canales[3].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL4#',Equipo.Canales[4].ValorReal + ' ['+Equipo.Canales[4].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL5#',Equipo.Canales[5].ValorReal + ' ['+Equipo.Canales[5].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL6#',Equipo.Canales[6].ValorReal + ' ['+Equipo.Canales[6].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANAL7#',Equipo.Canales[7].ValorReal + ' ['+Equipo.Canales[7].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#CANALD#',Equipo.Canales[8].ValorReal + ' ['+Equipo.Canales[8].Unidad+']');
+    // Informaci�n de los valores de los canales (din�mico seg�n NumCanales)
+    for j := 0 to Equipo.NumCanales - 1 do
+      PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+        '#CANAL' + IntToStr(j) + '#',
+        Equipo.Canales[j].ValorReal + ' [' + Equipo.Canales[j].Unidad + ']');
 
-    // Informarc�on de los valores calculados
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC0#',Equipo.CalcParam.Parametros[0].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[0].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC1#',Equipo.CalcParam.Parametros[1].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[1].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC2#',Equipo.CalcParam.Parametros[2].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[2].Unidad+']');
-    PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],'#VC3#',Equipo.CalcParam.Parametros[3].ResultCalcStr + ' ['+Equipo.CalcParam.Parametros[3].Unidad+']');
+    // Informaci�n de los valores calculados (din�mico seg�n CantParm)
+    for j := 0 to Equipo.CalcParam.CantParm - 1 do
+      PaginaWeb.Strings[i] := ReemplazarString(PaginaWeb.Strings[i],
+        '#VC' + IntToStr(j) + '#',
+        Equipo.CalcParam.Parametros[j].ResultCalcStr +
+        ' [' + Equipo.CalcParam.Parametros[j].Unidad + ']');
   end;
 
   try

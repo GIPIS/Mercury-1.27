@@ -461,3 +461,212 @@ TServEquipoThread.Execute():
 > y uno de los bytes en la posición calculada del nombre es >= 32, se parsearía
 > con canales incorrectos. El reintento de 500ms mitiga esto, pero no es
 > garantía absoluta en enlaces GPRS muy degradados.
+
+---
+
+## 8. Trama GA — Ciclo de Configuración de Internet por SIM (Abril 2026)
+
+### 8.1 Propósito
+
+La trama `GA` es el mecanismo por el cual el software Mercury envía al firmware remoto los parámetros de conexión a internet: APN/gateway, usuario, contraseña, IP del servidor, puerto y período de reconexión. Permite reconfigurar un equipo en campo sin intervención física, únicamente a través de la sesión TCP activa.
+
+
+---
+
+### 8.2 Ciclo de vida completo de `Execute` (con GA activo)
+
+El método `Execute` de `TServEquipoThread` sigue este orden estricto dentro del bucle principal de cada sesión TCP:
+
+```
+1.  SW → FW  : "OK"                    ← saludo inicial del servidor
+2.  FW → SW  : "CE"                    ← el equipo anuncia que enviará su configuración
+3.  FW → SW  : <payload CE>            ← trama binaria con hora, canales, nombre, memoria
+4.  SW       : LeerConfig()            ← parsea CE, redimensiona modelo si cambió Ncanales
+5.  SW       : CargarCanales()         ← carga INI de disco, asigna sensores, guarda
+6.  SW       : ForzarConfig()          ← evalúa si el INI pide reconfig forzada
+7.  SW       : ForzarValoresInstantaneos() ← evalúa si pide descarga instantánea
+
+    ┌─ if DescargarDatos ──────────────────────────────────────────────────────────┐
+    │  Retardo(1000)                                                               │
+    │  DescargarLosDatos()   ← RupturaTransmisión ? LeerDatos : GuardarInstant.   │
+    │  Retardo(2000)                                                               │
+    └──────────────────────────────────────────────────────────────────────────────┘
+
+    ┌─ if ConfigEquipo ────────────────────────────────────────────────────────────┐
+    │  EscribirConfig()                                                            │
+    │   ├── CargarNuevaConf()   ← lee {Nombre}Conf.ini                            │
+    │   │    ├── CambiarConf=S  → actualiza T, nombre, ConfigCHs[]                │
+    │   │    ├── CambConfInt=S  → actualiza gateway/user/pass/server/port         │
+    │   │    │                    → activa flag ConfigInternetEquipo               │
+    │   │    └── CambiarTConect=S → actualiza IndexTConect                        │
+    │   │                           → activa flag ConfigTConect                   │
+    │   └── SW → FW: "CE" + trama   ← envía config general (hora, canales, T)    │
+    │  GuardarNuevaConf()   ← persiste flags en 'N' para no repetir              │
+    │  Retardo(2000)                                                               │
+    └──────────────────────────────────────────────────────────────────────────────┘
+
+    ┌─ if ConfigTConect ───────────────────────────────────────────────────────────┐
+    │  EscribirConfigTConect()                                                     │
+    │   └── SW → FW: "TX" + 2 bytes   ← periodo de conexión en big-endian        │
+    │  Retardo(2000)                                                               │
+    └──────────────────────────────────────────────────────────────────────────────┘
+
+    ┌─ if ConfigInternetEquipo ────────────────────────────────────────────────────┐
+    │  EscribirConfigInternet()                                                    │
+    │   └── SW → FW: "GA" + trama AT  ← comandos de modem + período              │
+    │  Retardo(2000)                                                               │
+    └──────────────────────────────────────────────────────────────────────────────┘
+```
+
+> **Punto clave de orden:** `CargarNuevaConf` es llamada **dentro** de `EscribirConfig` (paso `ConfigEquipo`). Es ahí donde se activa `ConfigInternetEquipo`. Por eso, el bloque de GA siempre aparece **después** del bloque de CE — el flag ya está listo cuando se evalúa.
+
+---
+
+### 8.3 Cómo se activa el envío de GA
+
+El flag `ConfigInternetEquipo` se pone en `true` desde `CargarNuevaConf` cuando el archivo `{Nombre}Conf.ini` contiene `CambiarConfInternet=S`. El operador edita ese archivo (o la UI lo hace desde un formulario de configuración de internet), y en la próxima conexión del equipo el SW detecta el cambio y envía la trama GA.
+
+Una vez enviada, `GuardarNuevaConf` escribe `CambiarConfInternet=N` para que no se reenvíe en sesiones futuras.
+
+---
+
+### 8.4 Formato de la trama GA
+
+Construida en `EscribirConfigInternet`:
+
+```
+"GA" + strIni + strGateway + strServer + ";" + strFin + "#"
+```
+
+| Segmento | Contenido | Ejemplo literal |
+|---|---|---|
+| `"GA"` | Identificador de comando | `GA` |
+| `strIni` | Comandos AT de init del módem | `ATE0\rATE0\rAT+CMGF=1\rAT+CNMI=3,2,2,0,0\rAT+CMGD=1,4\rAT+CREG=1\r` |
+| `strGateway` | Configuración de APN/SIM | `AT+MIPCALL=1,"apn.operador","user","pass"\r/` |
+| `strServer` | Apertura de socket TCP | `AT+MIPOPEN=1,8080,"192.168.x.x",8080,0\r/` |
+| `";"` | **Separador** entre comandos y período | `;` |
+| `strFin` | 2 bytes período + comandos de cierre | `{byte_hi}{byte_lo}AT+MIPCLOSE=1\r/AT+MIPCALL=0\r/` |
+| `"#"` | Terminador de trama | `#` |
+
+Los 2 bytes del período en `strFin` son producidos por `NumToAbytes(CalcPeriodoConect(IndexTConect))` y representan la cantidad de muestras entre conexiones al servidor en orden `[byte_hi, byte_lo]`.
+
+---
+
+### 8.5 Recepción y procesamiento en el Firmware
+
+El dispatcher de comandos del firmware (`commands()` en `lib/comunication.py`) detecta el prefijo `GA` y delega en `command_GA()`:
+
+#### Paso 1 — Separación de secciones
+
+```python
+config = config.split(b'GA')[-1]                  # quita el prefijo "GA"
+modem_commands, send_period = config.split(b';')   # separa comandos AT del período
+```
+
+Si el `;` no está presente (fragmentación TCP), el `except` asigna un período por defecto de 30 minutos calculado desde `_t_sample`, pero **no parsea los comandos AT** — la configuración de modem queda incompleta hasta la siguiente sesión que entregue la trama completa.
+
+#### Paso 2 — Período de conexión
+
+```python
+send_period = send_period[0:2]   # primeros 2 bytes después del ';'
+command_TX(send_period)          # int.from_bytes(send_period, 'big') + 1
+```
+
+Este valor se guarda en `config.txt` bajo la clave `periodes_to_send`.
+
+#### Paso 3 — Parseo de comandos AT
+
+```python
+modem_commands = modem_commands.replace(b'/', b'')     # elimina separadores '/'
+modem_commands = modem_commands.split(b'\r')[0:-1]     # divide por '\r', descarta vacío final
+modem_commands = [command + b'\r' for command in modem_commands]
+```
+
+Resulta en una lista de comandos AT listos para enviar al módem UART, por ejemplo:
+```
+[b'ATE0\r', b'AT+CMGF=1\r', b'AT+MIPCALL=1,"apn","user","pass"\r', b'AT+MIPOPEN=1,8080,"ip",8080,0\r', ...]
+```
+
+#### Paso 4 — Determinación del modo de comunicación
+
+El firmware detecta el modo leyendo el campo `user` del comando `AT+MIPCALL`:
+
+```
+AT+MIPCALL=1, "gateway/APN" , "user" , "password"
+                  ↑ campo 1     ↑ campo 2   ↑ campo 3
+                  (ssid)        (mode)       (password)
+```
+
+| Valor del campo `user` | Modo asignado |
+|---|---|
+| `"WIFI"` | WiFi directo |
+| `"TERMINAL"`, `"ARSAT"`, `"GATEWAY"` | WiFi con terminal satelital ARSAT |
+| `"GLOBAL_STAR"` | Módulo GlobalStar |
+| Cualquier otro (ej: vacío, `"wap"`) | **MODEM** — conexión por tarjeta SIM ← caso normal |
+
+Para uso con tarjeta SIM, el campo `user` del APN típicamente es vacío (`""`) o un string corto del operador, por lo que cae correctamente en el caso `MODEM`.
+
+#### Paso 5 — Persistencia en `config.txt`
+
+```python
+set_in_file('wireless_config', ...)       # comandos AT como texto plano
+set_in_file('ssid',            ...)       # APN/gateway
+set_in_file('password',        ...)       # contraseña del APN
+set_in_file('ip_port',         ...)       # "ip puerto"
+set_in_file('communication_using', ...)   # "MODEM" / "WIFI" / "GLOBAL_STAR"
+set_in_file('terminal',        ...)       # "True" / "False"
+```
+
+Al siguiente boot del firmware, `get_wireless_config()` lee estos valores y reconstruye `modem_commands[]`, `ip_port`, `ssid`, `password` y `communication_using` sin necesidad de recibir otra trama GA.
+
+---
+
+### 8.6 Diagrama de secuencia GA completo
+
+```text
+  +------------------+                         +------------------+
+  |  Firmware (SIM)  |                         |    Mercury (PC)  |
+  +--------+---------+                         +---------+--------+
+           |                                             |
+           |  [Sesión TCP activa, CE ya procesado]       |
+           |                                             |
+           |               ← CambiarConfInternet=S       |
+           |                 detectado en Conf.ini       |
+           |                                             |
+           |      "GA" + strIni + strGateway             |
+           |      + strServer + ";" + strFin + "#"       |
+           |<============================================|
+           |                                             |
+           |  command_GA():                              |
+           |    split(b';') → modem_cmds + period        |
+           |    command_TX(period[0:2])                  |
+           |    parsea AT+MIPCALL → ssid, mode, pass     |
+           |    parsea AT+MIPOPEN → ip, port             |
+           |    determina communication_using            |
+           |    guarda en config.txt                     |
+           |                                             |
+           |    return b''  (sin ACK al SW)              |
+           |                                             |
+           |  [Nuevos parámetros aplican                 |
+           |   en la PRÓXIMA conexión GPRS]              |
+           |                                             |
+           |               Retardo(2000) en SW           |
+           |                                             |
+           |  [Sesión TCP cierra]                        |
+           |============================================>|
+           |                                             |
+```
+
+---
+
+### 8.7 Consideraciones y limitaciones conocidas
+
+| # | Situación | Impacto | Estado |
+|---|---|---|---|
+| 1 | El FW no devuelve ACK tras GA (`return b''`) | El SW no sabe si la trama llegó correctamente | ⚠️ Limitación conocida |
+| 2 | Fragmentación TCP parte la trama en el `;` | Comandos AT no se parsean; período se estima por defecto | ⚠️ Improbable en LAN, posible en GPRS degradado |
+| 3 | El terminador `#` no es validado por el FW | No hay verificación de integridad de trama | ⚠️ Sin impacto práctico actual |
+| 4 | GA y TX enviados en la misma sesión | El período se escribe dos veces con el mismo valor | ✅ Redundante pero inocuo |
+| 5 | Los parámetros aplican en la **próxima** conexión | No hay reconexión inmediata tras recibir GA | ✅ Comportamiento esperado y correcto |
+| 6 | `CambiarConfInternet` se resetea a `N` en `GuardarNuevaConf` | GA solo se envía una vez por cambio de config | ✅ Correcto |
+

@@ -373,13 +373,13 @@ begin
         Retardo(2000);
       end;
 
-      {
+      
       if ConfigInternetEquipo and ONLine then begin
         EscribirConfigInternet;
         ConfigInternetEquipo := false;
         Retardo(2000);
       end;
-      }
+
     except
       //
     end;

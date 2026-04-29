@@ -163,11 +163,10 @@
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="227"/>
+        <TopLine Value="230"/>
         <CursorPos X="29" Y="237"/>
         <UsageCount Value="80"/>
         <Loaded Value="True"/>
-        <DefaultSyntaxHighlighter Value="Delphi"/>
       </Unit>
       <Unit>
         <Filename Value="UDiaJuliano.pas"/>
