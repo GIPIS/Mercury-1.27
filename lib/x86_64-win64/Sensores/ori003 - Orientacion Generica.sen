@@ -1,0 +1,11 @@
+[ori003 - Orientacion Generica]
+ID=33
+Descripcion=Angulo de Orientacion (0º 27º ...)
+Unidad=º
+Decimales=0
+Entrada=TENSION
+Modo=CICLO
+Salida=NUMERO
+X=0;5;
+Y=0;360;
+--=--

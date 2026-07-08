@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="refresh" content="#T#">
+  <meta http-equiv="PRAGMA" content="NO-CACHE">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMAC Mercury - #NOMBRE#</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: #0a0f1e; color: #e2e8f0;
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0;
+      background: radial-gradient(ellipse at 20% 20%,rgba(30,64,175,.25) 0%,transparent 50%),
+                  radial-gradient(ellipse at 80% 80%,rgba(15,118,110,.2) 0%,transparent 50%);
+      z-index: 0; pointer-events: none;
+    }
+    .container { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:24px 16px; width:100%; }
+    .header { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; padding-bottom:20px; border-bottom:1px solid rgba(255,255,255,.08); }
+    .header-left { display:flex; align-items:center; gap:16px; }
+    .logo-badge { width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#1d4ed8,#0891b2); display:flex; align-items:center; justify-content:center; font-size:24px; }
+    .header h1 { font-size:1.5rem; font-weight:700; color:#f1f5f9; letter-spacing:-.02em; }
+    .header h1 span { color:#38bdf8; }
+    .header-subtitle { font-size:.8rem; color:#64748b; margin-top:2px; }
+    .status-badge { display:flex; align-items:center; gap:8px; border-radius:999px; padding:6px 14px; font-size:.78rem; transition:all .3s; }
+    .status-online { background:rgba(34,197,94,.1); border:1px solid rgba(34,197,94,.25); color:#4ade80; }
+    .status-offline { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.25); color:#f87171; }
+    .status-dot { width:7px; height:7px; border-radius:50%; }
+    .status-online .status-dot { background:#4ade80; animation:pulse 2s infinite; }
+    .status-offline .status-dot { background:#f87171; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .section-title { font-size:.75rem; font-weight:600; text-transform:uppercase; letter-spacing:.1em; color:#475569; margin-bottom:12px; }
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; margin-bottom:24px; }
+    .card { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:20px; position:relative; overflow:hidden; transition:border-color .2s,transform .2s; }
+    .card:hover { border-color:rgba(56,189,248,.35); transform:translateY(-2px); }
+    .card::before { content:""; position:absolute; top:0; left:0; right:0; height:2px; border-radius:16px 16px 0 0; }
+    .card-icon { font-size:1.8rem; margin-bottom:10px; display:block; }
+    .card-label { font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:#64748b; margin-bottom:6px; }
+    .card-value { font-size:1.35rem; font-weight:700; color:#f1f5f9; line-height:1.2; word-break:break-word; }
+    .calc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-bottom:28px; }
+    .calc-card { background:rgba(255,255,255,.025); border:1px solid rgba(255,255,255,.05); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:14px; }
+    .calc-icon { font-size:1.4rem; flex-shrink:0; }
+    .calc-label { font-size:.72rem; color:#64748b; margin-bottom:2px; }
+    .calc-value { font-size:1rem; font-weight:600; color:#cbd5e1; }
+    .footer { margin-top:auto; padding-top:20px; border-top:1px solid rgba(255,255,255,.06); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+    .footer-equipo { font-size:.8rem; color:#475569; }
+    .footer-equipo strong { color:#94a3b8; }
+    .footer-fecha { font-size:.78rem; color:#475569; }
+    @media(max-width:600px){ .header{flex-direction:column;align-items:flex-start;gap:12px} .cards-grid{grid-template-columns:repeat(2,1fr)} }
+
+    .c0::before{background:linear-gradient(90deg,#1d4ed8,#38bdf8)}
+    .c1::before{background:linear-gradient(90deg,#0891b2,#34d399)}
+    .c2::before{background:linear-gradient(90deg,#d97706,#fbbf24)}
+    .c3::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+    .c4::before{background:linear-gradient(90deg,#be123c,#fb7185)}
+    .c5::before{background:linear-gradient(90deg,#15803d,#4ade80)}
+    .c6::before{background:linear-gradient(90deg,#4338ca,#818cf8)}
+    .c7::before{background:linear-gradient(90deg,#0e7490,#22d3ee)}
+    .c8::before{background:linear-gradient(90deg,#4d7c0f,#a3e635)}
+    .c9::before{background:linear-gradient(90deg,#b91c1c,#fca5a5)}
+    .c10::before{background:linear-gradient(90deg,#0369a1,#7dd3fc)}
+    .c11::before{background:linear-gradient(90deg,#6d28d9,#c4b5fd)}
+    .c12::before{background:linear-gradient(90deg,#a16207,#fde047)}
+    .c13::before{background:linear-gradient(90deg,#047857,#6ee7b7)}
+    .c14::before{background:linear-gradient(90deg,#1e40af,#93c5fd)}
+    .c15::before{background:linear-gradient(90deg,#9f1239,#fda4af)}
+    .c16::before{background:linear-gradient(90deg,#1d4ed8,#38bdf8)}
+    .c17::before{background:linear-gradient(90deg,#0891b2,#34d399)}
+    .c18::before{background:linear-gradient(90deg,#d97706,#fbbf24)}
+    .c19::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+    .c20::before{background:linear-gradient(90deg,#be123c,#fb7185)}
+    .c21::before{background:linear-gradient(90deg,#15803d,#4ade80)}
+    .c22::before{background:linear-gradient(90deg,#4338ca,#818cf8)}
+    .c23::before{background:linear-gradient(90deg,#0e7490,#22d3ee)}
+    .c24::before{background:linear-gradient(90deg,#4d7c0f,#a3e635)}
+    .c25::before{background:linear-gradient(90deg,#b91c1c,#fca5a5)}
+    .c26::before{background:linear-gradient(90deg,#0369a1,#7dd3fc)}
+    .c27::before{background:linear-gradient(90deg,#6d28d9,#c4b5fd)}
+    .c28::before{background:linear-gradient(90deg,#a16207,#fde047)}
+    .c29::before{background:linear-gradient(90deg,#047857,#6ee7b7)}
+    .c30::before{background:linear-gradient(90deg,#1e40af,#93c5fd)}
+    .c31::before{background:linear-gradient(90deg,#9f1239,#fda4af)}
+    .c32::before{background:linear-gradient(90deg,#1d4ed8,#38bdf8)}
+    .c33::before{background:linear-gradient(90deg,#0891b2,#34d399)}
+    .c34::before{background:linear-gradient(90deg,#d97706,#fbbf24)}
+    .c35::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-badge">🌊</div>
+      <div><h1>EMAC <span>Mercury</span></h1><div class="header-subtitle">Sistema de Monitoreo Ambiental</div></div>
+    </div>
+    <div class="status-badge status-online" id="status-badge"><span class="status-dot"></span><span class="status-text">En línea</span></div>
+  </header>
+  <div class="section-title">Canales de Medicion Activos</div>
+  <div class="cards-grid" id="cards-grid">
+    <div class="card c0" data-channel="Canal 0"><span class="card-icon">📊</span><div class="card-label">Canal 0</div><div class="card-value">#CANAL0#</div></div>
+    <div class="card c1" data-channel="Canal 1"><span class="card-icon">📊</span><div class="card-label">Canal 1</div><div class="card-value">#CANAL1#</div></div>
+    <div class="card c2" data-channel="Canal 2"><span class="card-icon">📊</span><div class="card-label">Canal 2</div><div class="card-value">#CANAL2#</div></div>
+    <div class="card c3" data-channel="Canal 3"><span class="card-icon">📊</span><div class="card-label">Canal 3</div><div class="card-value">#CANAL3#</div></div>
+    <div class="card c4" data-channel="Canal 4"><span class="card-icon">📊</span><div class="card-label">Canal 4</div><div class="card-value">#CANAL4#</div></div>
+    <div class="card c5" data-channel="Canal 5"><span class="card-icon">📊</span><div class="card-label">Canal 5</div><div class="card-value">#CANAL5#</div></div>
+    <div class="card c6" data-channel="Canal 6"><span class="card-icon">📊</span><div class="card-label">Canal 6</div><div class="card-value">#CANAL6#</div></div>
+    <div class="card c7" data-channel="Canal 7"><span class="card-icon">📊</span><div class="card-label">Canal 7</div><div class="card-value">#CANAL7#</div></div>
+    <div class="card c8" data-channel="Canal 8"><span class="card-icon">📊</span><div class="card-label">Canal 8</div><div class="card-value">#CANAL8#</div></div>
+    <div class="card c9" data-channel="Canal 9"><span class="card-icon">📊</span><div class="card-label">Canal 9</div><div class="card-value">#CANAL9#</div></div>
+    <div class="card c10" data-channel="Canal 10"><span class="card-icon">📊</span><div class="card-label">Canal 10</div><div class="card-value">#CANAL10#</div></div>
+    <div class="card c11" data-channel="Canal 11"><span class="card-icon">📊</span><div class="card-label">Canal 11</div><div class="card-value">#CANAL11#</div></div>
+    <div class="card c12" data-channel="Canal 12"><span class="card-icon">📊</span><div class="card-label">Canal 12</div><div class="card-value">#CANAL12#</div></div>
+    <div class="card c13" data-channel="Canal 13"><span class="card-icon">📊</span><div class="card-label">Canal 13</div><div class="card-value">#CANAL13#</div></div>
+    <div class="card c14" data-channel="Canal 14"><span class="card-icon">📊</span><div class="card-label">Canal 14</div><div class="card-value">#CANAL14#</div></div>
+    <div class="card c15" data-channel="Canal 15"><span class="card-icon">📊</span><div class="card-label">Canal 15</div><div class="card-value">#CANAL15#</div></div>
+    <div class="card c16" data-channel="Canal 16"><span class="card-icon">📊</span><div class="card-label">Canal 16</div><div class="card-value">#CANAL16#</div></div>
+    <div class="card c17" data-channel="Canal 17"><span class="card-icon">📊</span><div class="card-label">Canal 17</div><div class="card-value">#CANAL17#</div></div>
+    <div class="card c18" data-channel="Canal 18"><span class="card-icon">📊</span><div class="card-label">Canal 18</div><div class="card-value">#CANAL18#</div></div>
+    <div class="card c19" data-channel="Canal 19"><span class="card-icon">📊</span><div class="card-label">Canal 19</div><div class="card-value">#CANAL19#</div></div>
+    <div class="card c20" data-channel="Canal 20"><span class="card-icon">📊</span><div class="card-label">Canal 20</div><div class="card-value">#CANAL20#</div></div>
+    <div class="card c21" data-channel="Canal 21"><span class="card-icon">📊</span><div class="card-label">Canal 21</div><div class="card-value">#CANAL21#</div></div>
+    <div class="card c22" data-channel="Canal 22"><span class="card-icon">📊</span><div class="card-label">Canal 22</div><div class="card-value">#CANAL22#</div></div>
+    <div class="card c23" data-channel="Canal 23"><span class="card-icon">📊</span><div class="card-label">Canal 23</div><div class="card-value">#CANAL23#</div></div>
+    <div class="card c24" data-channel="Canal 24"><span class="card-icon">📊</span><div class="card-label">Canal 24</div><div class="card-value">#CANAL24#</div></div>
+    <div class="card c25" data-channel="Canal 25"><span class="card-icon">📊</span><div class="card-label">Canal 25</div><div class="card-value">#CANAL25#</div></div>
+    <div class="card c26" data-channel="Canal 26"><span class="card-icon">📊</span><div class="card-label">Canal 26</div><div class="card-value">#CANAL26#</div></div>
+    <div class="card c27" data-channel="Canal 27"><span class="card-icon">📊</span><div class="card-label">Canal 27</div><div class="card-value">#CANAL27#</div></div>
+    <div class="card c28" data-channel="Canal 28"><span class="card-icon">📊</span><div class="card-label">Canal 28</div><div class="card-value">#CANAL28#</div></div>
+    <div class="card c29" data-channel="Canal 29"><span class="card-icon">📊</span><div class="card-label">Canal 29</div><div class="card-value">#CANAL29#</div></div>
+    <div class="card c30" data-channel="Canal 30"><span class="card-icon">📊</span><div class="card-label">Canal 30</div><div class="card-value">#CANAL30#</div></div>
+    <div class="card c31" data-channel="Canal 31"><span class="card-icon">📊</span><div class="card-label">Canal 31</div><div class="card-value">#CANAL31#</div></div>
+    <div class="card c32" data-channel="Canal 32"><span class="card-icon">📊</span><div class="card-label">Canal 32</div><div class="card-value">#CANAL32#</div></div>
+    <div class="card c33" data-channel="Canal 33"><span class="card-icon">📊</span><div class="card-label">Canal 33</div><div class="card-value">#CANAL33#</div></div>
+    <div class="card c34" data-channel="Canal 34"><span class="card-icon">📊</span><div class="card-label">Canal 34</div><div class="card-value">#CANAL34#</div></div>
+    <div class="card c35" data-channel="Canal 35"><span class="card-icon">📊</span><div class="card-label">Canal 35</div><div class="card-value">#CANAL35#</div></div>
+  </div>
+  <div class="section-title">Valores Calculados</div>
+  <div class="calc-grid">
+    <div class="calc-card"><span class="calc-icon">🧮</span><div><div class="calc-label">Parametro 1</div><div class="calc-value">#VC0#</div></div></div>
+    <div class="calc-card"><span class="calc-icon">📈</span><div><div class="calc-label">Parametro 2</div><div class="calc-value">#VC1#</div></div></div>
+    <div class="calc-card"><span class="calc-icon">📉</span><div><div class="calc-label">Parametro 3</div><div class="calc-value">#VC2#</div></div></div>
+    <div class="calc-card"><span class="calc-icon">⚡</span><div><div class="calc-label">Parametro 4</div><div class="calc-value">#VC3#</div></div></div>
+  </div>
+  <footer class="footer">
+    <div class="footer-equipo">Equipo: <strong>#NOMBRE#</strong></div>
+    <div class="footer-fecha">🕐 Actualizado: #FECHA#</div>
+  </footer>
+</div>
+<script>
+
+var UNIT_MAP = {
+  "km/h":{icon:"💨",label:"Vel. Viento"},"m/s":{icon:"💨",label:"Vel. Viento"},
+  "cm/s":{icon:"💨",label:"Vel. Corriente"},"kn":{icon:"💨",label:"Vel. Viento"},
+  "kt":{icon:"💨",label:"Vel. Viento"},
+  "\u00b0c":{icon:"🌡️",label:"Temperatura"},"degc":{icon:"🌡️",label:"Temperatura"},
+  "c":{icon:"🌡️",label:"Temperatura"},"k":{icon:"🌡️",label:"Temperatura"},
+  "%rh":{icon:"💧",label:"Humedad"},"%hr":{icon:"💧",label:"Humedad"},
+  "\u00b0":{icon:"🧭",label:"Dir. Viento"},"deg":{icon:"🧭",label:"Dir. Viento"},
+  "mm":{icon:"🌧️",label:"Precipitaci\u00f3n"},"l/m2":{icon:"🌧️",label:"Precipitaci\u00f3n"},
+  "w/m2":{icon:"☀️",label:"Radiaci\u00f3n"},"lux":{icon:"☀️",label:"Radiaci\u00f3n"},
+  "hpa":{icon:"🌬️",label:"Presi\u00f3n"},"mbar":{icon:"🌬️",label:"Presi\u00f3n"},
+  "pa":{icon:"🌬️",label:"Presi\u00f3n"},"m":{icon:"🌊",label:"Nivel"},
+  "cm":{icon:"🌊",label:"Nivel"},"ms/cm":{icon:"🔬",label:"Conductividad"},
+  "us/cm":{icon:"🔬",label:"Conductividad"},"mg/l":{icon:"💦",label:"Ox. Disuelto"},
+  "ph":{icon:"🧪",label:"pH"},"ntu":{icon:"💦",label:"Turbidez"},
+  "v":{icon:"🔋",label:"Voltaje"},"mv":{icon:"🔋",label:"Voltaje"},
+  "a":{icon:"⚡",label:"Corriente"},"ma":{icon:"⚡",label:"Corriente"},
+  "psu":{icon:"🌊",label:"Salinidad"}
+};
+var CARDINAL = /^(N|S|E|W|NE|NW|SE|SW|NNE|ENE|ESE|SSE|SSW|WSW|WNW|NNW)$/i;
+
+
+function getSensorInfo(raw) {
+  var um = raw.match(/\[([^\]]*)\]/);
+  var unit = um ? um[1].trim().toLowerCase() : "";
+  if (raw.indexOf("#CANAL") !== -1 || raw.indexOf("#VC") !== -1) return {empty:true};
+  var vp = um ? raw.substring(0, raw.indexOf("[")).trim() : raw.trim();
+  if (vp === "" || vp === " ") return {empty:true};
+  if (um && um[1].trim() === "") return {empty:true};
+  if (CARDINAL.test(vp)) return {icon:"🧭",label:"Dir. Viento",empty:false};
+  if (unit === "") return {icon:"📊",label:null,empty:false};
+  if (UNIT_MAP[unit]) return {icon:UNIT_MAP[unit].icon,label:UNIT_MAP[unit].label,empty:false};
+  return {icon:"📊",label:null,empty:false};
+}
+var cards = document.querySelectorAll(".cards-grid .card");
+for (var i=0; i<cards.length; i++) {
+  var c = cards[i], ve = c.querySelector(".card-value");
+  if (!ve) continue;
+  var info = getSensorInfo(ve.textContent||"");
+  if (info.empty) { c.style.display="none"; continue; }
+  c.querySelector(".card-icon").textContent = info.icon;
+  var le = c.querySelector(".card-label"), ch = c.getAttribute("data-channel")||"";
+  le.textContent = info.label ? ch+" \u00b7 "+info.label : ch;
+}
+var ccs = document.querySelectorAll(".calc-grid .calc-card");
+for (var i=0; i<ccs.length; i++) {
+  var v = ccs[i].querySelector(".calc-value");
+  if (!v) continue;
+  var t = v.textContent||"";
+  if (t.indexOf("#VC")!==-1 || t.trim()==="") ccs[i].style.display="none";
+}
+// Ocultar secciones vacias
+(function(){
+  var grids = [document.getElementById("cards-grid"), document.querySelector(".calc-grid")];
+  var titles = document.querySelectorAll(".section-title");
+  for (var g=0; g<grids.length; g++) {
+    if (!grids[g]) continue;
+    var items = grids[g].children, any=false;
+    for (var j=0; j<items.length; j++) if (items[j].style.display!=="none"){any=true;break;}
+    if (!any) { grids[g].style.display="none"; if(titles[g]) titles[g].style.display="none"; }
+  }
+})();
+// Estado de conexion
+(function(){
+  var b=document.getElementById("status-badge"), f=document.querySelector(".footer-fecha");
+  if(!b||!f) return;
+  var t=f.textContent||"", p=t.split("Actualizado:");
+  if(p.length<2){b.className="status-badge status-offline";b.querySelector(".status-text").textContent="Sin datos";return;}
+  var fs=p[1].trim();
+  if(fs.indexOf("#FECHA#")!==-1){b.className="status-badge status-offline";b.querySelector(".status-text").textContent="Sin datos";return;}
+  var m=fs.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})/);
+  if(!m){b.className="status-badge status-online";b.querySelector(".status-text").textContent="En l\u00ednea";return;}
+  var d=new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]),parseInt(m[4]),parseInt(m[5]),parseInt(m[6]));
+  var diff=(new Date().getTime()-d.getTime())/1000;
+  if(diff>300){b.className="status-badge status-offline";b.querySelector(".status-text").textContent="Sin datos recientes";}
+  else{b.className="status-badge status-online";b.querySelector(".status-text").textContent="En l\u00ednea";}
+})();
+
+</script>
+</body>
+</html>

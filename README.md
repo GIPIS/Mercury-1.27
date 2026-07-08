@@ -1,4 +1,4 @@
-﻿# EMAC Mercury 1.27
+# EMAC Mercury 1.27
 
 > Software de adquisición, configuración y descarga de datos para estaciones de monitoreo ambiental del grupo EMAC — Instituto Argentino de Oceanografía (IADO-CONICET).
 
@@ -106,23 +106,29 @@ Esta sección es para **usuarios finales** que solo quieren usar Mercury, sin mo
 ### Lo que se necesita
 
 - Windows 10 o superior (64 bits)
-- El archivo `Mercury.exe` compilado (ver abajo de dónde obtenerlo)
+- Git (para clonar) o acceso directo a los archivos del repositorio
 
-### Dónde está el ejecutable correcto
+### Dónde está el ejecutable
 
-El ejecutable generado por la **última compilación** se encuentra en:
+El ejecutable listo para usar se encuentra en el repositorio, dentro de:
 
 ```
 lib\x86_64-win64\Mercury.exe
 ```
 
-> ⚠️ El `Mercury.exe` que está en la **raíz del proyecto** puede ser de una versión anterior. Siempre usar el que está dentro de `lib\x86_64-win64\`.
+> ℹ️ El `Mercury.exe` en la **raíz** del proyecto es una copia anterior y puede estar desactualizado. Siempre usar el de `lib\x86_64-win64\`.
 
-### Instalación manual (sin instalador)
+### Instalación manual
 
-1. Copiar los siguientes archivos y carpetas a la carpeta de destino (por ejemplo `C:\EMAC Mercury\`):
+1. Clonar el repositorio (o descargar el ZIP desde GitHub):
 
-   | Qué copiar | Desde dónde |
+   ```bash
+   git clone <URL-del-repositorio> "Mercury 1.27"
+   ```
+
+2. Copiar los siguientes archivos y carpetas a la carpeta de destino (por ejemplo `C:\EMAC Mercury\`):
+
+   | Qué copiar | Desde dónde en el repo |
    |---|---|
    | `Mercury.exe` | `lib\x86_64-win64\Mercury.exe` |
    | `qtintf.dll` | raíz del proyecto |
@@ -135,7 +141,7 @@ lib\x86_64-win64\Mercury.exe
    | Carpeta `Pantillas Web\` | raíz del proyecto |
    | Carpeta `temp\` | raíz del proyecto |
 
-2. Ejecutar `Mercury.exe` desde la carpeta de destino.
+3. Ejecutar `Mercury.exe` desde la carpeta de destino.
 
    > Mercury busca sus archivos de configuración y recursos relativos a su propia ubicación, por lo que es importante que todas las carpetas estén junto al ejecutable.
 

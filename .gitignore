@@ -1,21 +1,51 @@
 backup/
 ConverterBackup/
-*.log
-*.exe
-*.dll
-*.o
-*.ppu
-*.a
-*.dcu
-*.~*
-lib/
 TEST/*
 
-# Otros artefactos
+# Artefactos de compilación en la raíz (copias viejas, no distribuir)
+*.dcu
+*.~*
 *.stackdump
-*.res
 ppas.bat
-*.compiled
 *.bkp
+
+# Binarios en la raíz (son copias anteriores, el ejecutable oficial está en lib/)
+*.log
+/Mercury.exe
+/Mercury.dll
+/Mercury.obj
+/Mercury.res
+/Mercury.compiled
+/project1.exe
+/project1.obj
+/project1.res
+/project1.compiled
+/qtintf.dll
+/libimpPuertoSerie.a
+
+# ─── lib/ se incluye en el repo (contiene el ejecutable compilado) ───────────
+# Se excluyen solo los datos de runtime que genera la aplicación al usarse
+
+# Datos operativos dentro de lib/ (generados en runtime, no son parte del código)
+lib/*/Datos/*
+lib/*/Equipos/*
+lib/*/backup/
+
+# Archivos de debug y logs grandes generados en runtime
+lib/*/debug_*.txt
+lib/*/debug_*.log
+lib/*/*.log
+
+# Archivos intermedios de compilación dentro de lib/ (pesados, se regeneran)
+lib/*/*.o
+lib/*/*.ppu
+lib/*/*.a
+lib/*/*.compiled
+lib/*/*.res
+lib/*/*.obj
+
+# Datos operativos en la raíz del proyecto (generados por la app al usarse)
+Equipos/*
+Datos/*
 
 

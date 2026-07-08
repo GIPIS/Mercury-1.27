@@ -1,0 +1,14 @@
+[dir004 - Direccion Viento TS232]
+ID=69
+Descripcion=Dirección Viento TS232
+Unidad=º
+Decimales=0
+Entrada=TENSION
+;Entrada=PULSO
+Modo=CICLO
+;Modo=ACUMULAR
+;Salida=TEXTO
+Salida=NUMERO
+X=0.2;3.8;
+Y=0;360;
+--=--
