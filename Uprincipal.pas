@@ -2595,16 +2595,14 @@ end;
 procedure TFprincipal.tsConfiguracionShow(Sender: TObject);
 var
   i: integer;
-  debug_conf: TextFile;
-  nombre_debug: string;
   cantBloques: integer;
-  j:integer;
+  j: integer;
   LabelIdx: integer;
-  contadorCanales:integer;
-    Comp: TComponent; // Variable auxiliar para guardar los componentes de forma dinamica
+  contadorCanales: integer;
+  Comp: TComponent;
   NombreComp: string;
-  contadorLabels:integer;
-  flagUltimoCanal:boolean;
+  contadorLabels: integer;
+  flagUltimoCanal: boolean;
 begin
  
   // Oculto el ComboBox
@@ -2612,16 +2610,6 @@ begin
   cbSensores.Visible := False;
   // Cargo el Nombre del Equipo
   eNombre.Text := Equipo.Nombre;
-
-  // DEBUG INICIO
-  try
-    nombre_debug := ExtractFilePath(ParamStr(0)) + 'debug_funcion_configuracion.txt';
-    AssignFile(debug_conf, nombre_debug);
-    Rewrite(debug_conf);
-    WriteLn(debug_conf, 'INICIO CONFIGURACION - ' + DateTimeToStr(Now));
-    WriteLn(debug_conf, 'NumCanales: ' + IntToStr(Equipo.NumCanales));
-  except
-  end;
 
   // Averiguo el periodo de muestro para el ComboBox
   cbIntervalo.ItemIndex := 0;
@@ -2632,28 +2620,13 @@ begin
   contadorCanales:=0;
   cantBloques := Equipo.NumCanales div 10;
   
-  try
-    WriteLn(debug_conf, 'CantBloques: ' + IntToStr(cantBloques));
-  except
-  end;
 
   for i := 1 to cantBloques do 
   begin
-    try
-        WriteLn(debug_conf, '--- Bloque ' + IntToStr(i) + ' ---');
-    except
-    end;
 
     // Recorro 10 canales por bloque (ej: 0-9, 10-19, 20-29)
     for j := contadorCanales to (contadorCanales + 9) do 
     begin
-      try
-         WriteLn(debug_conf, '  Iteracion j=' + IntToStr(j));
-         WriteLn(debug_conf, '  PosLista: ' + IntToStr(Equipo.Canales[j].PosLista));
-         if (Equipo.Canales[j].PosLista >= 0) and (Equipo.Canales[j].PosLista < Length(ListaSensores)) then
-             WriteLn(debug_conf, '  Sensor: ' + ListaSensores[Equipo.Canales[j].PosLista].Nombre);
-      except
-      end;
 
       // Calculo indice del Label (0..35)
       // Cada bloque visual tiene 9 labels (0..8)
@@ -2668,8 +2641,6 @@ begin
         
         // Asignacion normal
         NombreComp := Format('LConfig%.2d', [LabelIdx]);
-        try WriteLn(debug_conf, '    Buscando Config (Analog): ' + NombreComp); except end;
-        
         Comp := FindComponent(NombreComp);
         if (Comp <> nil) and (Comp is TLabel) then
         begin
@@ -2678,8 +2649,6 @@ begin
         end;
 
         NombreComp := Format('LDescConfig%.2d', [LabelIdx]);
-        try WriteLn(debug_conf, '    Buscando Desc (Analog): ' + NombreComp); except end;
-        
         Comp := FindComponent(NombreComp);
         if (Comp <> nil) and (Comp is TLabel) then
             TLabel(Comp).Caption := ListaSensores[Equipo.Canales[j].PosLista].Descripcion;
@@ -2698,7 +2667,6 @@ begin
              LabelIdx := (j div 10) * 9 + 8;
              
              NombreComp := Format('LConfig%.2d', [LabelIdx]);
-             try WriteLn(debug_conf, '    Buscando Config (Dig 8): ' + NombreComp); except end;
              Comp := FindComponent(NombreComp);
              if (Comp <> nil) and (Comp is TLabel) then
              begin
@@ -2717,7 +2685,6 @@ begin
              LabelIdx := (j div 10) * 9 + 8;
 
              NombreComp := Format('LConfig%.2d', [LabelIdx]);
-             try WriteLn(debug_conf, '    Buscando Config (Dig 9): ' + NombreComp); except end;
              Comp := FindComponent(NombreComp);
              if (Comp <> nil) and (Comp is TLabel) then
              begin
@@ -2741,11 +2708,6 @@ begin
     contadorCanales := contadorCanales + 10;
   end;
   
-  // DEBUG FIN
-  try
-    CloseFile(debug_conf);
-  except
-  end;
   // ShowMessage('cantidad de canales ' + intToStr(cantBloques));
 
   // LConfig00.Caption := ListaSensores[Equipo.Canales[0].PosLista].Nombre;
@@ -2869,7 +2831,6 @@ var
   SensorSel   : TSensor;
   LConfig     : TLabel;
   LDesc       : TLabel;
-  fDbg        : TextFile;
   i           : integer;
 begin
   if cbSensores.ItemIndex = -1 then
@@ -2976,7 +2937,6 @@ var
   i: byte;
   auxNombre: string[4];
   Qst: byte;
-  fDbg: TextFile;
 begin
   // Cartel de advertencia
   if (Sender <> nil) then

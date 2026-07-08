@@ -248,7 +248,6 @@ var
   i            : integer;
   PathDir      : string;
   RetryCount   : integer;
-  fDbg         : TextFile;
 
 begin
   PathDir      := DirINI + '\'+Nombre + '\';
@@ -328,11 +327,8 @@ var
   i            : integer;
   AFiles       : AFilesOfDir;
   PathDir      : string;
-  fDbg         : TextFile;
 
 begin
-  // DEBUG LOG REMOVED
-
   SeccionesINI := TStringList.Create;
   ArchivoINI   := TIniFile.Create(DirINI+'\'+Nombre+'\'+Nombre+'.ini');
   PathDir      := DirINI+'\'+Nombre+'\';
@@ -363,22 +359,6 @@ begin
       // IMPORTANT: Restore active Config from the loaded INI value to ensure persistence
       Canales[i].Config    := Canales[i].ConfigINI; 
     end;
-
-    // DEBUG LOG - lo que se cargo del INI
-    try
-      AssignFile(fDbg, 'debug_config.log');
-      if FileExists('debug_config.log') then Append(fDbg) else Rewrite(fDbg);
-      WriteLn(fDbg, FormatDateTime('hh:nn:ss.zzz', Now) + ' [CargarEquipo] LOADED from INI:');
-          // Dump memory for CH8
-          if NumCanales > 8 then begin
-              WriteLn(fDbg, 'CH8 (Dig0) Config: ' + IntToStr(Canales[8].Config));
-              WriteLn(fDbg, 'CH8 (Dig0) Desc: ' + Canales[8].Descripcion);
-              WriteLn(fDbg, 'CH8 (Dig0) Unit: ' + Canales[8].Unidad);
-          end else begin
-              WriteLn(fDbg, 'CH8 (Dig0) NOT AVAILABLE (NumCanales=' + IntToStr(NumCanales) + ')');
-          end;
-      CloseFile(fDbg);
-    except end;
 
     // Cargo  la config del los calculos de los parámetros
     CalcParam.CargarParametros(DirINI+'\'+Nombre+'\'+Nombre+'.ini', Nombre);
