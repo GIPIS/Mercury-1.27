@@ -31,10 +31,6 @@ lib/*/Datos/*
 lib/*/Equipos/*
 lib/*/backup/
 
-# Archivos de debug y logs grandes generados en runtime
-lib/*/debug_*.txt
-lib/*/debug_*.log
-lib/*/*.log
 
 # Archivos intermedios de compilación dentro de lib/ (pesados, se regeneran)
 lib/*/*.o

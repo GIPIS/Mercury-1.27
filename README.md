@@ -1,4 +1,4 @@
-# EMAC Mercury 1.27
+﻿# EMAC Mercury 1.27
 
 > Software de adquisición, configuración y descarga de datos para estaciones de monitoreo ambiental del grupo EMAC — Instituto Argentino de Oceanografía (IADO-CONICET).
 
@@ -24,9 +24,9 @@ Mercury es una aplicación de escritorio para Windows desarrollada originalmente
 - **Calcular** parámetros oceanográficos derivados: salinidad, densidad, etc.
 - **Gestionar** conexiones remotas y automáticas con múltiples equipos.
 
-Soporta más de 70 tipos de sensores predefinidos (temperatura, conductividad, nivel, viento, radiación, pH, oxígeno disuelto, entre otros), definidos en archivos `.sen` en la carpeta `Sensores/`.
+Soporta más de 70 tipos de sensores predefinidos (temperatura, conductividad, nivel, viento, radiación, pH, oxígeno disuelto, entre otros), definidos en archivos `.sen` en la carpeta `Sensores/`, los cuales se pueden modificar o expandir en esa misma carpeta.
 
-> **Estado actual (v1.27):** Migración de Delphi a Lazarus en curso. La comunicación serie, la configuración de equipos y la descarga/exportación de datos funcionan correctamente. Los módulos de gráficos y comunicación TCP/IP están temporalmente deshabilitados.
+> **Estado actual (v1.27):** Migrado de Delphi a Lazarus. La comunicación serie, la configuración de equipos y la descarga/exportación de datos funcionan correctamente. Los módulos de gráficos y comunicación TCP/IP están temporalmente deshabilitados. Falta probarlo en el entorno de trabajo real.
 
 ---
 
@@ -93,9 +93,9 @@ git clone <URL-del-repositorio> "Mercury 1.27"
 cd "Mercury 1.27"
 ```
 
-El repositorio ya incluye todos los archivos fuente (`.pas`, `.lfm`), los recursos (`Sensores/`, `Iconos/`, etc.) y los archivos de configuración del proyecto (`.lpi`, `.lpr`).
+El repositorio ya incluye todos los archivos fuente (`.pas`, `.lfm`), los recursos (`Sensores/`, `Iconos/`) y los archivos de configuración del proyecto (`.lpi`, `.lpr`).
 
-> **La carpeta `lib/` está excluida del repositorio** (listada en `.gitignore`). Se genera localmente al compilar el proyecto.
+> El contenido de las carpetas que se generan en ejecución (Datos, Equipos, etc.) **están excluidas del repositorio** (listada en `.gitignore`). Se genera localmente al compilar el proyecto y desplegarlo.
 
 ---
 
@@ -103,22 +103,11 @@ El repositorio ya incluye todos los archivos fuente (`.pas`, `.lfm`), los recurs
 
 Esta sección es para **usuarios finales** que solo quieren usar Mercury, sin modificar ni compilar nada.
 
-### Lo que se necesita
+### Requisitos
 
-- Windows 10 o superior (64 bits)
-- Git (para clonar) o acceso directo a los archivos del repositorio
+- Windows 64 bits (se desarrolló y probó en Windows 10/11)
 
-### Dónde está el ejecutable
-
-El ejecutable listo para usar se encuentra en el repositorio, dentro de:
-
-```
-lib\x86_64-win64\Mercury.exe
-```
-
-> ℹ️ El `Mercury.exe` en la **raíz** del proyecto es una copia anterior y puede estar desactualizado. Siempre usar el de `lib\x86_64-win64\`.
-
-### Instalación manual
+### Pasos
 
 1. Clonar el repositorio (o descargar el ZIP desde GitHub):
 
@@ -126,24 +115,13 @@ lib\x86_64-win64\Mercury.exe
    git clone <URL-del-repositorio> "Mercury 1.27"
    ```
 
-2. Copiar los siguientes archivos y carpetas a la carpeta de destino (por ejemplo `C:\EMAC Mercury\`):
+2. Copiar **toda la carpeta** `lib\x86_64-win64\` a la ubicación deseada (por ejemplo `C:\Program Files (x86)\EMAC Mercury\`).
 
-   | Qué copiar | Desde dónde en el repo |
-   |---|---|
-   | `Mercury.exe` | `lib\x86_64-win64\Mercury.exe` |
-   | `qtintf.dll` | raíz del proyecto |
-   | `Mercury.ini` | raíz del proyecto |
-   | Carpeta `Sensores\` | raíz del proyecto |
-   | Carpeta `Equipos\` | raíz del proyecto |
-   | Carpeta `Datos\` | raíz del proyecto |
-   | Carpeta `Iconos\` | raíz del proyecto |
-   | Carpeta `Imagenes\` | raíz del proyecto |
-   | Carpeta `Pantillas Web\` | raíz del proyecto |
-   | Carpeta `temp\` | raíz del proyecto |
+3. Se recomienda crear un acceso directo en el escritorio a `Mercury.exe`.
 
-3. Ejecutar `Mercury.exe` desde la carpeta de destino.
+4. Ejecutar `Mercury.exe`.
 
-   > Mercury busca sus archivos de configuración y recursos relativos a su propia ubicación, por lo que es importante que todas las carpetas estén junto al ejecutable.
+> ℹ️ La carpeta `lib\x86_64-win64\` ya contiene el ejecutable, la configuración inicial, los sensores y las plantillas web. No se necesita nada más para usar la aplicación.
 
 ### Primera ejecución
 
